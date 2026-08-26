@@ -1,0 +1,103 @@
+//////////////////////////////////////////////////////
+// USERS
+//////////////////////////////////////////////////////
+
+Table users {
+  id integer [pk, increment]
+  user_type integer // 0 - admin, 1 - librarian, 2 - user
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  phone varchar
+  created_at datetime
+}
+
+//////////////////////////////////////////////////////
+// AUTHORS
+//////////////////////////////////////////////////////
+
+Table authors {
+  id integer [pk, increment]
+  first_name varchar
+  last_name varchar
+  bio text
+}
+
+Table book_authors {
+  id integer [pk, increment]
+  book_id integer [ref: > books.id]
+  author_id integer [ref: > authors.id]
+}
+
+//////////////////////////////////////////////////////
+// BOOKS - general information about a book
+//////////////////////////////////////////////////////
+
+Table books {
+  id integer [pk, increment]
+  title varchar
+  description text
+  isbn varchar [unique]
+  published_year integer
+  category_id integer [ref: > categories.id]
+}
+
+//////////////////////////////////////////////////////
+// CATEGORIES
+//////////////////////////////////////////////////////
+
+Table categories {
+  id integer [pk, increment]
+  name varchar
+}
+
+//////////////////////////////////////////////////////
+// COPIES (physical items)
+//////////////////////////////////////////////////////
+
+Table books_physical {
+  id integer [pk, increment]
+  book_id integer [ref: > books.id]
+  inventory_code varchar [unique]
+  status varchar // available, borrowed, damaged, lost
+}
+
+//////////////////////////////////////////////////////
+// LOANS (borrowed books)
+//////////////////////////////////////////////////////
+
+Table current_loans_status {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id]
+  copy_id integer [ref: > books_physical.id]
+  loan_date datetime
+  due_date datetime
+  return_date datetime
+  status varchar//active, returned, overdue
+}
+
+//////////////////////////////////////////////////////
+// RESERVATIONS - reservations/books in users "shoping cart"
+//////////////////////////////////////////////////////
+
+Table reservations {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id]
+  copy_id integer [ref: > books_physical.id]
+  reserved_at datetime
+  status varchar // active, fulfilled, cancelled
+}
+
+//////////////////////////////////////////////////////
+// FEES
+//////////////////////////////////////////////////////
+
+Table fees {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id]
+  loan_id integer [ref: > current_loans_status.id]
+  amount decimal(18,2)
+  created_at datetime
+  paid_at datetime
+  status varchar
+}

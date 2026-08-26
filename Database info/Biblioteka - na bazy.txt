@@ -1,0 +1,69 @@
+Biblioteka
+
+Aplikacja webowa do zarządzania wirutalną biblioteką
+
+
+Umożliwia na:
+- przeglądanie dostępnych książek
+
+- śledzenie statusu wyporzyczonych książek
+
+- Alerty o terminie wypożyczenia(na pasku na górze?)
+
+
+1. Login/Rejestracja
+
+
+
+
+
+
+2. Strona główna + wyszukiwanie książek dostępnych w bibliotece(oraz filtrowanie po kategoriach
+
+
+3. Panel książki - podgląd danych o książce: okładka, opis, kategorie, numer iban?, inne informacje
+
+
+
+4. Konto
+
+4.1. Panel użytkownika
+
+4.2. Panel Bibliotekarza
+
+4.3. Panel Admina
+
+
+
+5. Koszyk - strona
+
+
+
+
+
+6. Strona Kontakt
+
+
+
+
+
+Panel/pasek - przyciski:
+
+Wypożyczone/Moje książki
+Konto
+Wyloguj
+
+Pasek szukania + filtry: gatunek, rok wydania
+
+Baza - tabele
+Postgres ?
+
+
+npx create-react-app@latest library-frontend --template typescript
+
+npx create-next-app@latest library-frontend
+
+npm create vite@latest library-frontend -- --template react 
+
+
+

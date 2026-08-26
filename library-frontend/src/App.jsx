@@ -21,17 +21,16 @@ function App() {
 					Kolekcja
 				</NavLink>
 				<NavLink
-					to="/nowa"
+					to="/koszyk"
 					className={({ isActive }) => (isActive ? "active-link" : "")}
 				>
-					Nazwa
+					Koszyk
 				</NavLink>
 			</header>
 
 			<Routes>
 				<Route path="/" element={<HomePage />} />
 				<Route path="/kolekcja" element={<CollectionPage />} />
-				<Route path="/nowa" element={<CollectionPage />} />
 			</Routes>
 		</>
 	);
