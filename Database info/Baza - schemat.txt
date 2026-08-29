@@ -4,7 +4,7 @@
 
 Table users {
   id integer [pk, increment]
-  user_type integer // 0 - admin, 1 - librarian, 2 - user
+  role varchar // admin, librarian, user
   first_name varchar
   last_name varchar
   email varchar [unique]

@@ -28,8 +28,11 @@ Umożliwia na:
 4. Konto
 
 4.1. Panel użytkownika
+opłaty
 
 4.2. Panel Bibliotekarza
+opłaty
+
 
 4.3. Panel Admina
 
