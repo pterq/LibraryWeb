@@ -1,0 +1,15 @@
+server:
+    port: 9192
+
+
+spring:
+    datasource:
+        username: springuser
+        password: 1234
+        url: JDBC:mysql://localhost:3306/sdb_db
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: create
+            format-sql: true
