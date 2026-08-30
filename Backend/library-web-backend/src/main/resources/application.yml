@@ -13,3 +13,7 @@ spring:
         hibernate:
             ddl-auto: create
             format-sql: true
+
+
+latefees:
+    cron: "0 0 2 * * *" // Schedule to run at 2 AM every day

@@ -27,10 +27,8 @@ public class FeeScheduler {
         this.feeRepository = feeRepository;
     }
 
-    /**
-     * Uruchamiane codziennie o 02:00
-     */
-    @Scheduled(cron = "0 0 2 * * *")
+
+    @Scheduled(cron = "${latefees.cron}")
     public void calculateLateFees() {
 
         LocalDateTime today = LocalDateTime.now();
