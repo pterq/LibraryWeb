@@ -24,7 +24,7 @@ public class Author {
     @Column(nullable = false)
     private String lastName;
 
-    private String bio;
+    private String biography;
 
     @OneToMany(mappedBy = "author")
     private Set<BookAuthor> bookAuthors;
