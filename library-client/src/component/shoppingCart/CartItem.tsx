@@ -10,6 +10,11 @@ const CartItem = ({ item }: { item: Reservation }) => {
 		return Math.ceil(timeDiff / (1000 * 3600 * 24));
 	};
 
+	const handleRemoveFromCart = () => {
+		// Implement the logic to remove the item from the cart
+		console.log(`Removing item with ID: ${item.id} from cart`);
+	};
+
 	return (
 		<div className="mb-4 p-3 border rounded">
 			<div className="d-flex align-items-center">
@@ -36,7 +41,7 @@ const CartItem = ({ item }: { item: Reservation }) => {
 
 				{/* RIGHT: Remove button (narrow column) */}
 				<div className="ms-3">
-					<button className="btn btn-danger btn-sm">
+					<button className="btn btn-danger btn-sm" onClick={handleRemoveFromCart}>
 						<i className="bi bi-x-lg"></i>
 					</button>
 				</div>

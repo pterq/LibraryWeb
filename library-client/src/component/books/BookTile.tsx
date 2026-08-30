@@ -10,6 +10,8 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 	const handleAddToCart = (book: Book) => {
 		console.log("Dodano do koszyka:", book);
 		// tutaj logika dodawania do koszyka
+
+		//backend musi sprawdzić czy jest dostępna kopia książki, jeśli nie to zwrócić błąd i wyświetlić komunikat użytkownikowi
 	};
 
 	return (
