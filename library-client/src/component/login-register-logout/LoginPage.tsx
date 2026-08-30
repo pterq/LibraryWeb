@@ -35,7 +35,7 @@ const LoginPage: React.FC = () => {
 
 		try {
 			const response = await axios.post<LoginResponse>(
-				"http://localhost:8080/api/login",
+				`${import.meta.env.VITE_BACKEND_URL}/login`,
 				form,
 			);
 

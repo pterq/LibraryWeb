@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 
-// Typ danych wysyłanych do backendu
 interface RegisterForm {
 	firstName: string;
 	lastName: string;
@@ -10,7 +9,6 @@ interface RegisterForm {
 	password: string;
 }
 
-// Typ odpowiedzi z backendu (możesz rozszerzyć)
 interface RegisterResponse {
 	id: number;
 	firstName: string;
@@ -42,7 +40,7 @@ const RegisterPage: React.FC = () => {
 
 		try {
 			const response = await axios.post<RegisterResponse>(
-				"http://localhost:8080/api/register",
+				`${import.meta.env.VITE_BACKEND_URL}/register`,
 				form,
 			);
 
@@ -50,9 +48,21 @@ const RegisterPage: React.FC = () => {
 			console.log("Server response:", response.data);
 		} catch (error) {
 			const err = error as AxiosError;
+
 			console.error("Axios error:", err);
 
-			setMessage("Wystąpił błąd podczas rejestracji.");
+			const status = err.response?.status;
+			const backendMessage = (err.response?.data as any)?.message || null;
+
+			if (status) {
+				setMessage(
+					backendMessage
+						? `Błąd (${status}): ${backendMessage}`
+						: `Wystąpił błąd podczas rejestracji. Kod błędu: ${status}`,
+				);
+			} else {
+				setMessage("Wystąpił błąd podczas rejestracji.");
+			}
 		}
 	};
 

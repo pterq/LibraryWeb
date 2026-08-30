@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-	baseURL: "http://localhost:9192",
+	baseURL: import.meta.env.VITE_BACKEND_URL,
 });
 
 axiosClient.interceptors.request.use((config) => {
