@@ -1,8 +1,23 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
+import { Offcanvas } from "bootstrap";
 import { useAuth } from "../../context/AuthContext";
+import CartPanel from "../shoppingCart/CartPanel";
 
 const NavBar = () => {
 	const { token, logout } = useAuth();
+	const cartOffcanvasRef = useRef<HTMLDivElement | null>(null);
+
+	const openCartOffcanvas = (event: React.MouseEvent<HTMLAnchorElement>) => {
+		event.preventDefault();
+
+		if (!cartOffcanvasRef.current) {
+			return;
+		}
+
+		const offcanvas = Offcanvas.getOrCreateInstance(cartOffcanvasRef.current);
+		offcanvas.show();
+	};
 
 	return (
 		<div>
@@ -56,7 +71,13 @@ const NavBar = () => {
 									</li>
 
 									<li className="nav-item">
-										<Link className="nav-link active" to={"/shopping-cart"}>
+										<Link
+											className="nav-link active"
+											to={"#"}
+											role="button"
+											aria-controls="globalCartOffcanvas"
+											onClick={openCartOffcanvas}
+										>
 											Shopping Cart
 										</Link>
 									</li>
@@ -119,6 +140,30 @@ const NavBar = () => {
 					</div>
 				</div>
 			</nav>
+
+			<div
+				className="offcanvas offcanvas-end"
+				data-bs-scroll="true"
+				tabIndex={-1}
+				id="globalCartOffcanvas"
+				aria-labelledby="globalCartOffcanvasLabel"
+				ref={cartOffcanvasRef}
+			>
+				<div className="offcanvas-header">
+					<h5 className="offcanvas-title" id="globalCartOffcanvasLabel">
+						Shopping Cart
+					</h5>
+					<button
+						type="button"
+						className="btn-close"
+						data-bs-dismiss="offcanvas"
+						aria-label="Close"
+					></button>
+				</div>
+				<div className="offcanvas-body">
+					<CartPanel />
+				</div>
+			</div>
 		</div>
 	);
 };

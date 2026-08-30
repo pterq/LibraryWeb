@@ -6,10 +6,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import NavBar from "./component/common/NavBar";
 import AboutUsPage from "./component/common/AboutUsPage";
+import MissingPage from "./component/common/MissingPage";
 import BooksPage from "./component/books/BooksPage";
 import UserBooksPage from "./component/books/UserBooksPage";
 import MyFeesPage from "./component/fees/MyFeesPage";
-import CartPage from "./component/shoppingCart/CartPage";
 import LogoutPage from "./component/login-register-logout/LogoutPage";
 import SettingsPage from "./component/user/SettingsPage";
 import LoginPage from "./component/login-register-logout/LoginPage";
@@ -54,15 +54,6 @@ function App() {
 						/>
 
 						<Route
-							path="/shopping-cart"
-							element={
-								<ProtectedRoute>
-									<CartPage />
-								</ProtectedRoute>
-							}
-						/>
-
-						<Route
 							path="/settings"
 							element={
 								<ProtectedRoute>
@@ -79,6 +70,9 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+
+						{/* Fallback page for non-existing routes */}
+						<Route path="*" element={<MissingPage />} />
 					</Routes>
 				</div>
 			</Router>
