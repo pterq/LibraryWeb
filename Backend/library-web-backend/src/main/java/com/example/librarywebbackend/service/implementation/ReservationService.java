@@ -49,7 +49,7 @@ public class ReservationService implements IReservationService {
         bookCopyRepository.save(copy);
 
         // ustawienie daty rezerwacji
-        reservation.setReservationDate(LocalDateTime.now());
+        reservation.setReservedAt(LocalDateTime.now());
         reservation.setStatus(ReservationStatus.ACTIVE);
 
         return reservationRepository.save(reservation);
@@ -68,7 +68,7 @@ public class ReservationService implements IReservationService {
                     bookCopyRepository.save(copy);
 
                     // ustawienie daty anulowania
-                    reservation.setCancelDate(LocalDateTime.now());
+                    reservation.setExpiresAt(LocalDateTime.now());
                     reservation.setStatus(ReservationStatus.CANCELLED);
 
                     return reservationRepository.save(reservation);

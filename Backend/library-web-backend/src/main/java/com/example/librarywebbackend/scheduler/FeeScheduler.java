@@ -9,6 +9,7 @@ import com.example.librarywebbackend.repository.LoanRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -32,7 +33,7 @@ public class FeeScheduler {
     @Scheduled(cron = "0 0 2 * * *")
     public void calculateLateFees() {
 
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
 
         // pobieramy wszystkie aktywne wypożyczenia
         List<Loan> activeLoans = loanRepository.findByStatus(LoanStatus.ACTIVE);
@@ -46,6 +47,7 @@ public class FeeScheduler {
 
                 long daysLate = ChronoUnit.DAYS.between(loan.getDueDate(), today);
 
+
                 if (daysLate <= 0) continue;
 
                 // zmiana statusu wypożyczenia
@@ -56,7 +58,7 @@ public class FeeScheduler {
                 Fee fee = new Fee();
                 fee.setLoan(loan);
                 fee.setUser(loan.getUser());
-                fee.setAmount(daysLate * 1.00); // 1 zł za dzień
+                fee.setAmount(BigDecimal.valueOf(daysLate * 1.00)); // 1 zł za dzień
                 fee.setCreatedAt(LocalDateTime.now());
                 fee.setStatus(FeeStatus.PENDING);
 

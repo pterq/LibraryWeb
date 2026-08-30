@@ -38,7 +38,6 @@ public class CategoryService implements ICategoryService {
         return categoryRepository.findById(id)
                 .map(category -> {
                     category.setName(updated.getName());
-                    category.setDescription(updated.getDescription());
                     return categoryRepository.save(category);
                 })
                 .orElse(null);

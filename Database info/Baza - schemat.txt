@@ -61,7 +61,7 @@ Table books_physical {
   id integer [pk, increment]
   book_id integer [ref: > books.id]
   inventory_code varchar [unique]
-  status varchar [not null] // available, borrowed, damaged, lost
+  status varchar [not null] // available, reserved, borrowed, damaged, lost
 }
 
 //////////////////////////////////////////////////////

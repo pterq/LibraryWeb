@@ -33,7 +33,7 @@ public class FeeService implements IFeeService {
     @Override
     public Fee createFee(Fee fee) {
         fee.setCreatedAt(LocalDateTime.now());
-        fee.setStatus(FeeStatus.UNPAID);
+        fee.setStatus(FeeStatus.PENDING);
         return feeRepository.save(fee);
     }
 
