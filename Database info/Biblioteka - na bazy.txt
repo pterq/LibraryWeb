@@ -69,4 +69,21 @@ npx create-next-app@latest library-frontend
 npm create vite@latest library-frontend -- --template react 
 
 
+Reqest
+{
+    "firstName" : "P",
+    "lastName" : "O",
+    "email" : "test@gmail.com",
+    "password" : "passwordTest"
+}
 
+Odpowiedź
+{
+    "id": 5,
+    "firstName": "P",
+    "lastName": "O",
+    "email": "test@gmail.com",
+    "phone": null,
+    "role": "USER",
+    "createdAt": "2026-08-30T19:17:46.667354"
+}
