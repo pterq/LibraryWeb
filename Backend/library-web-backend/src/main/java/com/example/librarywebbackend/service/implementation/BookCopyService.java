@@ -39,7 +39,7 @@ public class BookCopyService implements IBookCopyService {
         return bookCopyRepository.findById(id)
                 .map(copy -> {
                     copy.setBook(updated.getBook());
-                    copy.setCondition(updated.getCondition());
+                    copy.setInventoryCode(updated.getInventoryCode());
                     copy.setStatus(updated.getStatus());
                     return bookCopyRepository.save(copy);
                 })
