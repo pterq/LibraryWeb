@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 interface RegisterForm {
 	firstName: string;
@@ -14,9 +15,14 @@ interface RegisterResponse {
 	firstName: string;
 	lastName: string;
 	email: string;
+	accessToken: string;
+	tokenType: string;
 }
 
 const RegisterPage: React.FC = () => {
+	const navigate = useNavigate();
+	const { login } = useAuth();
+
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
 	const [form, setForm] = useState<RegisterForm>({
@@ -44,8 +50,9 @@ const RegisterPage: React.FC = () => {
 				form,
 			);
 
+			login(response.data.accessToken);
 			setMessage("Rejestracja zakończona sukcesem!");
-			console.log("Server response:", response.data);
+			navigate("/my-books", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
 

@@ -22,6 +22,11 @@ spring:
                   allowed-headers: "*"
                   allow-credentials: true
 
+app:
+    jwt:
+        secret: "library-web-backend-jwt-secret-key-2026-please-change-me"
+        expiration-minutes: 120
+
 
 
 latefees:

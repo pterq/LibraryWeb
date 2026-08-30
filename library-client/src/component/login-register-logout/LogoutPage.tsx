@@ -1,11 +1,18 @@
-import React from "react";
+import { useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const LogoutPage = () => {
+	const { logout } = useAuth();
+
+	useEffect(() => {
+		logout();
+	}, [logout]);
+
 	return (
 		<div>
 			<h1>Logout</h1>
-			Logout button will be implemented here. It will clear the user session and redirect to
-			the login page.
+			<Navigate to="/login" replace />
 		</div>
 	);
 };

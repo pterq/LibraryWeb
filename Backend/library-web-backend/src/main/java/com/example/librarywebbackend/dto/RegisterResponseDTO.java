@@ -17,4 +17,6 @@ public class RegisterResponseDTO {
     private String phone;
     private UserRole role;
     private LocalDateTime createdAt;
+    private String accessToken;
+    private String tokenType;
 }

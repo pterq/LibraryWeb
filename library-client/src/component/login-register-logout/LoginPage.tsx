@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 interface LoginForm {
 	email: string;
@@ -12,9 +13,14 @@ interface LoginResponse {
 	email: string;
 	firstName: string;
 	lastName: string;
+	accessToken: string;
+	tokenType: string;
 }
 
 const LoginPage: React.FC = () => {
+	const navigate = useNavigate();
+	const { login } = useAuth();
+
 	const [form, setForm] = useState<LoginForm>({
 		email: "",
 		password: "",
@@ -39,8 +45,9 @@ const LoginPage: React.FC = () => {
 				form,
 			);
 
+			login(response.data.accessToken);
 			setMessage("Logowanie zakończone sukcesem!");
-			console.log("Server response:", response.data);
+			navigate("/my-books", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
 			console.error("Axios error:", err);
