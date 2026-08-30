@@ -72,7 +72,7 @@ const NavBar = () => {
 											<i className="bi bi-person-circle text-white me-2"></i>
 											Profile
 										</Link>
-										<ul className="dropdown-menu">
+										<ul className="dropdown-menu dropdown-menu-end">
 											<li>
 												<Link className="dropdown-item" to={"/settings"}>
 													Settings
