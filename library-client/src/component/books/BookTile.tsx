@@ -7,6 +7,11 @@ interface BookTileProps {
 }
 
 const BookTile: React.FC<BookTileProps> = ({ book }) => {
+	const handleAddToCart = (book: Book) => {
+		console.log("Dodano do koszyka:", book);
+		// tutaj logika dodawania do koszyka
+	};
+
 	return (
 		<div>
 			<div
@@ -30,9 +35,15 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 							: book.description}
 					</p>
 
-					<Link to={`/book/${book.id}`} className="btn btn-primary">
-						More details
-					</Link>
+					<div className="d-flex justify-content-center gap-2 mt-3">
+						<Link to={`/book/${book.id}`} className="btn btn-primary">
+							Details
+						</Link>
+
+						<button className="btn btn-secondary" onClick={() => handleAddToCart(book)}>
+							Add to cart
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>

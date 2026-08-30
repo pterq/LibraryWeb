@@ -83,28 +83,19 @@ const NavBar = () => {
 									</li>
 
 									<li className="nav-item dropdown d-flex align-items-center">
-										<Link
-											className="nav-link dropdown-toggle"
-											to={"#"}
-											role="button"
+										<button
+											type="button"
+											className="nav-link dropdown-toggle border-0 bg-transparent text-white"
 											data-bs-toggle="dropdown"
 											aria-expanded="false"
 										>
 											<i className="bi bi-person-circle text-white me-2"></i>
 											Profile
-										</Link>
+										</button>
 										<ul className="dropdown-menu dropdown-menu-end">
 											<li>
 												<Link className="dropdown-item" to={"/settings"}>
 													Settings
-												</Link>
-											</li>
-											<li>
-												<Link
-													className="dropdown-item"
-													to={"/another-action"}
-												>
-													Another action
 												</Link>
 											</li>
 											<li>
