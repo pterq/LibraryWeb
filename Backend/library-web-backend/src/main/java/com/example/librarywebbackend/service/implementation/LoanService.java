@@ -9,6 +9,7 @@ import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.ILoanService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,9 @@ import java.util.List;
 
 @Service
 public class LoanService implements ILoanService {
+
+    @Value("${return-after-days}")
+    private int returnAfterDays;
 
     private final LoanRepository loanRepository;
     private final BookCopyRepository bookCopyRepository;
@@ -68,7 +72,7 @@ public class LoanService implements ILoanService {
         loan.setUser(user);
         loan.setCopy(copy);
         loan.setLoanDate(LocalDateTime.now());
-        loan.setReturnDate(null);
+        loan.setReturnDate(LocalDateTime.now().plusDays(returnAfterDays));
         loan.setStatus(LoanStatus.ACTIVE);
 
         return loanRepository.save(loan);

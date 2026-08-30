@@ -8,6 +8,7 @@ import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.ReservationRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.IReservationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,9 @@ import java.util.List;
 
 @Service
 public class ReservationService implements IReservationService {
+
+    @Value("${reservation-expires-after-days}")
+    private int reservationExpiresAfterDays;
 
     private final ReservationRepository reservationRepository;
     private final BookCopyRepository bookCopyRepository;
@@ -67,30 +71,12 @@ public class ReservationService implements IReservationService {
         reservation.setUser(user);
         reservation.setCopy(copy);
         reservation.setReservedAt(LocalDateTime.now());
-        reservation.setExpiresAt(LocalDateTime.now().plusDays(7));
+        reservation.setExpiresAt(LocalDateTime.now().plusDays(reservationExpiresAfterDays));
 
         return reservationRepository.save(reservation);
     }
 
-    @Override
-    public Reservation cancelReservation(Long id) {
 
-        return reservationRepository.findById(id)
-                .map(reservation -> {
-
-                    BookCopy copy = reservation.getCopy();
-
-                    // zmiana statusu kopii
-                    copy.setStatus(CopyStatus.AVAILABLE);
-                    bookCopyRepository.save(copy);
-
-                    // ustawienie daty anulowania
-                    reservation.setExpiresAt(LocalDateTime.now());
-
-                    return reservationRepository.save(reservation);
-                })
-                .orElse(null);
-    }
 
     @Override
     public void deleteReservation(Long id) {

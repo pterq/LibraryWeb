@@ -26,3 +26,7 @@ spring:
 
 latefees:
     cron: "0 0 2 * * *" # Schedule to run at 2 AM every day
+
+return-after-days: 7
+
+reservation-expires-after-days: 7
