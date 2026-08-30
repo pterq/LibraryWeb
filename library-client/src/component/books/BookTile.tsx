@@ -36,12 +36,15 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 					</p>
 
 					<div className="d-flex justify-content-center gap-2 mt-3">
-						<Link to={`/book/${book.id}`} className="btn btn-primary">
+						<Link to={`/book/${book.id}`} className="btn btn-primary flex-shrink-0">
 							Details
 						</Link>
 
-						<button className="btn btn-secondary" onClick={() => handleAddToCart(book)}>
-							Add to cart
+						<button
+							className="btn btn-secondary flex-shrink-0 flex-grow-0"
+							onClick={() => handleAddToCart(book)}
+						>
+							<i className="bi bi-cart"></i>
 						</button>
 					</div>
 				</div>
