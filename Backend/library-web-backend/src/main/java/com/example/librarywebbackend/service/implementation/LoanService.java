@@ -39,6 +39,11 @@ public class LoanService implements ILoanService {
     }
 
     @Override
+    public List<Loan> getLoansByStatus(LoanStatus status) {
+        return loanRepository.findByStatus(status);
+    }
+
+    @Override
     public Loan getLoanById(Long id) {
         return loanRepository.findById(id)
                 .orElse(null);

@@ -1,6 +1,7 @@
 package com.example.librarywebbackend.controller;
 
 import com.example.librarywebbackend.entity.Fee;
+import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,11 @@ public class FeeController {
         return feeService.getAllFees();
     }
 
+    @GetMapping("/status/{status}")
+    public List<Fee> getByStatus(@PathVariable FeeStatus status) {
+        return feeService.getFeesByStatus(status);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Fee> getById(@PathVariable Long id) {
         Fee fee = feeService.getFeeById(id);
@@ -38,6 +44,14 @@ public class FeeController {
     @PostMapping("/pay/{id}")
     public ResponseEntity<Fee> pay(@PathVariable Long id) {
         Fee fee = feeService.payFee(id);
+        return fee != null
+                ? ResponseEntity.ok(fee)
+                : ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/{status}")
+    public ResponseEntity<Fee> updateStatus(@PathVariable Long id, @PathVariable FeeStatus status) {
+        Fee fee = feeService.updateStatus(id, status);
         return fee != null
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();

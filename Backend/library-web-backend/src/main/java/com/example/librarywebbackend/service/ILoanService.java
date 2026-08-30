@@ -1,12 +1,15 @@
 package com.example.librarywebbackend.service;
 
 import com.example.librarywebbackend.entity.Loan;
+import com.example.librarywebbackend.entity.LoanStatus;
 
 import java.util.List;
 
 public interface ILoanService {
 
     List<Loan> getAllLoans();
+
+    List<Loan> getLoansByStatus(LoanStatus status);
 
     Loan getLoanById(Long id);
 

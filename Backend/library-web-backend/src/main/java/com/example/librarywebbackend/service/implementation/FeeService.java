@@ -25,6 +25,11 @@ public class FeeService implements IFeeService {
     }
 
     @Override
+    public List<Fee> getFeesByStatus(FeeStatus status) {
+        return feeRepository.findByStatus(status);
+    }
+
+    @Override
     public Fee getFeeById(Long id) {
         return feeRepository.findById(id)
                 .orElse(null);
@@ -43,6 +48,17 @@ public class FeeService implements IFeeService {
                 .map(fee -> {
                     fee.setPaidAt(LocalDateTime.now());
                     fee.setStatus(FeeStatus.PAID);
+                    return feeRepository.save(fee);
+                })
+                .orElse(null);
+    }
+
+    @Override
+    public Fee updateStatus(Long id, FeeStatus status) {
+        return feeRepository.findById(id)
+                .map(fee -> {
+                    fee.setStatus(status);
+                    fee.setPaidAt(status == FeeStatus.PAID ? LocalDateTime.now() : null);
                     return feeRepository.save(fee);
                 })
                 .orElse(null);
