@@ -17,20 +17,12 @@ const SearchBar = ({ searchBook, setSearchBook }: SerachBarProps) => {
 						value={searchBook}
 						onChange={(e) => setSearchBook(e.target.value)}
 					/>
-					<button
-						className="btn btn-outline-success shadow"
-						type="submit"
-					>
-						Search
-					</button>
 				</form>
 			</div>
 
 			<div className="row ">
 				<div className="d-flex justify-content-center col-sm-10 mb-4">
-					{searchBook
-						? `Searching for: ${searchBook}`
-						: "No search query"}
+					{searchBook ? `Searching for: ${searchBook}` : "No search query"}
 				</div>
 			</div>
 		</div>
