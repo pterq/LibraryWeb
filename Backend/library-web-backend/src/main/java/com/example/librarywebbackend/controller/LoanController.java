@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 import com.example.librarywebbackend.service.ILoanService;
@@ -27,6 +28,11 @@ public class LoanController {
     @GetMapping("/status/{status}")
     public List<Loan> getByStatus(@PathVariable LoanStatus status) {
         return loanService.getLoansByStatus(status);
+    }
+
+    @GetMapping("/userBooks/{userId}")
+    public List<Book> getBooksByUserId(@PathVariable Long userId) {
+        return loanService.getBooksByUserId(userId);
     }
 
     @GetMapping("/{id}")
