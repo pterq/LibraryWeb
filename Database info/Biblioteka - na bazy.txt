@@ -69,6 +69,11 @@ npx create-next-app@latest library-frontend
 npm create vite@latest library-frontend -- --template react 
 
 
+npx create-next-app@latest library-client //front + backend w jednym repo
+npm create vite@latest library-client //sam frontend
+
+npm create vite@latest library-client -- --template react-ts
+
 Reqest
 {
     "firstName" : "P",
