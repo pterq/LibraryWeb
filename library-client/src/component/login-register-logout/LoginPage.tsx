@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 
-// Typ danych wysyłanych do backendu
 interface LoginForm {
 	email: string;
 	password: string;
 }
 
-// Typ odpowiedzi z backendu (np. token JWT)
 interface LoginResponse {
-	token: string;
+	id: number;
 	email: string;
+	firstName: string;
+	lastName: string;
 }
 
 const LoginPage: React.FC = () => {
@@ -21,6 +21,7 @@ const LoginPage: React.FC = () => {
 	});
 
 	const [message, setMessage] = useState<string>("");
+	const [showPassword, setShowPassword] = useState<boolean>(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({
@@ -40,9 +41,6 @@ const LoginPage: React.FC = () => {
 
 			setMessage("Logowanie zakończone sukcesem!");
 			console.log("Server response:", response.data);
-
-			// Możesz tu zapisać token do localStorage:
-			// localStorage.setItem("token", response.data.token);
 		} catch (error) {
 			const err = error as AxiosError;
 			console.error("Axios error:", err);
@@ -69,19 +67,30 @@ const LoginPage: React.FC = () => {
 				</div>
 
 				<div className="mb-3">
-					<label className="form-label">Hasło</label>
-					<input
-						type="password"
-						name="password"
-						className="form-control"
-						value={form.password}
-						onChange={handleChange}
-						required
-					/>
+					<label className="form-label">Password</label>
+
+					<div className="input-group">
+						<input
+							type={showPassword ? "text" : "password"}
+							name="password"
+							className="form-control"
+							value={form.password}
+							onChange={handleChange}
+							required
+						/>
+
+						<button
+							type="button"
+							className="btn btn-outline-secondary"
+							onClick={() => setShowPassword((prev) => !prev)}
+						>
+							<i className={showPassword ? "bi bi-eye" : "bi bi-eye-slash"}></i>
+						</button>
+					</div>
 				</div>
 
 				<button type="submit" className="btn btn-primary w-100">
-					Zaloguj się
+					Login
 				</button>
 			</form>
 

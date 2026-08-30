@@ -19,6 +19,8 @@ interface RegisterResponse {
 }
 
 const RegisterPage: React.FC = () => {
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+
 	const [form, setForm] = useState<RegisterForm>({
 		firstName: "",
 		lastName: "",
@@ -60,7 +62,7 @@ const RegisterPage: React.FC = () => {
 
 			<form onSubmit={handleSubmit}>
 				<div className="mb-3">
-					<label className="form-label">Imię</label>
+					<label className="form-label">First Name</label>
 					<input
 						type="text"
 						name="firstName"
@@ -72,7 +74,7 @@ const RegisterPage: React.FC = () => {
 				</div>
 
 				<div className="mb-3">
-					<label className="form-label">Nazwisko</label>
+					<label className="form-label">Last Name</label>
 					<input
 						type="text"
 						name="lastName"
@@ -96,15 +98,26 @@ const RegisterPage: React.FC = () => {
 				</div>
 
 				<div className="mb-3">
-					<label className="form-label">Hasło</label>
-					<input
-						type="password"
-						name="password"
-						className="form-control"
-						value={form.password}
-						onChange={handleChange}
-						required
-					/>
+					<label className="form-label">Password</label>
+
+					<div className="input-group">
+						<input
+							type={showPassword ? "text" : "password"}
+							name="password"
+							className="form-control"
+							value={form.password}
+							onChange={handleChange}
+							required
+						/>
+
+						<button
+							type="button"
+							className="btn btn-outline-secondary"
+							onClick={() => setShowPassword((prev) => !prev)}
+						>
+							<i className={showPassword ? "bi bi-eye" : "bi bi-eye-slash"}></i>
+						</button>
+					</div>
 				</div>
 
 				<button type="submit" className="btn btn-primary w-100">
