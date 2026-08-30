@@ -46,11 +46,12 @@ public class BookService implements IBookService {
     @Override
     public Book createBook(BookCreateDTO dto) {
 
-        // 1. Pobranie kategorii
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = null;
+        if (dto.getCategoryId() != null) {
+            category = categoryRepository.findById(dto.getCategoryId())
+                    .orElse(null);
+        }
 
-        // 2. Tworzenie książki
         Book book = new Book();
         book.setTitle(dto.getTitle());
         book.setDescription(dto.getDescription());
@@ -60,17 +61,24 @@ public class BookService implements IBookService {
 
         book = bookRepository.save(book);
 
-        // 3. Powiązania z autorami
-        for (Long authorId : dto.getAuthorIds()) {
+        if (dto.getAuthorIds() != null) {
+            for (Long authorId : dto.getAuthorIds()) {
+                if (authorId == null) {
+                    continue;
+                }
 
-            Author author = authorRepository.findById(authorId)
-                    .orElseThrow(() -> new RuntimeException("Author not found: " + authorId));
+                Author author = authorRepository.findById(authorId)
+                        .orElse(null);
+                if (author == null) {
+                    continue;
+                }
 
-            BookAuthor ba = new BookAuthor();
-            ba.setBook(book);
-            ba.setAuthor(author);
+                BookAuthor ba = new BookAuthor();
+                ba.setBook(book);
+                ba.setAuthor(author);
 
-            bookAuthorRepository.save(ba);
+                bookAuthorRepository.save(ba);
+            }
         }
 
         return book;
@@ -82,8 +90,11 @@ public class BookService implements IBookService {
         return bookRepository.findById(id)
                 .map(book -> {
 
-                    Category category = categoryRepository.findById(dto.getCategoryId())
-                            .orElseThrow(() -> new RuntimeException("Category not found"));
+                    Category category = null;
+                    if (dto.getCategoryId() != null) {
+                        category = categoryRepository.findById(dto.getCategoryId())
+                                .orElse(null);
+                    }
 
                     // aktualizacja pól książki
                     book.setTitle(dto.getTitle());
@@ -98,16 +109,24 @@ public class BookService implements IBookService {
                     bookAuthorRepository.deleteAllByBookId(book.getId());
 
                     // dodanie nowych powiązań
-                    for (Long authorId : dto.getAuthorIds()) {
+                    if (dto.getAuthorIds() != null) {
+                        for (Long authorId : dto.getAuthorIds()) {
+                            if (authorId == null) {
+                                continue;
+                            }
 
-                        Author author = authorRepository.findById(authorId)
-                                .orElseThrow(() -> new RuntimeException("Author not found: " + authorId));
+                            Author author = authorRepository.findById(authorId)
+                                    .orElse(null);
+                            if (author == null) {
+                                continue;
+                            }
 
-                        BookAuthor ba = new BookAuthor();
-                        ba.setBook(book);
-                        ba.setAuthor(author);
+                            BookAuthor ba = new BookAuthor();
+                            ba.setBook(book);
+                            ba.setAuthor(author);
 
-                        bookAuthorRepository.save(ba);
+                            bookAuthorRepository.save(ba);
+                        }
                     }
 
                     return book;

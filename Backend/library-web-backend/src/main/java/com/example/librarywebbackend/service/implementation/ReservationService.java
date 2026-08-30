@@ -3,9 +3,10 @@ package com.example.librarywebbackend.service.implementation;
 import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Reservation;
-import com.example.librarywebbackend.entity.ReservationStatus;
+import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.ReservationRepository;
+import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.IReservationService;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,14 @@ public class ReservationService implements IReservationService {
 
     private final ReservationRepository reservationRepository;
     private final BookCopyRepository bookCopyRepository;
+    private final UserRepository userRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              BookCopyRepository bookCopyRepository) {
+                              BookCopyRepository bookCopyRepository,
+                              UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.bookCopyRepository = bookCopyRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -37,8 +41,19 @@ public class ReservationService implements IReservationService {
 
     @Override
     public Reservation createReservation(Reservation reservation) {
+        if (reservation.getUser() == null || reservation.getUser().getId() == null) {
+            throw new IllegalArgumentException("User id is required");
+        }
 
-        BookCopy copy = reservation.getCopy();
+        if (reservation.getCopy() == null || reservation.getCopy().getId() == null) {
+            throw new IllegalArgumentException("Copy id is required");
+        }
+
+        User user = userRepository.findById(reservation.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        BookCopy copy = bookCopyRepository.findById(reservation.getCopy().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {
             throw new IllegalStateException("Copy is not available for reservation");
@@ -49,8 +64,10 @@ public class ReservationService implements IReservationService {
         bookCopyRepository.save(copy);
 
         // ustawienie daty rezerwacji
+        reservation.setUser(user);
+        reservation.setCopy(copy);
         reservation.setReservedAt(LocalDateTime.now());
-        reservation.setStatus(ReservationStatus.ACTIVE);
+        reservation.setExpiresAt(LocalDateTime.now().plusDays(7));
 
         return reservationRepository.save(reservation);
     }
@@ -69,7 +86,6 @@ public class ReservationService implements IReservationService {
 
                     // ustawienie daty anulowania
                     reservation.setExpiresAt(LocalDateTime.now());
-                    reservation.setStatus(ReservationStatus.CANCELLED);
 
                     return reservationRepository.save(reservation);
                 })

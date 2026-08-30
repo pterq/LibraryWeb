@@ -28,7 +28,5 @@ public class Author {
 
     @OneToMany(mappedBy = "author")
     private Set<BookAuthor> bookAuthors;
-
-
-    // getters/setters
+    
 }

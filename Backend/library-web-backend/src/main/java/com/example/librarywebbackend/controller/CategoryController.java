@@ -2,6 +2,7 @@ package com.example.librarywebbackend.controller;
 
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.service.ICategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,16 +32,28 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category create(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public ResponseEntity<?> create(@RequestBody Category category) {
+        try {
+            return ResponseEntity.ok(categoryService.createCategory(category));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category updated) {
-        Category category = categoryService.updateCategory(id, updated);
-        return category != null
-                ? ResponseEntity.ok(category)
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Category updated) {
+        try {
+            Category category = categoryService.updateCategory(id, updated);
+            return category != null
+                    ? ResponseEntity.ok(category)
+                    : ResponseEntity.notFound().build();
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

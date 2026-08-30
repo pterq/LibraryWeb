@@ -2,6 +2,7 @@ package com.example.librarywebbackend.controller;
 
 import com.example.librarywebbackend.entity.Reservation;
 import com.example.librarywebbackend.service.IReservationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,16 +32,14 @@ public class ReservationController {
     }
 
     @PostMapping
-    public Reservation create(@RequestBody Reservation reservation) {
-        return reservationService.createReservation(reservation);
-    }
-
-    @PostMapping("/cancel/{id}")
-    public ResponseEntity<Reservation> cancel(@PathVariable Long id) {
-        Reservation reservation = reservationService.cancelReservation(id);
-        return reservation != null
-                ? ResponseEntity.ok(reservation)
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<?> create(@RequestBody Reservation reservation) {
+        try {
+            return ResponseEntity.ok(reservationService.createReservation(reservation));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

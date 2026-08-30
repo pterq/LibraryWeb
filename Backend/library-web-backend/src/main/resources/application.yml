@@ -11,9 +11,18 @@ spring:
     jpa:
         show-sql: true
         hibernate:
-            ddl-auto: create
+            ddl-auto: update
             format-sql: true
+    web:
+        cors:
+            mappings:
+                - path: "/**"
+                  allowed-origins: "http://localhost:3000"
+                  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+                  allowed-headers: "*"
+                  allow-credentials: true
+
 
 
 latefees:
-    cron: "0 0 2 * * *" // Schedule to run at 2 AM every day
+    cron: "0 0 2 * * *" # Schedule to run at 2 AM every day

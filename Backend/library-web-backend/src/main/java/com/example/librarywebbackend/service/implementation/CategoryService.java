@@ -30,6 +30,11 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public Category createCategory(Category category) {
+        String normalizedName = normalizeName(category.getName());
+        if (categoryRepository.existsByNameIgnoreCase(normalizedName)) {
+            throw new IllegalStateException("Category with this name already exists.");
+        }
+        category.setName(normalizedName);
         return categoryRepository.save(category);
     }
 
@@ -37,7 +42,11 @@ public class CategoryService implements ICategoryService {
     public Category updateCategory(Long id, Category updated) {
         return categoryRepository.findById(id)
                 .map(category -> {
-                    category.setName(updated.getName());
+                    String normalizedName = normalizeName(updated.getName());
+                    if (categoryRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, id)) {
+                        throw new IllegalStateException("Category with this name already exists.");
+                    }
+                    category.setName(normalizedName);
                     return categoryRepository.save(category);
                 })
                 .orElse(null);
@@ -46,5 +55,18 @@ public class CategoryService implements ICategoryService {
     @Override
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    private String normalizeName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Category name is required.");
+        }
+
+        String normalizedName = name.trim();
+        if (normalizedName.isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be empty.");
+        }
+
+        return normalizedName;
     }
 }

@@ -4,8 +4,10 @@ import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
+import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
+import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.ILoanService;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +19,14 @@ public class LoanService implements ILoanService {
 
     private final LoanRepository loanRepository;
     private final BookCopyRepository bookCopyRepository;
+    private final UserRepository userRepository;
 
     public LoanService(LoanRepository loanRepository,
-                       BookCopyRepository bookCopyRepository) {
+                       BookCopyRepository bookCopyRepository,
+                       UserRepository userRepository) {
         this.loanRepository = loanRepository;
         this.bookCopyRepository = bookCopyRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -37,8 +42,19 @@ public class LoanService implements ILoanService {
 
     @Override
     public Loan borrowBook(Loan loan) {
+        if (loan.getUser() == null || loan.getUser().getId() == null) {
+            throw new IllegalArgumentException("User id is required");
+        }
 
-        BookCopy copy = loan.getCopy();
+        if (loan.getCopy() == null || loan.getCopy().getId() == null) {
+            throw new IllegalArgumentException("Copy id is required");
+        }
+
+        User user = userRepository.findById(loan.getUser().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        BookCopy copy = bookCopyRepository.findById(loan.getCopy().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {
             throw new IllegalStateException("Copy is not available");
@@ -49,7 +65,10 @@ public class LoanService implements ILoanService {
         bookCopyRepository.save(copy);
 
         // ustawienie dat wypożyczenia
+        loan.setUser(user);
+        loan.setCopy(copy);
         loan.setLoanDate(LocalDateTime.now());
+        loan.setReturnDate(null);
         loan.setStatus(LoanStatus.ACTIVE);
 
         return loanRepository.save(loan);

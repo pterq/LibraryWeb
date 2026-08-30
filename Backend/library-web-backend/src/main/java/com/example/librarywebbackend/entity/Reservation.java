@@ -29,7 +29,4 @@ public class Reservation {
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;
-
-    @Enumerated(EnumType.STRING)
-    private ReservationStatus status;
 }
