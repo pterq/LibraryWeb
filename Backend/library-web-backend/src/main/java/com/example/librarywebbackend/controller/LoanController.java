@@ -1,0 +1,51 @@
+package com.example.librarywebbackend.controller;
+
+import com.example.librarywebbackend.entity.Loan;
+import com.example.librarywebbackend.service.ILoanService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/loans")
+public class LoanController {
+
+    private final ILoanService loanService;
+
+    public LoanController(ILoanService loanService) {
+        this.loanService = loanService;
+    }
+
+    @GetMapping
+    public List<Loan> getAll() {
+        return loanService.getAllLoans();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Loan> getById(@PathVariable Long id) {
+        Loan loan = loanService.getLoanById(id);
+        return loan != null
+                ? ResponseEntity.ok(loan)
+                : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/borrow")
+    public Loan borrow(@RequestBody Loan loan) {
+        return loanService.borrowBook(loan);
+    }
+
+    @PostMapping("/return/{id}")
+    public ResponseEntity<Loan> returnBook(@PathVariable Long id) {
+        Loan loan = loanService.returnBook(id);
+        return loan != null
+                ? ResponseEntity.ok(loan)
+                : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        loanService.deleteLoan(id);
+        return ResponseEntity.noContent().build();
+    }
+}
