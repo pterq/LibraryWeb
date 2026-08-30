@@ -15,6 +15,7 @@ interface RegisterResponse {
 	firstName: string;
 	lastName: string;
 	email: string;
+	role: string;
 	accessToken: string;
 	tokenType: string;
 }
@@ -50,7 +51,13 @@ const RegisterPage: React.FC = () => {
 				form,
 			);
 
-			login(response.data.accessToken);
+			login({
+				accessToken: response.data.accessToken,
+				firstName: response.data.firstName,
+				lastName: response.data.lastName,
+				email: response.data.email,
+				role: response.data.role,
+			});
 			setMessage("Rejestracja zakończona sukcesem!");
 			navigate("/my-books", { replace: true });
 		} catch (error) {

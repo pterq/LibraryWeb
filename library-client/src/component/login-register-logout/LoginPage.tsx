@@ -13,6 +13,7 @@ interface LoginResponse {
 	email: string;
 	firstName: string;
 	lastName: string;
+	role: string;
 	accessToken: string;
 	tokenType: string;
 }
@@ -45,7 +46,13 @@ const LoginPage: React.FC = () => {
 				form,
 			);
 
-			login(response.data.accessToken);
+			login({
+				accessToken: response.data.accessToken,
+				firstName: response.data.firstName,
+				lastName: response.data.lastName,
+				email: response.data.email,
+				role: response.data.role,
+			});
 			setMessage("Logowanie zakończone sukcesem!");
 			navigate("/my-books", { replace: true });
 		} catch (error) {
