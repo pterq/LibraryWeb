@@ -51,6 +51,7 @@ class RegisterServiceTest {
         RegisterResponseDTO response = registerService.register(request);
 
         assertNotNull(response);
+        assertEquals(1L, response.getUserId());
         assertEquals("jwt-token", response.getAccessToken());
         assertEquals("Bearer", response.getTokenType());
     }

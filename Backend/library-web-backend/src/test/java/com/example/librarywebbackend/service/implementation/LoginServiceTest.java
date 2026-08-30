@@ -44,6 +44,7 @@ class LoginServiceTest {
         LoginResponseDTO response = loginService.login(request);
 
         assertNotNull(response);
+        assertEquals(1L, response.getUserId());
         assertEquals("jwt-token", response.getAccessToken());
         assertEquals("Bearer", response.getTokenType());
     }

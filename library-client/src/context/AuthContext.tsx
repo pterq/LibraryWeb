@@ -7,6 +7,7 @@ interface AuthContextType {
 }
 
 interface AuthLoginData {
+	userId: number;
 	accessToken: string;
 	firstName: string;
 	lastName: string;
@@ -19,8 +20,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 
-	const login = ({ accessToken, firstName, lastName, email, role }: AuthLoginData) => {
+	const login = ({ userId, accessToken, firstName, lastName, email, role }: AuthLoginData) => {
+		console.log("Logging in user:", { userId, accessToken, firstName, lastName, email, role });
+
 		localStorage.setItem("token", accessToken);
+		localStorage.setItem("userId", userId.toString());
 		localStorage.setItem("firstName", firstName);
 		localStorage.setItem("lastName", lastName);
 		localStorage.setItem("email", email);
@@ -30,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 	const logout = () => {
 		localStorage.removeItem("token");
+		localStorage.removeItem("userId");
 		localStorage.removeItem("firstName");
 		localStorage.removeItem("lastName");
 		localStorage.removeItem("email");

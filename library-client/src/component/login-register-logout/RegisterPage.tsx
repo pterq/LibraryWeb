@@ -11,7 +11,7 @@ interface RegisterForm {
 }
 
 interface RegisterResponse {
-	id: number;
+	userId: number;
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -52,6 +52,7 @@ const RegisterPage: React.FC = () => {
 			);
 
 			login({
+				userId: response.data.userId,
 				accessToken: response.data.accessToken,
 				firstName: response.data.firstName,
 				lastName: response.data.lastName,

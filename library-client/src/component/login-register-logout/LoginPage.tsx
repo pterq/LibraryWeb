@@ -9,7 +9,7 @@ interface LoginForm {
 }
 
 interface LoginResponse {
-	id: number;
+	userId: number;
 	email: string;
 	firstName: string;
 	lastName: string;
@@ -47,6 +47,7 @@ const LoginPage: React.FC = () => {
 			);
 
 			login({
+				userId: response.data.userId,
 				accessToken: response.data.accessToken,
 				firstName: response.data.firstName,
 				lastName: response.data.lastName,
