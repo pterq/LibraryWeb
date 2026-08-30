@@ -2,13 +2,11 @@ import React from "react";
 import SearchBar from "../common/SearchBar";
 import BookGrid from "./BookGrid";
 
-const Books = () => {
+const BooksPage = () => {
 	const [search, setSearch] = React.useState("");
 	return (
 		<div>
-			<h2 className="d-flex justify-content-center mb-3">
-				Books search and add to cart
-			</h2>
+			<h2 className="d-flex justify-content-center mb-3">Books search and add to cart</h2>
 
 			<SearchBar searchBook={search} setSearchBook={setSearch} />
 
@@ -17,4 +15,4 @@ const Books = () => {
 	);
 };
 
-export default Books;
+export default BooksPage;

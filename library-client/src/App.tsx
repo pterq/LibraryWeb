@@ -4,11 +4,14 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import NavBar from "./component/common/NavBar";
-import AboutUs from "./component/AboutUs";
-import Books from "./component/books/Books";
-import MyFees from "./component/fees/MyFees";
-import Cart from "./component/shoppingCart/Cart";
-import Logout from "./component/common/Logout";
+import AboutUsPage from "./component/common/AboutUsPage";
+import BooksPage from "./component/books/BooksPage";
+import MyFeesPage from "./component/fees/MyFeesPage";
+import CartPage from "./component/shoppingCart/CartPage";
+import LogoutPage from "./component/login-register-logout/LogoutPage";
+import SettingsPage from "./component/user/SettingsPage";
+import LoginPage from "./component/login-register-logout/LoginPage";
+import RegisterPage from "./component/login-register-logout/RegisterPage";
 
 import BookCard from "./component/books/BookCard";
 
@@ -18,11 +21,15 @@ function App() {
 			<Router>
 				<NavBar />
 				<Routes>
-					<Route path="/" element={<Books />} />
-					<Route path="/about-us" element={<AboutUs />} />
-					<Route path="/my-fees" element={<MyFees />} />
-					<Route path="/shopping-cart" element={<Cart />} />
-					<Route path="/logout" element={<Logout />} />
+					<Route path="/" element={<BooksPage />} />
+					<Route path="/about-us" element={<AboutUsPage />} />
+					<Route path="/my-fees" element={<MyFeesPage />} />
+					<Route path="/shopping-cart" element={<CartPage />} />
+					<Route path="/settings" element={<SettingsPage />} />
+					<Route path="/logout" element={<LogoutPage />} />
+
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="/register" element={<RegisterPage />} />
 
 					<Route path="/book/:id" element={<BookCard />} />
 				</Routes>

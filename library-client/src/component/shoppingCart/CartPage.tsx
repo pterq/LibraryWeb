@@ -1,6 +1,6 @@
 import React from "react";
 
-const Cart = () => {
+const CartPage = () => {
 	return (
 		<div>
 			Shopping Cart page content - here is the list of books added to the cart(reservations)
@@ -41,4 +41,4 @@ const Cart = () => {
 	);
 };
 
-export default Cart;
+export default CartPage;
