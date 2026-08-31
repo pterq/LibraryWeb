@@ -110,7 +110,11 @@ const NavBar = () => {
 											}}
 										>
 											<li>
-												<Link className="dropdown-item" to={"/settings"} onClick={closeProfileDropdown}>
+												<Link
+													className="dropdown-item"
+													to={"/settings"}
+													onClick={closeProfileDropdown}
+												>
 													Settings
 												</Link>
 											</li>
