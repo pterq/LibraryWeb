@@ -28,7 +28,7 @@ function App() {
 		<AuthProvider>
 			<Router>
 				<NavBar />
-				<div className=" mt-5">
+				<div className="container-fluid mt-5">
 					<Routes>
 						{/* Public pages */}
 						<Route path="/" element={<BooksPage />} />

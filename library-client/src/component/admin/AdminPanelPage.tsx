@@ -65,7 +65,7 @@ const AdminPanelPage = () => {
 	);
 
 	return (
-		<div className="w-100">
+		<div className="">
 			<h1 className="mb-4">Admin Panel</h1>
 			<h2 className="mb-4">
 				User: {firstName} {lastName} ({email})

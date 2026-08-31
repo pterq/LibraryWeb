@@ -7,7 +7,7 @@ const AuthorsDashboard = () => {
 	const authors: AuthorType[] = MockData.mockAuthors;
 
 	return (
-		<div>
+		<div className="container-fluid">
 			<h1>Authors Dashboard</h1>
 
 			{/* Add author button*/}
