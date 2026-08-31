@@ -1,20 +1,63 @@
-import React from "react";
-import NavPanel from "./NavPanel";
+import { useState } from "react";
+import AdminNavPanel from "./AdminNavPanel";
+import { useAuth } from "../../context/AuthContext";
+
+const contentMap: Record<string, { title: string; description: string }> = {
+	dashboard: {
+		title: "Dashboard",
+		description: "Manage library database, users, loans and settings from this panel.",
+	},
+	authors: {
+		title: "Authors",
+		description: "Manage authors and their bibliographies.",
+	},
+	books: {
+		title: "Books",
+		description: "Manage the catalog and add new items to the library.",
+	},
+	users: {
+		title: "Users",
+		description: "Manage users, roles, and account statuses.",
+	},
+	loans: {
+		title: "Loans",
+		description: "Manage loans and their return deadlines.",
+	},
+	shoppingCarts: {
+		title: "Shopping Carts",
+		description: "Manage shopping carts and their contents.",
+	},
+	fees: {
+		title: "Fees",
+		description: "Manage fees and their payment statuses.",
+	},
+	settings: {
+		title: "Settings",
+		description: "System and admin panel preferences configuration.",
+	},
+};
 
 const AdminPanelPage = () => {
-	return (
-		<div>
-			<h1>Admin Panel</h1>
+	const [activeSection, setActiveSection] = useState("dashboard");
+	const currentContent = contentMap[activeSection] ?? contentMap.dashboard;
 
-			<div className="container text-center">
-				<div className="row row-cols-5 g-1">
-					<div className="col">
-						<NavPanel />
+	return (
+		<div className="w-100">
+			<h1 className="mb-4">Admin Panel</h1>
+			<h2 className="mb-4">
+				User: {useAuth().firstName} {useAuth().lastName} ({useAuth().email})
+			</h2>
+
+			<div className="row g-4 align-items-start">
+				<aside className="col-lg-3 col-md-4 col-12">
+					<AdminNavPanel activeItem={activeSection} onSelect={setActiveSection} />
+				</aside>
+
+				<div className="col-lg-9 col-md-8 col-12">
+					<div className="border rounded p-3 bg-light text-start">
+						<h2 className="h5 mb-3">{currentContent.title}</h2>
+						<p className="mb-0 text-muted">{currentContent.description}</p>
 					</div>
-					<div className="col">One of three columns</div>
-					<div className="col">One of three columns</div>
-					<div className="col">One of three columns</div>
-					<div className="col">One of three columns</div>
 				</div>
 			</div>
 		</div>

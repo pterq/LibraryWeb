@@ -3,6 +3,10 @@ import React, { createContext, useContext, useState } from "react";
 interface AuthContextType {
 	token: string | null;
 	role: string | null;
+	userId: number | null;
+	firstName: string | null;
+	lastName: string | null;
+	email: string | null;
 	login: (authData: AuthLoginData) => void;
 	logout: () => void;
 }
@@ -21,6 +25,12 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 	const [role, setRole] = useState<string | null>(localStorage.getItem("role"));
+	const [userId, setUserId] = useState<number | null>(
+		localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId")!) : null,
+	);
+	const [firstName, setFirstName] = useState<string | null>(localStorage.getItem("firstName"));
+	const [lastName, setLastName] = useState<string | null>(localStorage.getItem("lastName"));
+	const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
 
 	const login = ({ userId, accessToken, firstName, lastName, email, role }: AuthLoginData) => {
 		console.log("Logging in user:", { userId, accessToken, firstName, lastName, email, role });
@@ -33,6 +43,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		localStorage.setItem("role", role);
 		setToken(accessToken);
 		setRole(role);
+		setUserId(userId);
+		setFirstName(firstName);
+		setLastName(lastName);
+		setEmail(email);
 	};
 
 	const logout = () => {
@@ -43,10 +57,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		localStorage.removeItem("email");
 		localStorage.removeItem("role");
 		setToken(null);
+		setRole(null);
+		setUserId(null);
+		setFirstName(null);
+		setLastName(null);
+		setEmail(null);
 	};
 
 	return (
-		<AuthContext.Provider value={{ token, role, login, logout }}>
+		<AuthContext.Provider
+			value={{ token, role, userId, firstName, lastName, email, login, logout }}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
