@@ -8,6 +8,7 @@ import UsersDashboard from "../dashboards/UsersDashboard";
 import LoansDashboard from "../dashboards/LoansDashboard";
 import FeesDashboard from "../dashboards/FeesDashboard";
 import ShoppinCartsDashboard from "../dashboards/ShoppinCartsDashboard";
+import CategoriesDashboard from "../dashboards/CategoriesDashboard";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {
@@ -61,6 +62,7 @@ const AdminPanelPage = () => {
 		authors: <AuthorsDashboard />,
 		books: <BooksDashboard />,
 		booksPhysical: <PhysicalBooksDashboard />,
+		categories: <CategoriesDashboard />,
 		users: <UsersDashboard />,
 		loans: <LoansDashboard />,
 		fees: <FeesDashboard />,

@@ -141,6 +141,7 @@ const mockReservations: ReservationType[] = Array.from({ length: 5 }, (_, i) => 
 const MockData = {
 	mockUsers,
 	mockAuthors,
+	mockCategories,
 	mockBooks,
 	mockBookPhysicals,
 	mockLoans,

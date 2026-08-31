@@ -1,9 +1,119 @@
-import React from "react";
+import { useMemo, useState } from "react";
+import type { CategoryType } from "../../types/DbTypes";
+
+import { MockData } from "../data/MockData";
+import SearchBar from "../common/SearchBar";
 
 const CategoriesDashboard = () => {
+	const categories: CategoryType[] = MockData.mockCategories;
+	const [search, setSearch] = useState("");
+
+	const [sortConfig, setSortConfig] = useState<{
+		key: keyof CategoryType;
+		direction: "asc" | "desc";
+	} | null>(null);
+
+	const isFiltered = search !== "" || sortConfig !== null;
+
+	const requestSort = (key: keyof CategoryType) => {
+		let direction: "asc" | "desc" = "asc";
+
+		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
+			direction = "desc";
+		}
+
+		setSortConfig({ key, direction });
+	};
+
+	const getSortIcon = (key: keyof CategoryType) => {
+		if (!sortConfig || sortConfig.key !== key) return "";
+		return sortConfig.direction === "asc" ? "▲" : "▼";
+	};
+
+	const filteredAndSortedCategories = useMemo(() => {
+		let data = [...categories];
+
+		if (search.trim()) {
+			const searchTerm = search.toLowerCase();
+			data = data.filter((category) => {
+				return (
+					category.name.toLowerCase().includes(searchTerm) ||
+					String(category.id).includes(searchTerm)
+				);
+			});
+		}
+
+		if (sortConfig) {
+			data.sort((a, b) => {
+				const aVal = a[sortConfig.key];
+				const bVal = b[sortConfig.key];
+
+				if (typeof aVal === "number" && typeof bVal === "number") {
+					return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
+				}
+
+				return sortConfig.direction === "asc"
+					? String(aVal).localeCompare(String(bVal))
+					: String(bVal).localeCompare(String(aVal));
+			});
+		}
+
+		return data;
+	}, [categories, search, sortConfig]);
+
 	return (
-		<div>
-			<h2 className="h5 mb-3">Categories Dashboard</h2>
+		<div className="container-fluid">
+			<h1>Categories Dashboard</h1>
+
+			<SearchBar
+				search={search}
+				setSearch={setSearch}
+				placeholder="Search category by name or ID"
+			/>
+
+			<div className="d-flex justify-content-end mb-3">
+				<button
+					className="btn btn-secondary btn-sm"
+					disabled={!isFiltered}
+					onClick={() => {
+						setSearch("");
+						setSortConfig(null);
+					}}
+				>
+					Clear filters
+				</button>
+			</div>
+
+			<div className="mb-3">
+				<button className="btn btn-primary">Add Category</button>
+			</div>
+
+			<table className="table table-striped">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("id")}>
+							ID {getSortIcon("id")}
+						</th>
+						<th scope="col" onClick={() => requestSort("name")}>
+							Name {getSortIcon("name")}
+						</th>
+						<th scope="col">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{filteredAndSortedCategories.map((category, index) => (
+						<tr key={category.id}>
+							<td>{index + 1}</td>
+							<td>{category.id}</td>
+							<td>{category.name}</td>
+							<td>
+								<button className="btn btn-sm btn-primary">View Details</button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	);
 };
