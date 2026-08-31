@@ -54,7 +54,7 @@ const UserBooksPage = () => {
 								<td>{loan.status}</td>
 
 								<td>
-									<Link to={`/loans/${loan.id}`}>View</Link>
+									<Link to={`/user-loan/${loan.id}`}>View</Link>
 								</td>
 							</tr>
 						))}

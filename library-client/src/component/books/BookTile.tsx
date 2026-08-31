@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 
-import type { Book } from "../../types/BookType";
+import type { BookType } from "../../types/BookType";
 
 interface BookTileProps {
-	book: Book;
+	book: BookType;
 }
 
 const BookTile: React.FC<BookTileProps> = ({ book }) => {
-	const handleAddToCart = (book: Book) => {
+	const handleAddToCart = (book: BookType) => {
 		console.log("Dodano do koszyka:", book);
 		// tutaj logika dodawania do koszyka
 
@@ -23,7 +23,7 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 				onMouseLeave={(e) => e.currentTarget.classList.remove("bg-primary-subtle")}
 			>
 				<img
-					src={book.imageUrl ?? "/src/assets/book-placeholder.jpg"}
+					src={book.coverImageUrl ?? "/src/assets/book-placeholder.jpg"}
 					className="card-img-top w-50 mx-auto d-block mt-3"
 					alt={book.title}
 				/>

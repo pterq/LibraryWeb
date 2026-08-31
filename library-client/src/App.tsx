@@ -18,6 +18,7 @@ import BookCard from "./component/books/BookCard";
 import FeeCard from "./component/fees/FeeCard";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
+import UserBookCard from "./component/books/UserBookCard";
 
 function App() {
 	return (
@@ -43,6 +44,8 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+
+						<Route path="/user-loan/:id" element={<UserBookCard />} />
 
 						<Route
 							path="/my-fees"

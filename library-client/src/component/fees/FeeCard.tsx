@@ -24,7 +24,6 @@ const FeeCard = () => {
 			</button>
 
 			<h2>Fee info and payment</h2>
-			{/* Display fee information here */}
 			{/*<p>Fee ID: {fee.id}</p> */}
 			<p>Book Title: {fee.loan.bookPhysical.book.title}</p>
 			<p>
