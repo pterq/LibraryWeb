@@ -7,29 +7,33 @@ const navItems = [
 	{ id: "dashboard", label: "Dashboard" },
 	{ id: "books", label: "Books" },
 	{ id: "booksPhysical", label: "Physical Books" },
+	{ id: "categories", label: "Categories" },
 	{ id: "authors", label: "Authors" },
 	{ id: "users", label: "Users" },
 	{ id: "loans", label: "Loans" },
 	{ id: "fees", label: "Fees" },
 	{ id: "shoppingCarts", label: "Shopping Carts" },
-	{ id: "settings", label: "Settings" },
 ];
 
 const AdminNavPanel = ({ activeItem, onSelect }: NavPanelProps) => {
 	return (
-		<div className="list-group">
+		<div className="list-group container-fluid mb-4">
+			<h3>Navigation</h3>
 			{navItems.map((item) => (
-				<button
-					type="button"
-					key={item.id}
-					className={`list-group-item list-group-item-action ${
-						activeItem === item.id ? "active" : ""
-					}`}
-					aria-current={activeItem === item.id ? "true" : undefined}
-					onClick={() => onSelect(item.id)}
-				>
-					{item.label}
-				</button>
+				<div key={item.id}>
+					{item.id === "users" && <hr className="my-2 border-secondary-subtle" />}
+					{item.id === "books" && <hr className="my-2 border-secondary-subtle" />}
+					<button
+						type="button"
+						className={`list-group-item list-group-item-action ${
+							activeItem === item.id ? "active" : ""
+						}`}
+						aria-current={activeItem === item.id ? "true" : undefined}
+						onClick={() => onSelect(item.id)}
+					>
+						{item.label}
+					</button>
+				</div>
 			))}
 		</div>
 	);

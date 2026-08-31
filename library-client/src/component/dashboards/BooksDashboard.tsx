@@ -172,8 +172,7 @@ const BooksDashboard = () => {
 									.join(", ")}
 							</td>
 							<td>
-								<button className="btn btn-sm btn-primary">Edit</button>
-								<button className="btn btn-sm btn-danger">Delete</button>
+								<button className="btn btn-sm btn-primary">View Details</button>
 							</td>
 						</tr>
 					))}

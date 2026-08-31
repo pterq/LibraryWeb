@@ -26,6 +26,10 @@ const contentMap: Record<string, { title: string; description: string }> = {
 		title: "Physical Books",
 		description: "Manage the catalog and add new items to the library.",
 	},
+	categories: {
+		title: "Categories",
+		description: "Manage book categories",
+	},
 	users: {
 		title: "Users",
 		description: "Manage users, roles, and account statuses.",
@@ -82,7 +86,7 @@ const AdminPanelPage = () => {
 					<AdminNavPanel activeItem={activeSection} onSelect={setActiveSection} />
 				</aside>
 
-				<div className="col-lg-9 col-md-8 col-12">{sectionContent}</div>
+				<div className="containercol-lg-9 col-md-8 col-12">{sectionContent}</div>
 			</div>
 		</div>
 	);
