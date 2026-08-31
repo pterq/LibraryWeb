@@ -56,15 +56,7 @@ const LoginPage: React.FC = () => {
 			});
 			setMessage("Logowanie zakończone sukcesem!");
 
-			if (role === "ADMIN") {
-				navigate("/admin-panel", { replace: true });
-			}
-			if (role === "LIBRARIAN") {
-				navigate("/librarian-panel", { replace: true });
-			}
-			if (role === "USER") {
-				navigate("/", { replace: true });
-			}
+			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
 			console.error("Axios error:", err);

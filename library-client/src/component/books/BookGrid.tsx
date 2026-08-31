@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BookTile from "./BookTile";
-import PageNav from "../common/PageNav";
+import PageNav from "../admin/PageNav";
 
 import type { BookType } from "../../types/BookType";
 
