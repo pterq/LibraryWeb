@@ -2,6 +2,9 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
+import LibrarianPanelPage from "./component/librarian/LibrarianPanelPage";
+import AdminPanelPage from "./component/admin/AdminPanelPage";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import NavBar from "./component/common/NavBar";
@@ -14,7 +17,6 @@ import LogoutPage from "./component/login-register-logout/LogoutPage";
 import SettingsPage from "./component/user/SettingsPage";
 import LoginPage from "./component/login-register-logout/LoginPage";
 import RegisterPage from "./component/login-register-logout/RegisterPage";
-import BookCard from "./component/books/BookCard";
 import FeeCard from "./component/fees/FeeCard";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
@@ -25,7 +27,6 @@ function App() {
 		<AuthProvider>
 			<Router>
 				<NavBar />
-
 				<div className="container mt-5">
 					<Routes>
 						{/* Public pages */}
@@ -33,7 +34,7 @@ function App() {
 						<Route path="/about-us" element={<AboutUsPage />} />
 						<Route path="/login" element={<LoginPage />} />
 						<Route path="/register" element={<RegisterPage />} />
-						<Route path="/book/:id" element={<BookCard />} />
+						<Route path="/book/:id" element={<BooksPage />} />
 
 						{/* Protected pages */}
 						<Route
@@ -63,6 +64,24 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<SettingsPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/admin-panel"
+							element={
+								<ProtectedRoute>
+									<AdminPanelPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/librarian-panel"
+							element={
+								<ProtectedRoute>
+									<LibrarianPanelPage />
 								</ProtectedRoute>
 							}
 						/>

@@ -20,7 +20,7 @@ interface LoginResponse {
 
 const LoginPage: React.FC = () => {
 	const navigate = useNavigate();
-	const { login } = useAuth();
+	const { login, role } = useAuth();
 
 	const [form, setForm] = useState<LoginForm>({
 		email: "",
@@ -55,7 +55,16 @@ const LoginPage: React.FC = () => {
 				role: response.data.role,
 			});
 			setMessage("Logowanie zakończone sukcesem!");
-			navigate("/my-books", { replace: true });
+
+			if (role === "ADMIN") {
+				navigate("/admin-panel", { replace: true });
+			}
+			if (role === "LIBRARIAN") {
+				navigate("/librarian-panel", { replace: true });
+			}
+			if (role === "USER") {
+				navigate("/", { replace: true });
+			}
 		} catch (error) {
 			const err = error as AxiosError;
 			console.error("Axios error:", err);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BookTile from "./BookTile";
 import PageNav from "../common/PageNav";
 
@@ -6,18 +6,30 @@ import type { BookType } from "../../types/BookType";
 
 import { MockData } from "../data/MockData";
 
-const BookGrid: React.FC = () => {
+interface BookGridProps {
+	search: string;
+}
+
+const BookGrid: React.FC<BookGridProps> = ({ search }) => {
 	// Mock data for books
 	const books: BookType[] = MockData.mockBooks;
+	const normalizedSearch = search.trim().toLowerCase();
+	const filteredBooks = books.filter((book) =>
+		book.title.toLowerCase().includes(normalizedSearch),
+	);
 
 	const pageSize = 15; // ile kafelków na stronę
 	const [page, setPage] = useState(1);
 
-	const totalPages = Math.ceil(books.length / pageSize);
+	useEffect(() => {
+		setPage(1);
+	}, [normalizedSearch]);
+
+	const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
 
 	const start = (page - 1) * pageSize;
 	const end = start + pageSize;
-	const pageBooks = books.slice(start, end);
+	const pageBooks = filteredBooks.slice(start, end);
 
 	return (
 		<div>
@@ -28,10 +40,17 @@ const BookGrid: React.FC = () => {
 							<BookTile book={book} />
 						</div>
 					))}
+					{filteredBooks.length === 0 && (
+						<div className="col-12 text-center py-4">
+							No books found for this search.
+						</div>
+					)}
 				</div>
 			</div>
 
-			<PageNav page={page} totalPages={totalPages} onPageChange={setPage} />
+			{filteredBooks.length > 0 && (
+				<PageNav page={page} totalPages={totalPages} onPageChange={setPage} />
+			)}
 		</div>
 	);
 };
