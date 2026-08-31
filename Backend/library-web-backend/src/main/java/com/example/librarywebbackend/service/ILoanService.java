@@ -1,6 +1,5 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 
@@ -12,7 +11,7 @@ public interface ILoanService {
 
     List<Loan> getLoansByStatus(LoanStatus status);
 
-    List<Book> getBooksByUserId(Long userId);
+    List<Loan> getLoansByUserId(Long userId);
 
     Loan getLoanById(Long id);
 

@@ -1,6 +1,5 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 import com.example.librarywebbackend.service.ILoanService;
@@ -31,8 +30,8 @@ public class LoanController {
     }
 
     @GetMapping("/userBooks/{userId}")
-    public List<Book> getBooksByUserId(@PathVariable Long userId) {
-        return loanService.getBooksByUserId(userId);
+    public List<Loan> getLoansByUserId(@PathVariable Long userId) {
+        return loanService.getLoansByUserId(userId);
     }
 
     @GetMapping("/{id}")

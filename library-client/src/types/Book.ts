@@ -3,4 +3,7 @@ export interface Book {
 	title: string;
 	description: string;
 	imageUrl?: string;
+	isbn: string;
+	publishedYear: number;
+	bookAuthors: string[];
 }

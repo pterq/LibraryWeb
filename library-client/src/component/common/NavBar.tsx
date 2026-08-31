@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Offcanvas } from "bootstrap";
 import { useAuth } from "../../context/AuthContext";
@@ -7,6 +7,7 @@ import CartPanel from "../shoppingCart/CartPanel";
 const NavBar = () => {
 	const { token, logout } = useAuth();
 	const cartOffcanvasRef = useRef<HTMLDivElement | null>(null);
+	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
 	const openCartOffcanvas = (event: React.MouseEvent<HTMLAnchorElement>) => {
 		event.preventDefault();
@@ -18,6 +19,12 @@ const NavBar = () => {
 		const offcanvas = Offcanvas.getOrCreateInstance(cartOffcanvasRef.current);
 		offcanvas.show();
 	};
+
+	const toggleProfileDropdown = () => {
+		setProfileDropdownOpen((current) => !current);
+	};
+
+	const closeProfileDropdown = () => setProfileDropdownOpen(false);
 
 	return (
 		<div>
@@ -86,15 +93,24 @@ const NavBar = () => {
 										<button
 											type="button"
 											className="nav-link dropdown-toggle border-0 bg-transparent text-white"
-											data-bs-toggle="dropdown"
-											aria-expanded="false"
+											onClick={toggleProfileDropdown}
+											aria-expanded={profileDropdownOpen}
 										>
 											<i className="bi bi-person-circle text-white me-2"></i>
 											Profile
 										</button>
-										<ul className="dropdown-menu dropdown-menu-end">
+										<ul
+											className={`dropdown-menu dropdown-menu-end ${profileDropdownOpen ? "show" : ""}`}
+											style={{
+												display: profileDropdownOpen ? "block" : "none",
+												position: "absolute",
+												right: 0,
+												top: "100%",
+												zIndex: 1000,
+											}}
+										>
 											<li>
-												<Link className="dropdown-item" to={"/settings"}>
+												<Link className="dropdown-item" to={"/settings"} onClick={closeProfileDropdown}>
 													Settings
 												</Link>
 											</li>
@@ -102,7 +118,13 @@ const NavBar = () => {
 												<hr className="dropdown-divider" />
 											</li>
 											<li>
-												<button className="dropdown-item" onClick={logout}>
+												<button
+													className="dropdown-item"
+													onClick={() => {
+														logout();
+														closeProfileDropdown();
+													}}
+												>
 													Logout
 												</button>
 											</li>

@@ -1,6 +1,5 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Loan;
@@ -45,8 +44,8 @@ public class LoanService implements ILoanService {
     }
 
     @Override
-    public List<Book> getBooksByUserId(Long userId) {
-        return loanRepository.findBooksByUserId(userId);
+    public List<Loan> getLoansByUserId(Long userId) {
+        return loanRepository.findByUserId(userId);
     }
 
     @Override
