@@ -21,20 +21,21 @@ import FeeCard from "./component/fees/FeeCard";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 import UserBookCard from "./component/books/UserBookCard";
+import BookCard from "./component/books/BookCard";
 
 function App() {
 	return (
 		<AuthProvider>
 			<Router>
 				<NavBar />
-				<div className="container mt-5">
+				<div className=" mt-5">
 					<Routes>
 						{/* Public pages */}
 						<Route path="/" element={<BooksPage />} />
 						<Route path="/about-us" element={<AboutUsPage />} />
 						<Route path="/login" element={<LoginPage />} />
 						<Route path="/register" element={<RegisterPage />} />
-						<Route path="/book/:id" element={<BooksPage />} />
+						<Route path="/book/:id" element={<BookCard />} />
 
 						{/* Protected pages */}
 						<Route

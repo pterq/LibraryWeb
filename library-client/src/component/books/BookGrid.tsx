@@ -33,7 +33,7 @@ const BookGrid: React.FC<BookGridProps> = ({ search }) => {
 
 	return (
 		<div>
-			<div className="container mt-5 mb-5 p-3 bg-body-tertiary rounded">
+			<div className=" mt-5 mb-5 p-3 bg-body-tertiary rounded">
 				<div className="row row-cols-5 g-1">
 					{pageBooks.map((book) => (
 						<div className="col" key={book.id}>

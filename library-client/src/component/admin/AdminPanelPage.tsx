@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import AdminNavPanel from "./AdminNavPanel";
 import { useAuth } from "../../context/AuthContext";
+import AuthorsDashboard from "../dashboards/AuthorsDashboard";
+import BooksDashboard from "../dashboards/BooksDashboard";
+import UsersDashboard from "../dashboards/UsersDashboard";
+import LoansDashboard from "../dashboards/LoansDashboard";
+import FeesDashboard from "../dashboards/FeesDashboard";
+import ShoppinCartsDashboard from "../dashboards/ShoppinCartsDashboard";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {
@@ -39,13 +45,30 @@ const contentMap: Record<string, { title: string; description: string }> = {
 
 const AdminPanelPage = () => {
 	const [activeSection, setActiveSection] = useState("dashboard");
+	const { firstName, lastName, email } = useAuth();
 	const currentContent = contentMap[activeSection] ?? contentMap.dashboard;
+
+	const sectionComponentMap: Record<string, JSX.Element> = {
+		authors: <AuthorsDashboard />,
+		books: <BooksDashboard />,
+		users: <UsersDashboard />,
+		loans: <LoansDashboard />,
+		fees: <FeesDashboard />,
+		shoppingCarts: <ShoppinCartsDashboard />,
+	};
+
+	const sectionContent = sectionComponentMap[activeSection] ?? (
+		<div className="border rounded p-3 bg-light text-start">
+			<h2 className="h5 mb-3">{currentContent.title}</h2>
+			<p className="mb-0 text-muted">{currentContent.description}</p>
+		</div>
+	);
 
 	return (
 		<div className="w-100">
 			<h1 className="mb-4">Admin Panel</h1>
 			<h2 className="mb-4">
-				User: {useAuth().firstName} {useAuth().lastName} ({useAuth().email})
+				User: {firstName} {lastName} ({email})
 			</h2>
 
 			<div className="row g-4 align-items-start">
@@ -53,12 +76,7 @@ const AdminPanelPage = () => {
 					<AdminNavPanel activeItem={activeSection} onSelect={setActiveSection} />
 				</aside>
 
-				<div className="col-lg-9 col-md-8 col-12">
-					<div className="border rounded p-3 bg-light text-start">
-						<h2 className="h5 mb-3">{currentContent.title}</h2>
-						<p className="mb-0 text-muted">{currentContent.description}</p>
-					</div>
-				</div>
+				<div className="col-lg-9 col-md-8 col-12">{sectionContent}</div>
 			</div>
 		</div>
 	);
