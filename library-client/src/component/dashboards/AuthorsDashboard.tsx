@@ -19,6 +19,7 @@ const AuthorsDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
+						<th scope="col">#</th>
 						<th scope="col">ID</th>
 						<th scope="col">First Name</th>
 						<th scope="col">Last Name</th>
@@ -29,6 +30,7 @@ const AuthorsDashboard = () => {
 				<tbody>
 					{authors.map((author) => (
 						<tr key={author.id}>
+							<td>{authors.indexOf(author) + 1}</td>
 							<td>{author.id}</td>
 							<td>{author.firstName}</td>
 							<td>{author.lastName}</td>

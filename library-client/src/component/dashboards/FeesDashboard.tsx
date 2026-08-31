@@ -15,21 +15,29 @@ const FeesDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">ID</th>
-						<th scope="col">User ID</th>
+						<th scope="col">#</th>
+						<th scope="col">Fee ID</th>
+						<th scope="col">User</th>
 						<th scope="col">Amount</th>
-						<th scope="col">Due Date</th>
+						<th scope="col">Loan ID</th>
+						<th scope="col">Created At</th>
+						<th scope="col">Paid At</th>
 						<th scope="col">Status</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					{fees.map((fee) => (
+					{fees.map((fee, index) => (
 						<tr key={fee.id}>
+							<td>{index + 1}</td>
 							<td>{fee.id}</td>
-							<td>{fee.user.userId}</td>
+							<td>
+								{fee.user.firstName} {fee.user.lastName}
+							</td>
 							<td>{fee.amount}</td>
-							<td>{fee.loan.dueDate.toLocaleDateString()}</td>
+							<td>{fee.loan.id}</td>
+							<td>{fee.createdAt.toLocaleDateString()}</td>
+							<td>{fee.paidAt ? fee.paidAt.toLocaleDateString() : "-"}</td>
 							<td>{fee.status}</td>
 							<td>
 								<button className="btn btn-sm btn-primary">Edit</button>
