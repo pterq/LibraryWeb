@@ -15,7 +15,7 @@ import SettingsPage from "./component/user/SettingsPage";
 import LoginPage from "./component/login-register-logout/LoginPage";
 import RegisterPage from "./component/login-register-logout/RegisterPage";
 import BookCard from "./component/books/BookCard";
-
+import FeeCard from "./component/fees/FeeCard";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 
@@ -52,6 +52,8 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+
+						<Route path="/fee/:id" element={<FeeCard />} />
 
 						<Route
 							path="/settings"

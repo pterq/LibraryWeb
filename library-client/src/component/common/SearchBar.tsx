@@ -1,9 +1,10 @@
 interface SerachBarProps {
-	searchBook: string;
-	setSearchBook: (value: string) => void;
+	search: string;
+	setSearch: (value: string) => void;
+	placeholder?: string;
 }
 
-const SearchBar = ({ searchBook, setSearchBook }: SerachBarProps) => {
+const SearchBar = ({ search, setSearch, placeholder }: SerachBarProps) => {
 	return (
 		<div className="grid">
 			<div className="row"></div>
@@ -12,17 +13,17 @@ const SearchBar = ({ searchBook, setSearchBook }: SerachBarProps) => {
 					<input
 						className="form-control me-2 shadow"
 						type="search"
-						placeholder="Search book by title"
+						placeholder={placeholder || "Search bar"}
 						aria-label="Search"
-						value={searchBook}
-						onChange={(e) => setSearchBook(e.target.value)}
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
 					/>
 				</form>
 			</div>
 
 			<div className="row ">
 				<div className="d-flex justify-content-center col-sm-10 mb-4">
-					{searchBook ? `Searching for: ${searchBook}` : "No search query"}
+					{search ? `Searching for: ${search}` : "No search query"}
 				</div>
 			</div>
 		</div>

@@ -18,7 +18,7 @@ const UserBooksPage = () => {
 		<div>
 			<h2>User's Books</h2>
 
-			<SearchBar searchBook={search} setSearchBook={setSearch} />
+			<SearchBar search={search} setSearch={setSearch} placeholder="Search Book by title" />
 
 			<table className="table table-bordered table-hover shadow text-center">
 				<thead>

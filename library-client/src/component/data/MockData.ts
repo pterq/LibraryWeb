@@ -62,7 +62,7 @@ const mockFee: FeeType = {
 	createdAt: "2026-08-30T04:42:43.95786",
 	id: 1,
 	loan: mockLoan,
-	paidAt: null,
+	paidAt: "",
 	status: "CANCELLED",
 	user: mockUser,
 };
@@ -109,6 +109,9 @@ const mockLoans: LoanType[] = Array.from({ length: 5 }, (_, i) => ({
 const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
 	...mockFee,
 	id: i + 1,
+	amount: 10.0 + i * 5, // Different amounts for each fee
+	// Different createdAt dates for each fee, -1 day for each subsequent fee
+	createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
 	loan: mockLoans[i],
 	status: i % 2 === 0 ? "PAID" : "UNPAID",
 }));
