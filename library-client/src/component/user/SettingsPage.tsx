@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { UserData } from "../../types/UserData";
+import type { UserData } from "../../types/UserType";
 import { getUserDataFromLocalStorage } from "./UserDataFromStorage";
 
 const SettingsPage = () => {

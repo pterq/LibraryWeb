@@ -1,0 +1,134 @@
+import type { UserType } from "../../types/UserType";
+import type { LoanType } from "../../types/LoanType";
+import type { FeeType } from "../../types/FeeType";
+import type { AuthorsType, AuthorType } from "../../types/AuthorsType";
+import type { CategoryType } from "../../types/CategoryType";
+import type { BookType, BookPhysicalType } from "../../types/BookType";
+import type { ReservationType } from "../../types/ReservationType";
+
+const mockUser: UserType = {
+	userId: 1,
+	firstName: "Jan",
+	lastName: "Kowalski",
+	email: "jan.kowalski@example.com",
+	role: "USER",
+};
+
+const mockAuthor: AuthorType = {
+	id: 1,
+	firstName: "Robert C.",
+	lastName: "Martin",
+	bio: "Robert Cecil Martin, colloquially known as 'Uncle Bob', is an American software engineer and author.",
+};
+
+const mockBookAuthors: AuthorsType = {
+	id: 1,
+	authors: [mockAuthor],
+};
+
+const mockBook: BookType = {
+	id: 1,
+	title: "Clean Code",
+	description: "A handbook of agile software craftsmanship",
+	isbn: "9780132350884",
+	publishedYear: 2008,
+	authors: mockBookAuthors,
+};
+
+const mockBookPhysical: BookPhysicalType = {
+	id: 1,
+	inventoryCode: "INV-2026-0021",
+	status: "AVAILABLE",
+	book: mockBook,
+};
+
+const mockCategory: CategoryType = {
+	id: 1,
+	name: "Programming",
+};
+
+const mockLoan: LoanType = {
+	id: 1,
+	book: mockBook,
+	loanDate: "2026-08-30T04:42:43.95786",
+	returnDate: "2026-08-30T05:27:36.492792",
+	dueDate: "2026-09-13T10:00:00",
+	status: "RETURNED",
+	user: mockUser,
+};
+
+const mockFee: FeeType = {
+	amount: 10.0,
+	createdAt: "2026-08-30T04:42:43.95786",
+	id: 1,
+	loan: mockLoan,
+	paidAt: null,
+	status: "CANCELLED",
+	user: mockUser,
+};
+
+const mockReservation: ReservationType = {
+	id: 1,
+	userId: mockUser.userId,
+	copyId: mockBookPhysical.id,
+	reservedAt: "2026-08-30T04:42:43.95786",
+	expiresAt: "2026-09-13T10:00:00",
+};
+
+//fill mock data arrays with multiple copies of the mock data with different ids
+const mockUsers: UserType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockUser,
+	userId: i + 1,
+}));
+
+const mockAuthors: AuthorType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockAuthor,
+	id: i + 1,
+}));
+
+const mockBooks: BookType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockBook,
+	id: i + 1,
+	title: `Clean Code ${i + 1}`,
+}));
+
+const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockBookPhysical,
+	id: i + 1,
+	inventoryCode: `INV-2026-00${i + 1}`,
+	status: i % 2 === 0 ? "AVAILABLE" : "BORROWED",
+}));
+
+const mockLoans: LoanType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockLoan,
+	id: i + 1,
+	book: mockBooks[i],
+	status: i % 2 === 0 ? "BORROWED" : "RETURNED",
+}));
+
+const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockFee,
+	id: i + 1,
+	loan: mockLoans[i],
+	status: i % 2 === 0 ? "PAID" : "UNPAID",
+}));
+
+const mockReservations: ReservationType[] = Array.from({ length: 5 }, (_, i) => ({
+	...mockReservation,
+	id: i + 1,
+	userId: mockUsers[i].userId,
+	copyId: mockBookPhysicals[i].id,
+}));
+
+//export as MockData object
+const MockData = {
+	mockUsers,
+	mockAuthors,
+	mockBooks,
+	mockBookPhysicals,
+	mockLoans,
+	mockFees,
+	mockReservations,
+};
+
+export { MockData };

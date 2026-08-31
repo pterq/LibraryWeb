@@ -58,17 +58,15 @@
 */
 }
 
-import type { FeeType } from "../../types/FeeType";
+import type { LoanType } from "./LoanType";
+import type { UserType } from "./UserType";
 
-const MyFeesPage = () => {
-	//mock data for fees
-
-	return (
-		<div>
-			<h2>My Fees</h2>
-			<p>This is the My Fees page.</p>
-		</div>
-	);
+export type FeeType = {
+	amount: number;
+	createdAt: string;
+	id: number;
+	loan: LoanType;
+	paidAt: string | null;
+	status: "PAID" | "UNPAID" | "CANCELLED";
+	user: UserType;
 };
-
-export default MyFeesPage;

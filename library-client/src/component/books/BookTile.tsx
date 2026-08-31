@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import type { Book } from "../../types/Book";
+import type { Book } from "../../types/BookType";
 
 interface BookTileProps {
 	book: Book;

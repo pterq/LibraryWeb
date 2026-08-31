@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import type { Reservation } from "../../types/Reservation";
+import type { Reservation } from "../../types/ReservationType";
 
 const CartItem = ({ item }: { item: Reservation }) => {
 	const calculateDaysLeft = (expiresAt: string): number => {

@@ -1,5 +1,5 @@
 import CartItem from "./CartItem";
-import type { Reservation } from "../../types/Reservation";
+import type { Reservation } from "../../types/ReservationType";
 
 const CartPanel = () => {
 	const getCartItems = async () => {};

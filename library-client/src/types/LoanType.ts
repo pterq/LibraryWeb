@@ -40,23 +40,15 @@
 	*/
 }
 
+import type { BookType } from "./BookType";
+import type { UserType } from "./UserType";
+
 export interface LoanType {
 	id: number;
-	book: {
-		id: number;
-		title: string;
-		description: string;
-		isbn: string;
-		publishedYear: number;
-		bookAuthors: string[];
-	};
+	book: BookType;
 	loanDate: string;
 	returnDate: string;
 	dueDate: string;
 	status: "BORROWED" | "RETURNED" | "OVERDUE";
-	user: {
-		id: number;
-		firstName: string;
-		lastName: string;
-	};
+	user: UserType;
 }

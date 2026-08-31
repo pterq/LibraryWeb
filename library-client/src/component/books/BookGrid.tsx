@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import BookTile from "./BookTile";
 import PageNav from "../common/PageNav";
 
-import type { Book } from "../../types/Book";
+import type { Book } from "../../types/BookType";
 
 const BookGrid: React.FC = () => {
 	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
