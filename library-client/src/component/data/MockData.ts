@@ -49,7 +49,7 @@ const mockCategory: CategoryType = {
 
 const mockLoan: LoanType = {
 	id: 1,
-	book: mockBook,
+	bookPhysical: mockBookPhysical,
 	loanDate: "2026-08-30T04:42:43.95786",
 	returnDate: "2026-08-30T05:27:36.492792",
 	dueDate: "2026-09-13T10:00:00",
@@ -102,7 +102,7 @@ const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 5 }, (_, i) =
 const mockLoans: LoanType[] = Array.from({ length: 5 }, (_, i) => ({
 	...mockLoan,
 	id: i + 1,
-	book: mockBooks[i],
+	bookPhysical: mockBookPhysicals[i],
 	status: i % 2 === 0 ? "BORROWED" : "RETURNED",
 }));
 

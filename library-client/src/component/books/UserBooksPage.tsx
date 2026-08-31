@@ -2,8 +2,7 @@ import { useState } from "react";
 import SearchBar from "../common/SearchBar";
 
 import type { LoanType } from "../../types/LoanType";
-import type { BookType } from "../../types/BookType";
-import type { UserType } from "../../types/UserType";
+
 import { Link } from "react-router-dom";
 
 import { MockData } from "../data/MockData";
@@ -14,7 +13,6 @@ const UserBooksPage = () => {
 
 	//use mock data for now
 	const loans: LoanType[] = MockData.mockLoans;
-	const user: UserType = MockData.mockUsers[0];
 
 	return (
 		<div>
@@ -31,21 +29,23 @@ const UserBooksPage = () => {
 						<th scope="col">Loan Date</th>
 						<th scope="col">Return Date</th>
 						<th scope="col">Status</th>
-						<th scope="col"></th>
+						<th scope="col">Action</th>
 					</tr>
 				</thead>
 				<tbody className="text-center">
 					{loans
-						.filter((lo) => lo.book.title.toLowerCase().includes(search))
+						.filter((lo) =>
+							lo.bookPhysical.book.title.toLowerCase().includes(search.toLowerCase()),
+						)
 						.map((loan, index) => (
 							<tr key={loan.id}>
 								<th scope="row" key={index}>
 									{index + 1}
 								</th>
 
-								<td>{loan.book.title}</td>
+								<td>{loan.bookPhysical.book.title}</td>
 								<td>
-									{loan.book.authors.authors
+									{loan.bookPhysical.book.authors.authors
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>
@@ -53,9 +53,9 @@ const UserBooksPage = () => {
 								<td>{new Date(loan.returnDate).toLocaleDateString()}</td>
 								<td>{loan.status}</td>
 
-								<td className="mx-2"></td>
-								<td className="mx-2"></td>
-								<td className="mx-2"></td>
+								<td>
+									<Link to={`/loans/${loan.id}`}>View</Link>
+								</td>
 							</tr>
 						))}
 				</tbody>

@@ -40,12 +40,12 @@
 	*/
 }
 
-import type { BookType } from "./BookType";
+import type { BookPhysicalType } from "./BookType";
 import type { UserType } from "./UserType";
 
 export interface LoanType {
 	id: number;
-	book: BookType;
+	bookPhysical: BookPhysicalType;
 	loanDate: string;
 	returnDate: string;
 	dueDate: string;

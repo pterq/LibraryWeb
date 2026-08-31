@@ -2,15 +2,13 @@ import React, { useState } from "react";
 import BookTile from "./BookTile";
 import PageNav from "../common/PageNav";
 
-import type { Book } from "../../types/BookType";
+import type { BookType } from "../../types/BookType";
+
+import { MockData } from "../data/MockData";
 
 const BookGrid: React.FC = () => {
-	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
-	const books: Book[] = Array.from({ length: 46 }).map((_, i) => ({
-		id: i + 1,
-		title: `Book ${i + 1}`,
-		description: `Description for Book ${i + 1}`,
-	}));
+	// Mock data for books
+	const books: BookType[] = MockData.mockBooks;
 
 	const pageSize = 15; // ile kafelków na stronę
 	const [page, setPage] = useState(1);
