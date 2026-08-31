@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import type { FeeType } from "../../types/FeeType";
+import type { FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
 import { MockData } from "../data/MockData";
 

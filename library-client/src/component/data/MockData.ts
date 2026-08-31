@@ -53,6 +53,12 @@ const mockCategory: CategoryType = {
 	name: "Programming",
 };
 
+const mockCategories: CategoryType[] = [
+	mockCategory,
+	{ id: 2, name: "Software Engineering" },
+	{ id: 3, name: "Architecture" },
+];
+
 const mockLoan: LoanType = {
 	id: 1,
 	bookPhysical: mockBookPhysical,
@@ -75,10 +81,11 @@ const mockFee: FeeType = {
 
 const mockReservation: ReservationType = {
 	id: 1,
-	userId: mockUser.userId,
+	user: mockUser,
 	copyId: mockBookPhysical.id,
 	reservedAt: new Date("2026-08-30T04:42:43.95786"),
 	expiresAt: new Date("2026-09-13T10:00:00"),
+	bookPhysical: mockBookPhysical,
 };
 
 //fill mock data arrays with multiple copies of the mock data with different ids
@@ -96,6 +103,7 @@ const mockBooks: BookType[] = Array.from({ length: 5 }, (_, i) => ({
 	...mockBook,
 	id: i + 1,
 	title: `Clean Code ${i + 1}`,
+	categories: [mockCategories[i % mockCategories.length]],
 }));
 
 const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 5 }, (_, i) => ({

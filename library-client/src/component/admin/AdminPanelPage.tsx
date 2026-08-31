@@ -21,6 +21,10 @@ const contentMap: Record<string, { title: string; description: string }> = {
 		title: "Books",
 		description: "Manage the catalog and add new items to the library.",
 	},
+	copies: {
+		title: "Physical Books",
+		description: "Manage the catalog and add new items to the library.",
+	},
 	users: {
 		title: "Users",
 		description: "Manage users, roles, and account statuses.",
