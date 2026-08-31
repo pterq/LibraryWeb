@@ -1,4 +1,5 @@
 import { useState, type JSX } from "react";
+import PhysicalBooksDashboard from "../dashboards/PhysicalBooksDashboard";
 import AdminNavPanel from "./AdminNavPanel";
 import { useAuth } from "../../context/AuthContext";
 import AuthorsDashboard from "../dashboards/AuthorsDashboard";
@@ -21,7 +22,7 @@ const contentMap: Record<string, { title: string; description: string }> = {
 		title: "Books",
 		description: "Manage the catalog and add new items to the library.",
 	},
-	copies: {
+	booksPhysical: {
 		title: "Physical Books",
 		description: "Manage the catalog and add new items to the library.",
 	},
@@ -55,6 +56,7 @@ const AdminPanelPage = () => {
 	const sectionComponentMap: Record<string, JSX.Element> = {
 		authors: <AuthorsDashboard />,
 		books: <BooksDashboard />,
+		booksPhysical: <PhysicalBooksDashboard />,
 		users: <UsersDashboard />,
 		loans: <LoansDashboard />,
 		fees: <FeesDashboard />,

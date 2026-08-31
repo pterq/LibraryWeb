@@ -6,6 +6,7 @@ type NavPanelProps = {
 const navItems = [
 	{ id: "dashboard", label: "Dashboard" },
 	{ id: "books", label: "Books" },
+	{ id: "booksPhysical", label: "Physical Books" },
 	{ id: "authors", label: "Authors" },
 	{ id: "users", label: "Users" },
 	{ id: "loans", label: "Loans" },
