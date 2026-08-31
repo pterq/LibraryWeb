@@ -97,12 +97,13 @@ const BooksDashboard = () => {
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search book by title" />
 
 			<div className="d-flex justify-content-end mb-3">
+				<button className="btn btn-primary btn-sm me-2">Add Book</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
 					onClick={() => {
 						setSearch("");
-						setFilterCategory("ALL");
 						setSortConfig(null);
 					}}
 				>

@@ -99,12 +99,13 @@ const PhysicalBooksDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				<button className="btn btn-primary btn-sm me-2">Add Physical Book</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
 					onClick={() => {
 						setSearch("");
-						setFilterStatus("ALL");
 						setSortConfig(null);
 					}}
 				>

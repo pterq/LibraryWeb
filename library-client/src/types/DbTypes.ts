@@ -70,3 +70,9 @@ export interface ReservationType {
 	expiresAt: Date;
 	bookPhysical: BookPhysicalType;
 }
+
+export interface CategoryCountType {
+	id: number;
+	name: string;
+	numberOfBooks: number;
+}

@@ -117,12 +117,13 @@ const LoansDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				<button className="btn btn-primary btn-sm me-2">Add Loan</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
 					onClick={() => {
 						setSearch("");
-						setFilter("ALL");
 						setSortConfig(null);
 					}}
 				>

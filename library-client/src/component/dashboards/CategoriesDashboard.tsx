@@ -1,21 +1,22 @@
 import { useMemo, useState } from "react";
-import type { CategoryType } from "../../types/DbTypes";
+import type { CategoryType, CategoryCountType } from "../../types/DbTypes";
 
 import { MockData } from "../data/MockData";
 import SearchBar from "../common/SearchBar";
 
 const CategoriesDashboard = () => {
 	const categories: CategoryType[] = MockData.mockCategories;
+	const categoriesWithCount: CategoryCountType[] = MockData.mockCategoriesCount;
 	const [search, setSearch] = useState("");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof CategoryType;
+		key: keyof CategoryCountType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof CategoryType) => {
+	const requestSort = (key: keyof CategoryCountType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -25,13 +26,13 @@ const CategoriesDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof CategoryType) => {
+	const getSortIcon = (key: keyof CategoryCountType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const filteredAndSortedCategories = useMemo(() => {
-		let data = [...categories];
+		let data = [...categoriesWithCount];
 
 		if (search.trim()) {
 			const searchTerm = search.toLowerCase();
@@ -59,7 +60,7 @@ const CategoriesDashboard = () => {
 		}
 
 		return data;
-	}, [categories, search, sortConfig]);
+	}, [categoriesWithCount, search, sortConfig]);
 
 	return (
 		<div className="container-fluid">
@@ -72,6 +73,8 @@ const CategoriesDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				<button className="btn btn-primary btn-sm me-2">Add Category</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -84,10 +87,6 @@ const CategoriesDashboard = () => {
 				</button>
 			</div>
 
-			<div className="mb-3">
-				<button className="btn btn-primary">Add Category</button>
-			</div>
-
 			<table className="table table-striped">
 				<thead>
 					<tr>
@@ -98,6 +97,9 @@ const CategoriesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("name")}>
 							Name {getSortIcon("name")}
 						</th>
+						<th scope="col" onClick={() => requestSort("numberOfBooks")}>
+							Number of books {getSortIcon("numberOfBooks")}
+						</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
@@ -107,6 +109,7 @@ const CategoriesDashboard = () => {
 							<td>{index + 1}</td>
 							<td>{category.id}</td>
 							<td>{category.name}</td>
+							<td>{category.numberOfBooks}</td>
 							<td>
 								<button className="btn btn-sm btn-primary">View Details</button>
 							</td>

@@ -73,6 +73,8 @@ const AuthorsDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				<button className="btn btn-primary btn-sm me-2">Add Author</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -85,18 +87,11 @@ const AuthorsDashboard = () => {
 				</button>
 			</div>
 
-			{/* Add author button*/}
-			<div className="mb-3">
-				<button className="btn btn-primary">Add Author</button>
-			</div>
-
 			{/* Authors table */}
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("id")}>
-							# {getSortIcon("id")}
-						</th>
+						<th scope="col">#</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							ID {getSortIcon("id")}
 						</th>
