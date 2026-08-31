@@ -1,10 +1,14 @@
-import type { UserType } from "../../types/UserType";
-import type { LoanType } from "../../types/LoanType";
-import type { FeeType } from "../../types/FeeType";
-import type { AuthorsType, AuthorType } from "../../types/AuthorsType";
-import type { CategoryType } from "../../types/CategoryType";
-import type { BookType, BookPhysicalType } from "../../types/BookType";
-import type { ReservationType } from "../../types/ReservationType";
+import type {
+	UserType,
+	AuthorType,
+	AuthorsType,
+	BookType,
+	BookPhysicalType,
+	CategoryType,
+	LoanType,
+	FeeType,
+	ReservationType,
+} from "../../types/DbTypes";
 
 const mockUser: UserType = {
 	userId: 1,
@@ -52,19 +56,19 @@ const mockCategory: CategoryType = {
 const mockLoan: LoanType = {
 	id: 1,
 	bookPhysical: mockBookPhysical,
-	loanDate: "2026-08-30T04:42:43.95786",
-	returnDate: "2026-08-30T05:27:36.492792",
-	dueDate: "2026-09-13T10:00:00",
+	loanDate: new Date("2026-08-30T04:42:43.95786"),
+	returnDate: new Date("2026-08-30T05:27:36.492792"),
+	dueDate: new Date("2026-09-13T10:00:00"),
 	status: "RETURNED",
 	user: mockUser,
 };
 
 const mockFee: FeeType = {
 	amount: 10.0,
-	createdAt: "2026-08-30T04:42:43.95786",
+	createdAt: new Date("2026-08-30T04:42:43.95786"),
 	id: 1,
 	loan: mockLoan,
-	paidAt: "",
+	paidAt: null,
 	status: "CANCELLED",
 	user: mockUser,
 };
@@ -73,8 +77,8 @@ const mockReservation: ReservationType = {
 	id: 1,
 	userId: mockUser.userId,
 	copyId: mockBookPhysical.id,
-	reservedAt: "2026-08-30T04:42:43.95786",
-	expiresAt: "2026-09-13T10:00:00",
+	reservedAt: new Date("2026-08-30T04:42:43.95786"),
+	expiresAt: new Date("2026-09-13T10:00:00"),
 };
 
 //fill mock data arrays with multiple copies of the mock data with different ids
@@ -113,7 +117,7 @@ const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
 	id: i + 1,
 	amount: 10.0 + i * 5, // Different amounts for each fee
 	// Different createdAt dates for each fee, -1 day for each subsequent fee
-	createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+	createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
 	loan: mockLoans[i],
 	status: i % 2 === 0 ? "PAID" : "UNPAID",
 }));

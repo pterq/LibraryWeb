@@ -1,5 +1,5 @@
 import React from "react";
-import type { AuthorType, AuthorsType } from "../../types/AuthorsType";
+import type { AuthorType, AuthorsType } from "../../types/DbTypes";
 
 import { MockData } from "../data/MockData";
 
