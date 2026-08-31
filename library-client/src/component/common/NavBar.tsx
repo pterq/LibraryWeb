@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import CartPanel from "../shoppingCart/CartPanel";
 
 const NavBar = () => {
-	const { token, logout } = useAuth();
+	const { token, role, logout } = useAuth();
 	const cartOffcanvasRef = useRef<HTMLDivElement | null>(null);
 	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
@@ -61,34 +61,58 @@ const NavBar = () => {
 						</ul>
 
 						<ul className="navbar-nav ms-auto mb-2 mb-lg-0 ">
-							{/* ZALOGOWANY */}
+							{/* Logged in */}
 
 							{token && (
 								<>
-									<li className="nav-item">
-										<Link className="nav-link active" to={"/my-books"}>
-											My Books
-										</Link>
-									</li>
+									{role === "ADMIN" && (
+										<li className="nav-item">
+											<Link className="nav-link active" to={"/admin-panel"}>
+												Admin Panel
+											</Link>
+										</li>
+									)}
 
-									<li className="nav-item">
-										<Link className="nav-link active" to={"/my-fees"}>
-											My Fees
-										</Link>
-									</li>
+									{role === "LIBRARIAN" && (
+										<li className="nav-item">
+											<Link
+												className="nav-link active"
+												to={"/librarian-panel"}
+											>
+												Librarian Panel
+											</Link>
+										</li>
+									)}
 
-									<li className="nav-item">
-										<Link
-											className="nav-link active"
-											to={"#"}
-											role="button"
-											aria-controls="globalCartOffcanvas"
-											onClick={openCartOffcanvas}
-										>
-											Shopping Cart
-										</Link>
-									</li>
+									{role !== "ADMIN" && role !== "LIBRARIAN" && (
+										<>
+											<li className="nav-item">
+												<Link className="nav-link active" to={"/my-books"}>
+													My Books
+												</Link>
+											</li>
 
+											<li className="nav-item">
+												<Link className="nav-link active" to={"/my-fees"}>
+													My Fees
+												</Link>
+											</li>
+
+											<li className="nav-item">
+												<Link
+													className="nav-link active"
+													to={"#"}
+													role="button"
+													aria-controls="globalCartOffcanvas"
+													onClick={openCartOffcanvas}
+												>
+													Shopping Cart
+												</Link>
+											</li>
+										</>
+									)}
+
+									{/* Dropdown profile zostaje bez zmian */}
 									<li className="nav-item dropdown d-flex align-items-center">
 										<button
 											type="button"
@@ -137,7 +161,7 @@ const NavBar = () => {
 								</>
 							)}
 
-							{/* NIEZALOGOWANY */}
+							{/* Not logged in */}
 							{!token && (
 								<>
 									<li className="nav-item">

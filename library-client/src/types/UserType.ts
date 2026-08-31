@@ -4,5 +4,5 @@ export interface UserType {
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: string;
+	role: "ADMIN" | "USER" | "LIBRARIAN";
 }
