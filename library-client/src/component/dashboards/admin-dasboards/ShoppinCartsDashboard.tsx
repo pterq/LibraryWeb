@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import type { AuthorType, ReservationType } from "../../../types/DbTypes";
+import type { ReservationType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import { MockData } from "../../data/MockData";
@@ -8,31 +8,13 @@ import { MockData } from "../../data/MockData";
 const ShoppinCartsDashboard = () => {
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key:
-			| "id"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt";
+		key: "id" | "userId" | "user" | "copyId" | "itemsCount";
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (
-		key:
-			| "id"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt",
-	) => {
+	const requestSort = (key: "id" | "userId" | "user" | "copyId" | "itemsCount") => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -42,43 +24,30 @@ const ShoppinCartsDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (
-		key:
-			| "id"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt",
-	) => {
+	const getSortIcon = (key: "id" | "userId" | "user" | "copyId" | "itemsCount") => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const shoppingCarts = useMemo(() => {
+	const getItemsCount = (shoppingCart: ReservationType) => {
+		return shoppingCart.bookPhysical ? 1 : 0;
+	};
+
+	const filteredAndSortedShoppingCarts = useMemo(() => {
 		let data: ReservationType[] = [...MockData.mockReservations];
 
-		if (search) {
+		if (search.trim()) {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((shoppingCart) => {
 				const fullName =
 					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
-				const authors = shoppingCart.bookPhysical.book.authors.authors
-					.map((author) => `${author.firstName} ${author.lastName}`)
-					.join(", ")
-					.toLowerCase();
 
 				return (
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(shoppingCart.user.userId).includes(lowerSearch) ||
-					String(shoppingCart.copyId).includes(lowerSearch) ||
-					shoppingCart.bookPhysical.book.title.toLowerCase().includes(lowerSearch) ||
-					authors.includes(lowerSearch) ||
-					shoppingCart.bookPhysical.inventoryCode.toLowerCase().includes(lowerSearch)
+					String(shoppingCart.copyId).includes(lowerSearch)
 				);
 			});
 		}
@@ -93,6 +62,10 @@ const ShoppinCartsDashboard = () => {
 						aVal = a.id;
 						bVal = b.id;
 						break;
+					case "userId":
+						aVal = a.user.userId;
+						bVal = b.user.userId;
+						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
@@ -101,29 +74,9 @@ const ShoppinCartsDashboard = () => {
 						aVal = a.copyId;
 						bVal = b.copyId;
 						break;
-					case "bookTitle":
-						aVal = a.bookPhysical.book.title;
-						bVal = b.bookPhysical.book.title;
-						break;
-					case "author":
-						aVal = a.bookPhysical.book.authors.authors
-							.map((author) => `${author.firstName} ${author.lastName}`)
-							.join(", ");
-						bVal = b.bookPhysical.book.authors.authors
-							.map((author) => `${author.firstName} ${author.lastName}`)
-							.join(", ");
-						break;
-					case "inventoryCode":
-						aVal = a.bookPhysical.inventoryCode;
-						bVal = b.bookPhysical.inventoryCode;
-						break;
-					case "reservedAt":
-						aVal = new Date(a.reservedAt).getTime();
-						bVal = new Date(b.reservedAt).getTime();
-						break;
-					case "expiresAt":
-						aVal = new Date(a.expiresAt).getTime();
-						bVal = new Date(b.expiresAt).getTime();
+					case "itemsCount":
+						aVal = getItemsCount(a);
+						bVal = getItemsCount(b);
 						break;
 				}
 
@@ -169,62 +122,31 @@ const ShoppinCartsDashboard = () => {
 				</button>
 			</div>
 
-			{/* Shopping carts table */}
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("id")}>
-							# {getSortIcon("id")}
-						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
-							Reservation ID {getSortIcon("id")}
+						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							User ID {getSortIcon("userId")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User ID {getSortIcon("user")}
+							User Name {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("copyId")}>
-							Copy ID {getSortIcon("copyId")}
-						</th>
-						<th scope="col" onClick={() => requestSort("bookTitle")}>
-							Book Title {getSortIcon("bookTitle")}
-						</th>
-						<th scope="col" onClick={() => requestSort("author")}>
-							Book Author {getSortIcon("author")}
-						</th>
-						<th scope="col" onClick={() => requestSort("inventoryCode")}>
-							Inventory Code {getSortIcon("inventoryCode")}
-						</th>
-						<th scope="col" onClick={() => requestSort("reservedAt")}>
-							Reserved At {getSortIcon("reservedAt")}
-						</th>
-						<th scope="col" onClick={() => requestSort("expiresAt")}>
-							Expires At {getSortIcon("expiresAt")}
+						<th scope="col" onClick={() => requestSort("itemsCount")}>
+							Number of Items in Cart {getSortIcon("itemsCount")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					{shoppingCarts.map((shoppingCart, index) => (
+					{filteredAndSortedShoppingCarts.map((shoppingCart, index) => (
 						<tr key={shoppingCart.id}>
 							<td>{index + 1}</td>
-							<td>{shoppingCart.id}</td>
+							<td>{shoppingCart.user.userId}</td>
 							<td>
 								{shoppingCart.user.firstName} {shoppingCart.user.lastName}
 							</td>
-							<td>{shoppingCart.bookPhysical.id}</td>
-							<td>{shoppingCart.bookPhysical.book.title}</td>
-							<td>
-								{shoppingCart.bookPhysical.book.authors.authors
-									.map(
-										(author: AuthorType) =>
-											`${author.firstName} ${author.lastName}`,
-									)
-									.join(", ")}
-							</td>
-							<td>{shoppingCart.bookPhysical.inventoryCode}</td>
-							<td>{shoppingCart.reservedAt.toLocaleString()}</td>
-							<td>{shoppingCart.expiresAt.toLocaleString()}</td>
-
+							<td>{getItemsCount(shoppingCart)}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
