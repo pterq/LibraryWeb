@@ -73,7 +73,12 @@ const CategoriesDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Category</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/category/add`)}
+				>
+					Add Category
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -111,7 +116,14 @@ const CategoriesDashboard = () => {
 							<td>{category.name}</td>
 							<td>{category.numberOfBooks}</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() =>
+										(window.location.href = `/category/view/${category.id}`)
+									}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

@@ -24,6 +24,12 @@ import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
 import ViewEditAddBookPage from "./component/dashboards/ViewEditAddBookPage";
 import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddAuthorPage";
+import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddBookCopyPage";
+import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddCategoryPage";
+import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddLoanPage";
+import ViewEditAddFeePage from "./component/dashboards/ViewEditAddFeePage";
+import ViewEditAddUserPage from "./component/dashboards/ViewEditAddUserPage";
+import ViewEditAddCartPage from "./component/dashboards/ViewEditAddCartPage";
 
 function App() {
 	return (
@@ -89,39 +95,172 @@ function App() {
 							}
 						/>
 
-						<Route
-							path="/book/add"
-							element={
-								<ProtectedRoute>
-									<ViewEditAddBookPage />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path="/book/view/:id"
-							element={
-								<ProtectedRoute>
-									<ViewEditAddBookPage />
-								</ProtectedRoute>
-							}
-						/>
+						<>
+							<>
+								<Route
+									path="/book/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddBookPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/book/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddBookPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/book-copy/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddBookCopyPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/book-copy/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddBookCopyPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/category/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCategoryPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/category/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCategoryPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/category/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCategoryPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/category/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCategoryPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/author/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddAuthorPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/author/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddAuthorPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/user/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddUserPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/user/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddUserPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/loan/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddLoanPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/loan/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddLoanPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/fee/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddFeePage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/fee/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddFeePage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/shoppingCart/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCartPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/shoppingCart/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCartPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+						</>
 
-						<Route
-							path="/author/add"
-							element={
-								<ProtectedRoute>
-									<ViewEditAddAuthorPage />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path="/author/view/:id"
-							element={
-								<ProtectedRoute>
-									<ViewEditAddAuthorPage />
-								</ProtectedRoute>
-							}
-						/>
+						<></>
 
 						<Route
 							path="/logout"

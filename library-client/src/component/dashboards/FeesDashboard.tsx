@@ -106,7 +106,12 @@ const FeesDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Fee</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/fee/add`)}
+				>
+					Add Fee
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -186,7 +191,12 @@ const FeesDashboard = () => {
 							<td>{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}</td>
 							<td>{fee.status}</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() => (window.location.href = `/fee/view/${fee.id}`)}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

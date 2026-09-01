@@ -1,9 +1,186 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import axiosClient from "../../api/axiosClient";
+
+type PageAction = "view" | "add";
+
+type AuthorFormData = {
+	firstName: string;
+	lastName: string;
+	biography: string;
+};
+
+const EMPTY_FORM: AuthorFormData = {
+	firstName: "",
+	lastName: "",
+	biography: "",
+};
 
 const ViewEditAddAuthorPage = () => {
+	const path = window.location.pathname;
+	const action: PageAction = path.includes("/view") ? "view" : "add";
+
+	const rawId = path.split("/").pop() ?? "";
+	const parsedAuthorId = Number(rawId);
+	const authorId = Number.isFinite(parsedAuthorId) ? parsedAuthorId : null;
+
+	const [isEditing, setIsEditing] = useState(action === "add");
+	const isReadOnly = action === "view" && !isEditing;
+	const isExistingAuthorAction = action === "view";
+
+	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!isExistingAuthorAction) {
+			setFormData(EMPTY_FORM);
+			setError(null);
+			setIsEditing(true);
+			return;
+		}
+
+		setIsEditing(false);
+
+		if (!authorId) {
+			setError("Invalid or missing author id in URL.");
+			setFormData(EMPTY_FORM);
+			return;
+		}
+
+		let isActive = true;
+
+		const loadAuthor = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const response = await axiosClient.get(`/authors/${authorId}`);
+				const author = response.data as {
+					firstName?: string;
+					lastName?: string;
+					biography?: string;
+				};
+
+				if (!isActive) {
+					return;
+				}
+
+				setFormData({
+					firstName: author.firstName ?? "",
+					lastName: author.lastName ?? "",
+					biography: author.biography ?? "",
+				});
+			} catch {
+				if (!isActive) {
+					return;
+				}
+
+				setError("Failed to load author data.");
+				setFormData(EMPTY_FORM);
+			} finally {
+				if (isActive) {
+					setIsLoading(false);
+				}
+			}
+		};
+
+		void loadAuthor();
+
+		return () => {
+			isActive = false;
+		};
+	}, [action, authorId, isExistingAuthorAction]);
+
+	const pageTitle =
+		action === "view" ? (isEditing ? "Edit Author" : "View Author") : "Add Author";
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		const { name, value } = event.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+
+		if (isReadOnly) {
+			return;
+		}
+
+		console.log("Form submit payload:", formData);
+	};
+
 	return (
-		<div>
-			<h2>View, Edit, or Add Author Page</h2>
+		<div className="container py-3">
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				<button className="btn btn-secondary" onClick={() => window.history.back()}>
+					Back
+				</button>
+				{action === "view" && !isEditing && (
+					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
+						Edit
+					</button>
+				)}
+			</div>
+			<h2>{pageTitle}</h2>
+
+			{isLoading && <p>Loading author data...</p>}
+			{error && <p className="text-danger mb-3">{error}</p>}
+
+			<form onSubmit={handleSubmit} className="mt-3">
+				<div className="mb-3">
+					<label htmlFor="firstName" className="form-label">
+						First Name
+					</label>
+					<input
+						type="text"
+						id="firstName"
+						name="firstName"
+						className="form-control"
+						value={formData.firstName}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+						required
+					/>
+				</div>
+
+				<div className="mb-3">
+					<label htmlFor="lastName" className="form-label">
+						Last Name
+					</label>
+					<input
+						type="text"
+						id="lastName"
+						name="lastName"
+						className="form-control"
+						value={formData.lastName}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+						required
+					/>
+				</div>
+
+				<div className="mb-3">
+					<label htmlFor="biography" className="form-label">
+						Biography
+					</label>
+					<textarea
+						id="biography"
+						name="biography"
+						className="form-control"
+						rows={5}
+						value={formData.biography}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+					/>
+				</div>
+
+				{!isReadOnly && (
+					<button type="submit" className="btn btn-primary" disabled={isLoading}>
+						{action === "view" ? "Save Changes" : "Create Author"}
+					</button>
+				)}
+			</form>
 		</div>
 	);
 };

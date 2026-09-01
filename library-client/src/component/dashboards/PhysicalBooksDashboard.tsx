@@ -99,7 +99,12 @@ const PhysicalBooksDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Physical Book</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/book-copy/add`)}
+				>
+					Add Physical Book
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -173,7 +178,14 @@ const PhysicalBooksDashboard = () => {
 							<td>{copy.book.publishedYear}</td>
 							<td>{copy.status}</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() =>
+										(window.location.href = `/book-copy/view/${copy.id}`)
+									}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

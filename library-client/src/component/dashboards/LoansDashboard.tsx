@@ -117,7 +117,12 @@ const LoansDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Loan</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/loan/add`)}
+				>
+					Add Loan
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -197,7 +202,12 @@ const LoansDashboard = () => {
 							<td>{new Date(loan.returnDate).toLocaleDateString()}</td>
 							<td>{loan.status}</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() => (window.location.href = `/loan/view/${loan.id}`)}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

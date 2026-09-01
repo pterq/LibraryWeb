@@ -152,6 +152,12 @@ const ShoppinCartsDashboard = () => {
 
 			<div className="d-flex justify-content-end mb-3">
 				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/shoppingCart/add`)}
+				>
+					Add Shopping Cart
+				</button>
+				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
 					onClick={() => {
@@ -220,7 +226,14 @@ const ShoppinCartsDashboard = () => {
 							<td>{shoppingCart.expiresAt.toLocaleString()}</td>
 
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() =>
+										(window.location.href = `/shoppingCart/view/${shoppingCart.id}`)
+									}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

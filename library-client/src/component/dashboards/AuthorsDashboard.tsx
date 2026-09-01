@@ -73,7 +73,12 @@ const AuthorsDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Author</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/author/add`)}
+				>
+					Add Author
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -121,7 +126,14 @@ const AuthorsDashboard = () => {
 							<td>{author.bio}</td>
 
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() =>
+										(window.location.href = `/author/view/${author.id}`)
+									}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}
