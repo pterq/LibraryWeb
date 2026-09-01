@@ -5,7 +5,7 @@ const ShoppingCartItemsDashboard = () => {
 		<div className="container-fluid">
 			<h1>Shopping Carts Dashboard</h1>
 
-			<CartItemsTable />
+			<CartItemsTable userId={null} />
 		</div>
 	);
 };

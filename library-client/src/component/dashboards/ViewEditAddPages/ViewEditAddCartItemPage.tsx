@@ -178,6 +178,7 @@ const ViewEditAddCartItemPage = () => {
 
 			{isLoading && <p>Loading reservation data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
+			<h3>Reservation Id: {reservationId}</h3>
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<div className="mb-3">

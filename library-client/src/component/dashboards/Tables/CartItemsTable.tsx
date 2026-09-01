@@ -5,11 +5,15 @@ import type { AuthorType, ReservationType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 import { MockData } from "../../data/MockData";
 
-const CartItemsTable = () => {
+const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
+	const selectedUserId = userId ?? null;
+
+	//=====================================================
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
 		key:
 			| "id"
+			| "userId"
 			| "user"
 			| "copyId"
 			| "bookTitle"
@@ -25,6 +29,7 @@ const CartItemsTable = () => {
 	const requestSort = (
 		key:
 			| "id"
+			| "userId"
 			| "user"
 			| "copyId"
 			| "bookTitle"
@@ -45,6 +50,7 @@ const CartItemsTable = () => {
 	const getSortIcon = (
 		key:
 			| "id"
+			| "userId"
 			| "user"
 			| "copyId"
 			| "bookTitle"
@@ -59,6 +65,10 @@ const CartItemsTable = () => {
 
 	const shoppingCarts = useMemo(() => {
 		let data: ReservationType[] = [...MockData.mockReservations.reservations];
+
+		if (selectedUserId !== null && selectedUserId !== undefined) {
+			data = data.filter((reservation) => reservation.user.userId === selectedUserId);
+		}
 
 		if (search) {
 			const lowerSearch = search.toLowerCase();
@@ -138,7 +148,7 @@ const CartItemsTable = () => {
 		}
 
 		return data;
-	}, [search, sortConfig]);
+	}, [search, sortConfig, selectedUserId]);
 
 	return (
 		<>
@@ -178,8 +188,11 @@ const CartItemsTable = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							Reservation ID {getSortIcon("id")}
 						</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							User ID {getSortIcon("userId")}
+						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User ID {getSortIcon("user")}
+							User Name {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("copyId")}>
 							Copy ID {getSortIcon("copyId")}
@@ -207,6 +220,7 @@ const CartItemsTable = () => {
 						<tr key={shoppingCartItem.id}>
 							<td>{index + 1}</td>
 							<td>{shoppingCartItem.id}</td>
+							<td>{shoppingCartItem.user.userId}</td>
 							<td>
 								{shoppingCartItem.user.firstName} {shoppingCartItem.user.lastName}
 							</td>

@@ -187,11 +187,6 @@ const ViewEditAddCartPage = () => {
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
 			</div>
 			<h2>{pageTitle}</h2>
 
@@ -226,7 +221,7 @@ const ViewEditAddCartPage = () => {
 			{selectedUserId && (
 				<>
 					<h4 className="mb-3">Reservations for user id: {selectedUserId}</h4>
-					<CartItemsTable />
+					<CartItemsTable userId={selectedUserId} />
 				</>
 			)}
 		</div>
