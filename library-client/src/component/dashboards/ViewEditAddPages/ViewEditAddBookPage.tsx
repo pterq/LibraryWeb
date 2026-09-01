@@ -123,6 +123,20 @@ const ViewEditAddBookPage = () => {
 		console.log("Form submit payload:", formData);
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<BookFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -132,6 +146,11 @@ const ViewEditAddBookPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>

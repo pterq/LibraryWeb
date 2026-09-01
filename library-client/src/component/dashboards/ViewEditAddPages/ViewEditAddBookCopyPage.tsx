@@ -32,12 +32,14 @@ const ViewEditAddBookCopyPage = () => {
 	const isExistingCopyAction = action === "view";
 
 	const [formData, setFormData] = useState<BookCopyFormData>(EMPTY_FORM);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!isExistingCopyAction) {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
@@ -48,6 +50,7 @@ const ViewEditAddBookCopyPage = () => {
 		if (!copyId) {
 			setError("Invalid or missing book copy id in URL.");
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -69,14 +72,17 @@ const ViewEditAddBookCopyPage = () => {
 					return;
 				}
 
-				setFormData({
+				const loadedFormData: BookCopyFormData = {
 					bookId:
 						typeof copy.book?.id === "number" || typeof copy.book?.id === "string"
 							? String(copy.book.id)
 							: "",
 					inventoryCode: copy.inventoryCode ?? "",
 					status: copy.status ?? "AVAILABLE",
-				});
+				};
+
+				setFormData(loadedFormData);
+				setOriginalFormData(loadedFormData);
 			} catch {
 				if (!isActive) {
 					return;
@@ -84,6 +90,7 @@ const ViewEditAddBookCopyPage = () => {
 
 				setError("Failed to load book copy data.");
 				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) {
 					setIsLoading(false);
@@ -120,6 +127,20 @@ const ViewEditAddBookCopyPage = () => {
 		});
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<BookCopyFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action !== "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(originalFormData);
+		setIsEditing(false);
+		setError(null);
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -129,6 +150,11 @@ const ViewEditAddBookCopyPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>
@@ -192,9 +218,11 @@ const ViewEditAddBookCopyPage = () => {
 				</div>
 
 				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Book Copy"}
-					</button>
+					<div className="d-flex flex-wrap gap-2">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create Book Copy"}
+						</button>
+					</div>
 				)}
 			</form>
 		</div>

@@ -5,14 +5,14 @@ import type { ReservationType } from "../../../types/DbTypes";
 
 type PageAction = "view" | "add";
 
-type CartFormData = {
+type CartItemFormData = {
 	userId: string;
 	copyId: string;
 	reservedAt: string;
 	expiresAt: string;
 };
 
-const EMPTY_FORM: CartFormData = {
+const EMPTY_FORM: CartItemFormData = {
 	userId: "",
 	copyId: "",
 	reservedAt: "",
@@ -48,7 +48,7 @@ const ViewEditAddCartItemPage = () => {
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingReservationAction = action === "view";
 
-	const [formData, setFormData] = useState<CartFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<CartItemFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -162,6 +162,21 @@ const ViewEditAddCartItemPage = () => {
 		});
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<CartItemFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+		window.history.back();
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -171,6 +186,11 @@ const ViewEditAddCartItemPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>

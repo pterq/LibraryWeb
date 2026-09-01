@@ -5,7 +5,7 @@ import axiosClient from "../../../api/axiosClient";
 type PageAction = "view" | "add";
 type FeeStatus = "PENDING" | "PAID" | "CANCELLED";
 
-type FeeFormData = {
+type FeeItemFormData = {
 	userId: string;
 	loanId: string;
 	amount: string;
@@ -16,7 +16,7 @@ type FeeFormData = {
 
 const FEE_STATUSES: FeeStatus[] = ["PENDING", "PAID", "CANCELLED"];
 
-const EMPTY_FORM: FeeFormData = {
+const EMPTY_FORM: FeeItemFormData = {
 	userId: "",
 	loanId: "",
 	amount: "",
@@ -47,7 +47,7 @@ const mapFeeToFormData = (fee: {
 	createdAt?: string | Date | null;
 	paidAt?: string | Date | null;
 	status?: FeeStatus | null;
-}): FeeFormData => ({
+}): FeeItemFormData => ({
 	userId:
 		typeof fee.user?.userId === "number" || typeof fee.user?.userId === "string"
 			? String(fee.user.userId)
@@ -75,7 +75,7 @@ const ViewEditAddFeeItemPage = () => {
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingFeeAction = action === "view";
 
-	const [formData, setFormData] = useState<FeeFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<FeeItemFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -212,6 +212,21 @@ const ViewEditAddFeeItemPage = () => {
 		}
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<FeeItemFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+		window.history.back();
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -221,6 +236,11 @@ const ViewEditAddFeeItemPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
 import type { UserType } from "../../../types/DbTypes";
+import { useAuth } from "../../../context/AuthContext";
 
 type PageAction = "view" | "add";
 
@@ -123,6 +124,33 @@ const ViewEditAddUserPage = () => {
 		console.log("Form submit payload:", formData);
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<UserFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+		window.history.back();
+	};
+
+	const auth = useAuth();
+	const LoggedInUsersRole = auth.role;
+
+	const allowedRoles = [];
+	if (LoggedInUsersRole === "ADMIN") {
+		allowedRoles.push("ADMIN", "LIBRARIAN", "USER");
+	} else if (LoggedInUsersRole === "LIBRARIAN") {
+		allowedRoles.push("USER");
+	} else if (LoggedInUsersRole === "USER") {
+		allowedRoles.push("USER");
+	}
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -132,6 +160,11 @@ const ViewEditAddUserPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>

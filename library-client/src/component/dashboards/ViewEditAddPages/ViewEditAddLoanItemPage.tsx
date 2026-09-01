@@ -4,7 +4,7 @@ import axiosClient from "../../../api/axiosClient";
 import type { LoanType } from "../../../types/DbTypes";
 
 type PageAction = "view" | "add";
-type LoanFormData = {
+type LoanItemFormData = {
 	userId: string;
 	copyId: string;
 	loanDate: string;
@@ -15,7 +15,7 @@ type LoanFormData = {
 
 const LOAN_STATUSES: LoanType["status"][] = ["BORROWED", "RETURNED", "OVERDUE"];
 
-const EMPTY_FORM: LoanFormData = {
+const EMPTY_FORM: LoanItemFormData = {
 	userId: "",
 	copyId: "",
 	loanDate: "",
@@ -51,7 +51,7 @@ const ViewEditAddLoanItemPage = () => {
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingLoanAction = action === "view";
 
-	const [formData, setFormData] = useState<LoanFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<LoanItemFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -155,6 +155,21 @@ const ViewEditAddLoanItemPage = () => {
 		});
 	};
 
+	const [originalFormData, setOriginalFormData] = useState<LoanItemFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+		window.history.back();
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -164,6 +179,11 @@ const ViewEditAddLoanItemPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+						Cancel
 					</button>
 				)}
 			</div>

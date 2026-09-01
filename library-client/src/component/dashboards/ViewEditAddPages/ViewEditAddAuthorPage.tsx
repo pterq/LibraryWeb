@@ -29,12 +29,14 @@ const ViewEditAddAuthorPage = () => {
 	const isExistingAuthorAction = action === "view";
 
 	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!isExistingAuthorAction) {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
@@ -66,11 +68,14 @@ const ViewEditAddAuthorPage = () => {
 					return;
 				}
 
-				setFormData({
+				const nextFormData = {
 					firstName: author.firstName ?? "",
 					lastName: author.lastName ?? "",
 					biography: author.biography ?? "",
-				});
+				};
+
+				setFormData(nextFormData);
+				setOriginalFormData(nextFormData);
 			} catch {
 				if (!isActive) {
 					return;
@@ -110,6 +115,20 @@ const ViewEditAddAuthorPage = () => {
 		console.log("Form submit payload:", formData);
 	};
 
+	const handleCancel = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setIsEditing(false);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+		window.history.back();
+	};
+
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
@@ -119,6 +138,11 @@ const ViewEditAddAuthorPage = () => {
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
+					</button>
+				)}
+				{isEditing && (
+					<button type="button" className="btn btn-danger" onClick={handleCancel}>
+						Cancel
 					</button>
 				)}
 			</div>

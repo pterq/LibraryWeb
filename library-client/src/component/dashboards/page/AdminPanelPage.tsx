@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShoppingCartItemsDashboard from "../admin-dasboards/ShoppingCartItemsDashboard";
 import PhysicalBooksDashboard from "../admin-dasboards/PhysicalBooksDashboard";
 import AdminNavPanel from "./AdminNavPanel";
@@ -12,6 +12,7 @@ import ShoppinCartsDashboard from "../admin-dasboards/ShoppinCartsDashboard";
 import CategoriesDashboard from "../admin-dasboards/CategoriesDashboard";
 import LoanItemsDashboard from "../admin-dasboards/LoanItemsDashboard";
 import FeeItemsDashboard from "../admin-dasboards/FeeItemsDashboard";
+import { useNavigate } from "react-router-dom";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {
@@ -91,6 +92,13 @@ const AdminPanelPage = () => {
 			<p className="mb-0 text-muted">{currentContent.description}</p>
 		</div>
 	);
+
+	const navigate = useNavigate();
+	useEffect(() => {
+		if (role !== "Admin" && role !== "Librarian") {
+			navigate("/");
+		}
+	}, [activeSection, role]);
 
 	return (
 		<div className="">
