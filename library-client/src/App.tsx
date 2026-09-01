@@ -26,13 +26,14 @@ import ViewEditAddBookPage from "./component/dashboards/ViewEditAddPages/ViewEdi
 import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddPages/ViewEditAddAuthorPage";
 import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddPages/ViewEditAddBookCopyPage";
 import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCategoryPage";
-import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoanPage";
-import ViewEditAddFeePage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeePage";
+import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoansUserPage";
+import ViewEditAddFeesUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeesUserPage";
 import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddUserPage";
 import ViewEditAddCartPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartPage";
 import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartItemPage";
 import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeeItemPage";
 import ViewEditAddLoanItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoanItemPage";
+import ViewEditAddLoansUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoansUserPage";
 
 function App() {
 	return (
@@ -209,18 +210,18 @@ function App() {
 							</>
 							<>
 								<Route
-									path="/loan/add"
+									path="/userLoans/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddLoanPage />
+											<ViewEditAddLoansUserPage />
 										</ProtectedRoute>
 									}
 								/>
 								<Route
-									path="/loan/view/:id"
+									path="/userLoans/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddLoanPage />
+											<ViewEditAddLoansUserPage />
 										</ProtectedRoute>
 									}
 								/>
@@ -245,35 +246,35 @@ function App() {
 							</>
 							<>
 								<Route
-									path="/feeItem/add"
+									path="/userFees/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddFeeItemPage />
+											<ViewEditAddFeesUserPage />
 										</ProtectedRoute>
 									}
 								/>
 								<Route
-									path="/feeItem/view/:id"
+									path="/userFees/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddFeeItemPage />
+											<ViewEditAddFeesUserPage />
 										</ProtectedRoute>
 									}
 								/>
 								<>
 									<Route
-										path="/fee/add"
+										path="/feeItem/add"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddFeePage />
+												<ViewEditAddFeeItemPage />
 											</ProtectedRoute>
 										}
 									/>
 									<Route
-										path="/fee/view/:id"
+										path="/feeItem/view/:id"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddFeePage />
+												<ViewEditAddFeeItemPage />
 											</ProtectedRoute>
 										}
 									/>

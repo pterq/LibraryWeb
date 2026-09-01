@@ -9,6 +9,8 @@ import type {
 	FeeType,
 	ReservationType,
 	CategoryCountType,
+	FeeCountType,
+	LoanCountType,
 } from "../../types/DbTypes";
 
 const mockUser: UserType = {
@@ -147,6 +149,25 @@ const mockCategoriesCount: CategoryCountType[] = Array.from({ length: 5 }, (_, i
 	numberOfBooks: i * 10,
 }));
 
+const mockFeesCount: FeeCountType[] = Array.from({ length: 5 }, (_, i) => ({
+	id: i + 1,
+	firstName: `FirstN ${i + 1}`,
+	lastName: `LastN${i + 1}`,
+	numberOfFees: i * 5,
+	numberOfFeesUnpaid: i * 2,
+	numberOfFeesPaid: i * 2,
+	numberOfFeesCancelled: i,
+}));
+
+const mockLoansCount: LoanCountType[] = Array.from({ length: 5 }, (_, i) => ({
+	id: i + 1,
+	firstName: `FirstN ${i + 1}`,
+	lastName: `LastN${i + 1}`,
+	numberOfLoans: i * 3,
+}));
+
+//========
+
 //export as MockData object
 const MockData = {
 	mockUsers,
@@ -158,6 +179,8 @@ const MockData = {
 	mockFees,
 	mockReservations,
 	mockCategoriesCount,
+	mockFeesCount,
+	mockLoansCount,
 };
 
 export { MockData };

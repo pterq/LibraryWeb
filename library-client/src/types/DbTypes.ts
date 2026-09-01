@@ -95,8 +95,27 @@ export interface ReservationType {
 	bookPhysical: BookPhysicalType;
 }
 
+//============================================
+
 export interface CategoryCountType {
 	id: number;
 	name: string;
 	numberOfBooks: number;
+}
+
+export interface FeeCountType {
+	id: number;
+	firstName: string;
+	lastName: string;
+	numberOfFees: number;
+	numberOfFeesUnpaid: number;
+	numberOfFeesPaid: number;
+	numberOfFeesCancelled: number;
+}
+
+export interface LoanCountType {
+	id: number;
+	firstName: string;
+	lastName: string;
+	numberOfLoans: number;
 }

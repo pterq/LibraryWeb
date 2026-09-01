@@ -153,7 +153,7 @@ const ShoppingCartItemsDashboard = () => {
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/shoppingCart/add`)}
+					onClick={() => (window.location.href = `/shoppingCartItem/add`)}
 				>
 					Add Item to Shopping Cart
 				</button>

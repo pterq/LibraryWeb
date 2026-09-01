@@ -193,7 +193,9 @@ const FeeItemsDashboard = () => {
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
-									onClick={() => (window.location.href = `/fee/view/${fee.id}`)}
+									onClick={() =>
+										(window.location.href = `/feeItem/view/${fee.id}`)
+									}
 								>
 									View Details
 								</button>
