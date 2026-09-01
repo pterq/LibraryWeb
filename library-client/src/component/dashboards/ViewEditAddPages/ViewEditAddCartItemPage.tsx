@@ -37,12 +37,14 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 const ViewEditAddCartItemPage = () => {
 	const path = window.location.pathname;
 	const action: PageAction = path.includes("/view") ? "view" : "add";
+	const queryParams = new URLSearchParams(window.location.search);
+	const isEditModeFromQuery = queryParams.get("mode") === "edit";
 
 	const rawId = path.split("/").pop() ?? "";
 	const parsedReservationId = Number(rawId);
 	const reservationId = Number.isFinite(parsedReservationId) ? parsedReservationId : null;
 
-	const [isEditing, setIsEditing] = useState(action === "add");
+	const [isEditing, setIsEditing] = useState(action === "add" || isEditModeFromQuery);
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingReservationAction = action === "view";
 
@@ -58,7 +60,7 @@ const ViewEditAddCartItemPage = () => {
 			return;
 		}
 
-		setIsEditing(false);
+		setIsEditing(isEditModeFromQuery);
 
 		if (!reservationId) {
 			setError("Invalid or missing reservation id in URL.");
@@ -131,7 +133,7 @@ const ViewEditAddCartItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingReservationAction, reservationId]);
+	}, [action, isEditModeFromQuery, isExistingReservationAction, reservationId]);
 
 	const pageTitle =
 		action === "view"

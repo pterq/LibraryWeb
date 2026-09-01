@@ -58,7 +58,7 @@ const CartItemsTable = () => {
 	};
 
 	const shoppingCarts = useMemo(() => {
-		let data: ReservationType[] = [...MockData.mockReservations];
+		let data: ReservationType[] = [...MockData.mockReservations.reservations];
 
 		if (search) {
 			const lowerSearch = search.toLowerCase();
@@ -155,6 +155,7 @@ const CartItemsTable = () => {
 				>
 					Add Item to Shopping Cart
 				</button>
+
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -225,7 +226,7 @@ const CartItemsTable = () => {
 
 							<td>
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
 										(window.location.href = `/shoppingCartItem/view/${shoppingCartItem.id}`)
 									}

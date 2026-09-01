@@ -6,7 +6,7 @@ const CartPanel = () => {
 	const getCartItems = async () => {};
 
 	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
-	const items = MockData.mockReservations;
+	const items = MockData.mockReservations.reservations;
 
 	return (
 		<div>

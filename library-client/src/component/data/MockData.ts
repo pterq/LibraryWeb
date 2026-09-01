@@ -15,6 +15,8 @@ import type {
 	FeeStatusType,
 	BookPhysicalStatusType,
 	UserRoleType,
+	ReservastionsType,
+	ReservationCountType,
 } from "../../types/DbTypes";
 
 const mockUser: UserType = {
@@ -155,12 +157,18 @@ const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
 	status: i % 3 === 0 ? "PAID" : i % 3 === 1 ? "UNPAID" : "CANCELLED",
 }));
 
-const mockReservations: ReservationType[] = Array.from({ length: 5 }, (_, i) => ({
-	...mockReservation,
-	id: i + 1,
-	userId: mockUsers[i].userId,
-	copyId: mockBookPhysicals[i].id,
-}));
+const mockReservations: ReservastionsType = {
+	reservations: Array.from({ length: 5 }, (_, i) => ({
+		id: i + 1,
+		user: mockUsers[i],
+		copyId: mockBookPhysicals[i].id,
+		reservedAt: new Date(
+			new Date("2026-08-30T04:42:43.95786").getTime() + i * 24 * 60 * 60 * 1000,
+		),
+		expiresAt: new Date(new Date("2026-09-13T10:00:00").getTime() + i * 24 * 60 * 60 * 1000),
+		bookPhysical: mockBookPhysicals[i],
+	})),
+};
 
 //=============================================
 const mockCategoriesCount: CategoryCountType[] = Array.from({ length: 5 }, (_, i) => ({
@@ -186,6 +194,13 @@ const mockLoansCount: LoanCountType[] = Array.from({ length: 5 }, (_, i) => ({
 	numberOfLoans: i * 3,
 }));
 
+const mockReservationsCount: ReservationCountType[] = Array.from({ length: 5 }, (_, i) => ({
+	id: i + 1,
+	firstName: `FirstN ${i + 1}`,
+	lastName: `LastN${i + 1}`,
+	numberOfReservations: i * 2,
+}));
+
 //========
 
 //export as MockData object
@@ -201,6 +216,7 @@ const MockData = {
 	mockCategoriesCount,
 	mockFeesCount,
 	mockLoansCount,
+	mockReservationsCount,
 };
 
 export { MockData };

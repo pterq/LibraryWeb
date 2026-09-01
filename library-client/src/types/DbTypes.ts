@@ -89,6 +89,10 @@ export interface ReservationType {
 	bookPhysical: BookPhysicalType;
 }
 
+export interface ReservastionsType {
+	reservations: ReservationType[];
+}
+
 //============================================
 
 export interface CategoryCountType {
@@ -112,4 +116,11 @@ export interface LoanCountType {
 	firstName: string;
 	lastName: string;
 	numberOfLoans: number;
+}
+
+export interface ReservationCountType {
+	id: number;
+	firstName: string;
+	lastName: string;
+	numberOfReservations: number;
 }
