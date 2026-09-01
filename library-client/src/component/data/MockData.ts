@@ -104,16 +104,16 @@ const mockReservation: ReservationType = {
 
 //fill mock data arrays with multiple copies of the mock data with different ids
 const mockUsers: UserType[] = Array.from({ length: 5 }, (_, i) => ({
-	firstName: `FirstN ${i + 1}`,
-	lastName: `LastN${i + 1}`,
+	firstName: `FUs${i + 1}`,
+	lastName: `NUs${i + 1}${i + 1}`,
 	email: `user${i + 1}@example.com`,
 	role: "USER",
 	userId: i + 1,
 }));
 
 const mockAuthors: AuthorType[] = Array.from({ length: 5 }, (_, i) => ({
-	firstName: `FirstN ${i + 1}`,
-	lastName: `LastN${i + 1}`,
+	firstName: `FAu ${i + 1}`,
+	lastName: `NAu${i + 1}${i + 1}`,
 	bio: `Bio of author ${i + 1}`,
 	id: i + 1,
 }));
