@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { BookType } from "../../../types/DbTypes";
 
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
 const BooksDashboard = () => {

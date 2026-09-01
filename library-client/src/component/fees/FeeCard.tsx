@@ -4,7 +4,7 @@ import type { FeeType } from "../../types/FeeType";
 
 //get fee id from url params
 import { useParams } from "react-router-dom";
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 const fees = MockData.mockFees;
 

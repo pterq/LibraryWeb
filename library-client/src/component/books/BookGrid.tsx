@@ -4,7 +4,7 @@ import PageNav from "../dashboards/page/PageNav";
 
 import type { BookType } from "../../types/BookType";
 
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 interface BookGridProps {
 	search: string;

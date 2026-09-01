@@ -1,6 +1,6 @@
 import React from "react";
 
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 import type { LoanType } from "../../types/LoanType";
 import { useParams } from "react-router-dom";
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { CategoryType, CategoryCountType } from "../../../types/DbTypes";
 
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
 const CategoriesDashboard = () => {

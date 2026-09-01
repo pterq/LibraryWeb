@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 const BookCard = () => {
 	const { id } = useParams<{ id?: string }>();

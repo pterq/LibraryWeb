@@ -1,6 +1,6 @@
 import CartItem from "./CartItem";
 import type { ReservationType } from "../../types/DbTypes";
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 const CartPanel = () => {
 	const getCartItems = async () => {};

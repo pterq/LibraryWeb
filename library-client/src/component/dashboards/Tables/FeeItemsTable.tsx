@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import type { FeeType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 
 const FeeItemsTable = () => {
 	const [search, setSearch] = useState("");

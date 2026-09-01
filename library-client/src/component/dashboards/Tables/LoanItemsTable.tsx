@@ -3,9 +3,11 @@ import { useMemo, useState } from "react";
 import type { LoanType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 
-const LoanItemsTable = () => {
+const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
+	const selectedUserId = userId ?? null;
+
 	const loans: LoanType[] = MockData.mockLoans;
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | LoanType["status"]>("ALL");
@@ -47,6 +49,10 @@ const LoanItemsTable = () => {
 			data = data.filter((loan) => loan.status === filter);
 		}
 
+		if (selectedUserId !== null && selectedUserId !== undefined) {
+			data = data.filter((element) => element.user.userId === selectedUserId);
+		}
+
 		if (search) {
 			data = data.filter((loan) =>
 				loan.bookPhysical.book.title.toLowerCase().includes(search.toLowerCase()),
@@ -63,6 +69,10 @@ const LoanItemsTable = () => {
 					case "id":
 						aVal = a.id;
 						bVal = b.id;
+						break;
+					case "userId":
+						aVal = a.user.userId;
+						bVal = b.user.userId;
 						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
@@ -104,7 +114,7 @@ const LoanItemsTable = () => {
 		}
 
 		return data;
-	}, [loans, filter, search, sortConfig]);
+	}, [loans, filter, search, sortConfig, selectedUserId]);
 
 	return (
 		<>
@@ -143,6 +153,9 @@ const LoanItemsTable = () => {
 						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							Loan ID {getSortIcon("id")}
+						</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							User ID {getSortIcon("userId")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							User {getSortIcon("user")}
@@ -190,6 +203,7 @@ const LoanItemsTable = () => {
 						<tr key={loan.id}>
 							<td>{index + 1}</td>
 							<td>{loan.id}</td>
+							<td>{loan.user.userId}</td>
 							<td>
 								{loan.user.firstName} {loan.user.lastName}
 							</td>

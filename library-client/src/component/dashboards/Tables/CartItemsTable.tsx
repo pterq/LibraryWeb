@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import type { AuthorType, ReservationType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 
 const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;

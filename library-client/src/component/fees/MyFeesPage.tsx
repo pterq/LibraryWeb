@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import type { FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 const MyFeesPage = () => {
 	const [search, setSearch] = useState("");

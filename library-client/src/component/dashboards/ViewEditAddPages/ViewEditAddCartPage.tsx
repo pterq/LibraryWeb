@@ -122,9 +122,9 @@ const ViewEditAddCartPage = () => {
 	const pageTitle =
 		action === "view"
 			? isEditing
-				? "Edit Shopping Cart"
-				: "View Shopping Cart"
-			: "Add Shopping Cart";
+				? "Edit User's Shopping Cart"
+				: "View User's Shopping Cart"
+			: "Add User's Shopping Cart";
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;

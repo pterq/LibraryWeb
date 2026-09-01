@@ -109,10 +109,12 @@ export interface FeeCountType {
 	numberOfFeesUnpaid: number;
 	numberOfFeesPaid: number;
 	numberOfFeesCancelled: number;
+	user: UserType;
 }
 
 export interface LoanCountType {
-	id: number;
+	loanId: number;
+	user: UserType;
 	firstName: string;
 	lastName: string;
 	numberOfLoans: number;
@@ -123,4 +125,5 @@ export interface ReservationCountType {
 	firstName: string;
 	lastName: string;
 	numberOfReservations: number;
+	user: UserType;
 }

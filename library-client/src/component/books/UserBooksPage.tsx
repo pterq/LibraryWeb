@@ -5,7 +5,7 @@ import type { LoanType } from "../../types/DbTypes";
 
 import { Link } from "react-router-dom";
 
-import { MockData } from "../data/MockData";
+import { MockData } from "../../types/MockData";
 
 const UserBooksPage = () => {
 	const [search, setSearch] = useState("");

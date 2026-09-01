@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import type { LoanType, LoanCountType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../data/MockData";
+import { MockData } from "../../../types/MockData";
 
 const LoansDashboard = () => {
 	const loansWithCount: LoanCountType[] = MockData.mockLoansCount;
@@ -41,9 +41,9 @@ const LoansDashboard = () => {
 				const fullName = `${loan.firstName} ${loan.lastName}`.toLowerCase();
 
 				return (
-					String(loan.id).includes(lowerSearch) ||
+					String(loan.loanId).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
-					String(loan.id).includes(lowerSearch) ||
+					String(loan.loanId).includes(lowerSearch) ||
 					String(loan.numberOfLoans).includes(lowerSearch)
 				);
 			});
@@ -56,12 +56,12 @@ const LoansDashboard = () => {
 
 				switch (sortConfig.key) {
 					case "index":
-						aVal = a.id + 1;
-						bVal = b.id + 1;
+						aVal = a.loanId;
+						bVal = b.loanId;
 						break;
 					case "userId":
-						aVal = a.id;
-						bVal = b.id;
+						aVal = a.user.userId;
+						bVal = b.user.userId;
 						break;
 					case "user":
 						aVal = `${a.firstName} ${a.lastName}`;
@@ -133,16 +133,16 @@ const LoansDashboard = () => {
 				</thead>
 				<tbody>
 					{filteredAndSortedLoans.map((loan, index) => (
-						<tr key={loan.id}>
+						<tr key={index + 1}>
 							<td>{index + 1}</td>
-							<td>{loan.id}</td>
-							<td>{`${loan.firstName} ${loan.lastName}`}</td>
+							<td>{loan.user.userId}</td>
+							<td>{`${loan.user.firstName} ${loan.user.lastName}`}</td>
 							<td>{loan.numberOfLoans}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
 									onClick={() =>
-										(window.location.href = `/userLoans/view/${loan.id}`)
+										(window.location.href = `/userLoans/view/${loan.user.userId}`)
 									}
 								>
 									View Details

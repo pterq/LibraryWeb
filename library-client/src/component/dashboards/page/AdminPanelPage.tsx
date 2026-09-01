@@ -95,7 +95,7 @@ const AdminPanelPage = () => {
 
 	const navigate = useNavigate();
 	useEffect(() => {
-		if (role !== "Admin" && role !== "Librarian") {
+		if (role !== "ADMIN" && role !== "LIBRARIAN") {
 			navigate("/");
 		}
 	}, [activeSection, role]);
