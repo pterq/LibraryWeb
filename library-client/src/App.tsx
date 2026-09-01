@@ -22,14 +22,14 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
-import ViewEditAddBookPage from "./component/dashboards/ViewEditAddBookPage";
-import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddAuthorPage";
-import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddBookCopyPage";
-import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddCategoryPage";
-import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddLoanPage";
-import ViewEditAddFeePage from "./component/dashboards/ViewEditAddFeePage";
-import ViewEditAddUserPage from "./component/dashboards/ViewEditAddUserPage";
-import ViewEditAddCartPage from "./component/dashboards/ViewEditAddCartPage";
+import ViewEditAddBookPage from "./component/dashboards/ViewEditAddPages/ViewEditAddBookPage";
+import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddPages/ViewEditAddAuthorPage";
+import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddPages/ViewEditAddBookCopyPage";
+import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCategoryPage";
+import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoanPage";
+import ViewEditAddFeePage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeePage";
+import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddUserPage";
+import ViewEditAddCartPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartPage";
 
 function App() {
 	return (

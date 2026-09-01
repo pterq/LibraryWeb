@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 
-import type { LoanType } from "../../types/DbTypes";
+import type { LoanType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const LoansDashboard = () => {
 	const loans: LoanType[] = MockData.mockLoans;

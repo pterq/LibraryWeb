@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 
-import type { FeeType } from "../../types/DbTypes";
+import type { FeeType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const FeesDashboard = () => {
 	const [search, setSearch] = useState("");

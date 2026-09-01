@@ -1,45 +1,46 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../api/axiosClient";
+import axiosClient from "../../../api/axiosClient";
+import type { UserType } from "../../../types/DbTypes";
 
 type PageAction = "view" | "add";
 
-type BookFormData = {
-	title: string;
-	authors: string[];
-	description: string;
-	isbn: string;
-	publishedYear: string;
-	categories: string[];
+type UserFormData = {
+	firstName: string;
+	lastName: string;
+	email: string;
+	phone: string;
+	role: UserType["role"];
 };
 
-const EMPTY_FORM: BookFormData = {
-	title: "",
-	authors: [],
-	categories: [],
-	description: "",
-	isbn: "",
-	publishedYear: "",
+const USER_ROLES: UserType["role"][] = ["ADMIN", "LIBRARIAN", "USER"];
+
+const EMPTY_FORM: UserFormData = {
+	firstName: "",
+	lastName: "",
+	email: "",
+	phone: "",
+	role: "USER",
 };
 
-const ViewEditAddBookPage = () => {
+const ViewEditAddUserPage = () => {
 	const path = window.location.pathname;
 	const action: PageAction = path.includes("/view") ? "view" : "add";
 
 	const rawId = path.split("/").pop() ?? "";
-	const parsedBookId = Number(rawId);
-	const bookId = Number.isFinite(parsedBookId) ? parsedBookId : null;
+	const parsedUserId = Number(rawId);
+	const userId = Number.isFinite(parsedUserId) ? parsedUserId : null;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
-	const isExistingBookAction = action === "view";
+	const isExistingUserAction = action === "view";
 
-	const [formData, setFormData] = useState<BookFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<UserFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!isExistingBookAction) {
+		if (!isExistingUserAction) {
 			setFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
@@ -48,27 +49,26 @@ const ViewEditAddBookPage = () => {
 
 		setIsEditing(false);
 
-		if (!bookId) {
-			setError("Invalid or missing book id in URL.");
+		if (!userId) {
+			setError("Invalid or missing user id in URL.");
 			setFormData(EMPTY_FORM);
 			return;
 		}
 
 		let isActive = true;
 
-		const loadBook = async () => {
+		const loadUser = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/books/${bookId}`);
-				const book = response.data as {
-					title?: string;
-					authors?: string[];
-					categories?: string[];
-					description?: string;
-					isbn?: string;
-					publishedYear?: number;
+				const response = await axiosClient.get(`/user/${userId}`);
+				const user = response.data as {
+					firstName?: string;
+					lastName?: string;
+					email?: string;
+					phone?: string | null;
+					role?: UserType["role"];
 				};
 
 				if (!isActive) {
@@ -76,20 +76,18 @@ const ViewEditAddBookPage = () => {
 				}
 
 				setFormData({
-					title: book.title ?? "",
-					authors: book.authors ?? [],
-					categories: book.categories ?? [],
-					description: book.description ?? "",
-					isbn: book.isbn ?? "",
-					publishedYear:
-						typeof book.publishedYear === "number" ? String(book.publishedYear) : "",
+					firstName: user.firstName ?? "",
+					lastName: user.lastName ?? "",
+					email: user.email ?? "",
+					phone: user.phone ?? "",
+					role: user.role ?? "USER",
 				});
 			} catch {
 				if (!isActive) {
 					return;
 				}
 
-				setError("Failed to load book data.");
+				setError("Failed to load user data.");
 				setFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) {
@@ -98,16 +96,18 @@ const ViewEditAddBookPage = () => {
 			}
 		};
 
-		void loadBook();
+		void loadUser();
 
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingBookAction, bookId]);
+	}, [action, isExistingUserAction, userId]);
 
-	const pageTitle = action === "view" ? (isEditing ? "Edit Book" : "View Book") : "Add Book";
+	const pageTitle = action === "view" ? (isEditing ? "Edit User" : "View User") : "Add User";
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+	const handleChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+	) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
@@ -137,20 +137,20 @@ const ViewEditAddBookPage = () => {
 			</div>
 			<h2>{pageTitle}</h2>
 
-			{isLoading && <p>Loading book data...</p>}
+			{isLoading && <p>Loading user data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<div className="mb-3">
-					<label htmlFor="title" className="form-label">
-						Title
+					<label htmlFor="firstName" className="form-label">
+						First Name
 					</label>
 					<input
 						type="text"
-						id="title"
-						name="title"
+						id="firstName"
+						name="firstName"
 						className="form-control"
-						value={formData.title}
+						value={formData.firstName}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
 						required
@@ -158,73 +158,75 @@ const ViewEditAddBookPage = () => {
 				</div>
 
 				<div className="mb-3">
-					<label htmlFor="isbn" className="form-label">
-						ISBN
+					<label htmlFor="lastName" className="form-label">
+						Last Name
 					</label>
 					<input
 						type="text"
-						id="isbn"
-						name="isbn"
+						id="lastName"
+						name="lastName"
 						className="form-control"
-						value={formData.isbn}
+						value={formData.lastName}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
 						required
 					/>
 				</div>
+
 				<div className="mb-3">
-					<label htmlFor="authors" className="form-label">
-						Authors
+					<label htmlFor="email" className="form-label">
+						Email
+					</label>
+					<input
+						type="email"
+						id="email"
+						name="email"
+						className="form-control"
+						value={formData.email}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+						required
+					/>
+				</div>
+
+				<div className="mb-3">
+					<label htmlFor="phone" className="form-label">
+						Phone
 					</label>
 					<input
 						type="text"
-						id="authors"
-						name="authors"
+						id="phone"
+						name="phone"
 						className="form-control"
-						value={formData.authors.join(", ")}
-						onChange={(e) =>
-							setFormData((prev) => ({
-								...prev,
-								authors: e.target.value.split(",").map((author) => author.trim()),
-							}))
-						}
-						disabled={isReadOnly || isLoading}
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label htmlFor="publishedYear" className="form-label">
-						Published Year
-					</label>
-					<input
-						type="number"
-						id="publishedYear"
-						name="publishedYear"
-						className="form-control"
-						value={formData.publishedYear}
+						value={formData.phone}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
 					/>
 				</div>
 
 				<div className="mb-3">
-					<label htmlFor="description" className="form-label">
-						Description
+					<label htmlFor="role" className="form-label">
+						Role
 					</label>
-					<textarea
-						id="description"
-						name="description"
-						className="form-control"
-						rows={4}
-						value={formData.description}
+					<select
+						id="role"
+						name="role"
+						className="form-select"
+						value={formData.role}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
-					/>
+					>
+						{USER_ROLES.map((role) => (
+							<option key={role} value={role}>
+								{role}
+							</option>
+						))}
+					</select>
 				</div>
 
 				{!isReadOnly && (
 					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Book"}
+						{action === "view" ? "Save Changes" : "Create User"}
 					</button>
 				)}
 			</form>
@@ -232,4 +234,4 @@ const ViewEditAddBookPage = () => {
 	);
 };
 
-export default ViewEditAddBookPage;
+export default ViewEditAddUserPage;

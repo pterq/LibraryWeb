@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 
-import type { UserType } from "../../types/DbTypes";
+import type { UserType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const UsersDashboard = () => {
 	const users: UserType[] = MockData.mockUsers;
@@ -76,6 +76,12 @@ const UsersDashboard = () => {
 
 			<div className="d-flex justify-content-end mb-3">
 				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/user/add`)}
+				>
+					Add User
+				</button>
+				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
 					onClick={() => {
@@ -137,7 +143,14 @@ const UsersDashboard = () => {
 							<td>{user.email}</td>
 							<td>{user.role}</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() =>
+										(window.location.href = `/user/view/${user.userId}`)
+									}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

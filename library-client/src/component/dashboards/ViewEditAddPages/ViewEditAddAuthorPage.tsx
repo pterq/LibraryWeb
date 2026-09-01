@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../api/axiosClient";
+import axiosClient from "../../../api/axiosClient";
 
 type PageAction = "view" | "add";
 

@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 
-import type { AuthorType, ReservationType } from "../../types/DbTypes";
+import type { AuthorType, ReservationType } from "../../../types/DbTypes";
 
-import SearchBar from "../common/SearchBar";
-import { MockData } from "../data/MockData";
+import SearchBar from "../../common/SearchBar";
+import { MockData } from "../../data/MockData";
 
 const ShoppinCartsDashboard = () => {
 	const [search, setSearch] = useState("");

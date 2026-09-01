@@ -1,14 +1,14 @@
 import { useState, type JSX } from "react";
-import PhysicalBooksDashboard from "../dashboards/PhysicalBooksDashboard";
+import PhysicalBooksDashboard from "../dashboards/admin-dasboards/PhysicalBooksDashboard";
 import AdminNavPanel from "./AdminNavPanel";
 import { useAuth } from "../../context/AuthContext";
-import AuthorsDashboard from "../dashboards/AuthorsDashboard";
-import BooksDashboard from "../dashboards/BooksDashboard";
-import UsersDashboard from "../dashboards/UsersDashboard";
-import LoansDashboard from "../dashboards/LoansDashboard";
-import FeesDashboard from "../dashboards/FeesDashboard";
-import ShoppinCartsDashboard from "../dashboards/ShoppinCartsDashboard";
-import CategoriesDashboard from "../dashboards/CategoriesDashboard";
+import AuthorsDashboard from "../dashboards/admin-dasboards/AuthorsDashboard";
+import BooksDashboard from "../dashboards/admin-dasboards/BooksDashboard";
+import UsersDashboard from "../dashboards/admin-dasboards/UsersDashboard";
+import LoansDashboard from "../dashboards/admin-dasboards/LoansDashboard";
+import FeesDashboard from "../dashboards/admin-dasboards/FeesDashboard";
+import ShoppinCartsDashboard from "../dashboards/admin-dasboards/ShoppinCartsDashboard";
+import CategoriesDashboard from "../dashboards/admin-dasboards/CategoriesDashboard";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {

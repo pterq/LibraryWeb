@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import type { AuthorType } from "../../types/DbTypes";
+import type { AuthorType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const AuthorsDashboard = () => {
 	const authors: AuthorType[] = MockData.mockAuthors;

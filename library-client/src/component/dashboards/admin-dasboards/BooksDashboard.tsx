@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { BookType } from "../../types/DbTypes";
+import type { BookType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const BooksDashboard = () => {
 	const [search, setSearch] = useState("");

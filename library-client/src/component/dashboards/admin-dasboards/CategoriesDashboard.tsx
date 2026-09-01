@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import type { CategoryType, CategoryCountType } from "../../types/DbTypes";
+import type { CategoryType, CategoryCountType } from "../../../types/DbTypes";
 
-import { MockData } from "../data/MockData";
-import SearchBar from "../common/SearchBar";
+import { MockData } from "../../data/MockData";
+import SearchBar from "../../common/SearchBar";
 
 const CategoriesDashboard = () => {
 	const categories: CategoryType[] = MockData.mockCategories;
