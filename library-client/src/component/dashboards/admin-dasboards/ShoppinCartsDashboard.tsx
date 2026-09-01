@@ -108,7 +108,7 @@ const ShoppinCartsDashboard = () => {
 					className="btn btn-primary btn-sm me-2"
 					onClick={() => (window.location.href = `/shoppingCart/add`)}
 				>
-					Add Shopping Cart
+					Add Users Shopping Cart
 				</button>
 				<button
 					className="btn btn-secondary btn-sm"

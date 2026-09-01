@@ -11,6 +11,10 @@ import type {
 	CategoryCountType,
 	FeeCountType,
 	LoanCountType,
+	LoanStatusType,
+	FeeStatusType,
+	BookPhysicalStatusType,
+	UserRoleType,
 } from "../../types/DbTypes";
 
 const mockUser: UserType = {
@@ -62,6 +66,9 @@ const mockCategories: CategoryType[] = [
 	{ id: 3, name: "Architecture" },
 	{ id: 4, name: "Design Patterns" },
 	{ id: 5, name: "Agile" },
+	{ id: 6, name: "Databases" },
+	{ id: 7, name: "Networking" },
+	{ id: 8, name: "Security" },
 ];
 
 const mockLoan: LoanType = {
@@ -95,34 +102,47 @@ const mockReservation: ReservationType = {
 
 //fill mock data arrays with multiple copies of the mock data with different ids
 const mockUsers: UserType[] = Array.from({ length: 5 }, (_, i) => ({
-	...mockUser,
+	firstName: `FirstN ${i + 1}`,
+	lastName: `LastN${i + 1}`,
+	email: `user${i + 1}@example.com`,
+	role: "USER",
 	userId: i + 1,
 }));
 
 const mockAuthors: AuthorType[] = Array.from({ length: 5 }, (_, i) => ({
-	...mockAuthor,
+	firstName: `FirstN ${i + 1}`,
+	lastName: `LastN${i + 1}`,
+	bio: `Bio of author ${i + 1}`,
 	id: i + 1,
 }));
 
+const mockAuthorsArray: AuthorsType[] = Array.from({ length: 5 }, (_, i) => ({
+	id: i + 1,
+	authors: [mockAuthors[i]],
+}));
+
 const mockBooks: BookType[] = Array.from({ length: 5 }, (_, i) => ({
-	...mockBook,
+	authors: mockAuthorsArray[i],
+	description: `Description of Clean Code ${i + 1}`,
+	isbn: `978013235088${i + 1}`,
+	publishedYear: 2008,
 	id: i + 1,
 	title: `Clean Code ${i + 1}`,
 	categories: [mockCategories[i % mockCategories.length]],
 }));
 
 const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 5 }, (_, i) => ({
-	...mockBookPhysical,
+	book: mockBooks[i],
 	id: i + 1,
 	inventoryCode: `INV-2026-00${i + 1}`,
-	status: i % 2 === 0 ? "AVAILABLE" : "BORROWED",
+	status: i % 3 === 0 ? "AVAILABLE" : i % 3 === 1 ? "BORROWED" : "RESERVED",
 }));
 
 const mockLoans: LoanType[] = Array.from({ length: 5 }, (_, i) => ({
 	...mockLoan,
 	id: i + 1,
 	bookPhysical: mockBookPhysicals[i],
-	status: i % 2 === 0 ? "BORROWED" : "RETURNED",
+	status: i % 3 === 0 ? "BORROWED" : i % 3 === 1 ? "RETURNED" : "OVERDUE",
 }));
 
 const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
@@ -132,7 +152,7 @@ const mockFees: FeeType[] = Array.from({ length: 5 }, (_, i) => ({
 	// Different createdAt dates for each fee, -1 day for each subsequent fee
 	createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
 	loan: mockLoans[i],
-	status: i % 2 === 0 ? "PAID" : "UNPAID",
+	status: i % 3 === 0 ? "PAID" : i % 3 === 1 ? "UNPAID" : "CANCELLED",
 }));
 
 const mockReservations: ReservationType[] = Array.from({ length: 5 }, (_, i) => ({

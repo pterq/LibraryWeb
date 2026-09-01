@@ -25,14 +25,12 @@ export interface BookType {
 	coverImageUrl?: string;
 }
 
-export interface BookPhysicalStatusType {
-	name: "AVAILABLE" | "BORROWED" | "RESERVED";
-}
+export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
 
 export interface BookPhysicalType {
 	id: number;
 	inventoryCode: string;
-	status: BookPhysicalStatusType["name"];
+	status: BookPhysicalStatusType;
 	book: BookType;
 }
 
@@ -41,9 +39,7 @@ export interface CategoryType {
 	name: string;
 }
 
-export interface LoanStatusType {
-	name: "BORROWED" | "RETURNED" | "OVERDUE";
-}
+export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
 
 export interface LoanType {
 	id: number;
@@ -51,7 +47,7 @@ export interface LoanType {
 	loanDate: Date;
 	returnDate: Date;
 	dueDate: Date;
-	status: LoanStatusType["name"];
+	status: LoanStatusType;
 	user: UserType;
 }
 
@@ -72,9 +68,7 @@ export interface UserData {
 	role: UserRoleType["name"];
 }
 
-export interface FeeStatusType {
-	name: "PAID" | "UNPAID" | "CANCELLED";
-}
+export type FeeStatusType = "PAID" | "UNPAID" | "CANCELLED";
 
 export type FeeType = {
 	amount: number;
@@ -82,7 +76,7 @@ export type FeeType = {
 	id: number;
 	loan: LoanType;
 	paidAt: Date | null;
-	status: FeeStatusType["name"];
+	status: FeeStatusType;
 	user: UserType;
 };
 

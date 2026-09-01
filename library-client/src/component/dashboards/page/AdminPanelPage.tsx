@@ -66,7 +66,7 @@ const contentMap: Record<string, { title: string; description: string }> = {
 
 const AdminPanelPage = () => {
 	const [activeSection, setActiveSection] = useState("dashboard");
-	const { firstName, lastName, email } = useAuth();
+	const { firstName, lastName, email, role } = useAuth();
 	const currentContent = contentMap[activeSection] ?? contentMap.dashboard;
 
 	const sectionComponentMap: Record<string, JSX.Element> = {
@@ -94,7 +94,7 @@ const AdminPanelPage = () => {
 
 	return (
 		<div className="">
-			<h1 className="mb-4">Admin Panel</h1>
+			<h1 className="mb-4">{role} Panel</h1>
 			<h2 className="mb-4">
 				User: {firstName} {lastName} ({email})
 			</h2>
