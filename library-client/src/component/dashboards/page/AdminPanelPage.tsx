@@ -1,14 +1,15 @@
-import { useState, type JSX } from "react";
-import PhysicalBooksDashboard from "../dashboards/admin-dasboards/PhysicalBooksDashboard";
+import React, { useState } from "react";
+import ShoppingCartItemsDashboard from "../admin-dasboards/ShoppingCartItemsDashboard";
+import PhysicalBooksDashboard from "../admin-dasboards/PhysicalBooksDashboard";
 import AdminNavPanel from "./AdminNavPanel";
-import { useAuth } from "../../context/AuthContext";
-import AuthorsDashboard from "../dashboards/admin-dasboards/AuthorsDashboard";
-import BooksDashboard from "../dashboards/admin-dasboards/BooksDashboard";
-import UsersDashboard from "../dashboards/admin-dasboards/UsersDashboard";
-import LoansDashboard from "../dashboards/admin-dasboards/LoansDashboard";
-import FeesDashboard from "../dashboards/admin-dasboards/FeesDashboard";
-import ShoppinCartsDashboard from "../dashboards/admin-dasboards/ShoppinCartsDashboard";
-import CategoriesDashboard from "../dashboards/admin-dasboards/CategoriesDashboard";
+import { useAuth } from "../../../context/AuthContext";
+import AuthorsDashboard from "../admin-dasboards/AuthorsDashboard";
+import BooksDashboard from "../admin-dasboards/BooksDashboard";
+import UsersDashboard from "../admin-dasboards/UsersDashboard";
+import LoansDashboard from "../admin-dasboards/LoansDashboard";
+import FeesDashboard from "../admin-dasboards/FeesDashboard";
+import ShoppinCartsDashboard from "../admin-dasboards/ShoppinCartsDashboard";
+import CategoriesDashboard from "../admin-dasboards/CategoriesDashboard";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {
@@ -67,6 +68,7 @@ const AdminPanelPage = () => {
 		loans: <LoansDashboard />,
 		fees: <FeesDashboard />,
 		shoppingCarts: <ShoppinCartsDashboard />,
+		shoppingCartItems: <ShoppingCartItemsDashboard />,
 	};
 
 	const sectionContent = sectionComponentMap[activeSection] ?? (

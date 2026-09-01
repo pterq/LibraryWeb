@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import LibrarianPanelPage from "./component/librarian/LibrarianPanelPage";
-import AdminPanelPage from "./component/admin/AdminPanelPage";
+import AdminPanelPage from "./component/dashboards/page/AdminPanelPage";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -30,6 +30,7 @@ import ViewEditAddLoanPage from "./component/dashboards/ViewEditAddPages/ViewEdi
 import ViewEditAddFeePage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeePage";
 import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddUserPage";
 import ViewEditAddCartPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartPage";
+import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartItemPage";
 
 function App() {
 	return (
@@ -254,6 +255,24 @@ function App() {
 									element={
 										<ProtectedRoute>
 											<ViewEditAddCartPage />
+										</ProtectedRoute>
+									}
+								/>
+							</>
+							<>
+								<Route
+									path="/shoppingCartItem/add"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCartItemPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/shoppingCartItem/view/:id"
+									element={
+										<ProtectedRoute>
+											<ViewEditAddCartItemPage />
 										</ProtectedRoute>
 									}
 								/>

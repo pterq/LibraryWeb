@@ -13,6 +13,7 @@ const navItems = [
 	{ id: "loans", label: "Loans" },
 	{ id: "fees", label: "Fees" },
 	{ id: "shoppingCarts", label: "Shopping Carts" },
+	{ id: "shoppingCartItems", label: "Shopping Cart Items" },
 ];
 
 const AdminNavPanel = ({ activeItem, onSelect }: NavPanelProps) => {
