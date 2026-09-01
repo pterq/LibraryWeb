@@ -58,6 +58,8 @@ const mockCategories: CategoryType[] = [
 	mockCategory,
 	{ id: 2, name: "Software Engineering" },
 	{ id: 3, name: "Architecture" },
+	{ id: 4, name: "Design Patterns" },
+	{ id: 5, name: "Agile" },
 ];
 
 const mockLoan: LoanType = {

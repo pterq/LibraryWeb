@@ -32,13 +32,9 @@ const BooksDashboard = () => {
 	};
 
 	const availableCategories = useMemo(() => {
-		return [
-			...new Set(
-				MockData.mockBooks.flatMap((book) =>
-					(book.categories ?? []).map((category) => category.name),
-				),
-			),
-		].sort((a, b) => a.localeCompare(b));
+		return [...new Set(MockData.mockCategories.flatMap((cat) => cat.name))].sort((a, b) =>
+			a.localeCompare(b),
+		);
 	}, []);
 
 	const books = useMemo(() => {
