@@ -1,3 +1,7 @@
+export interface UserRoleType {
+	name: "ADMIN" | "USER" | "LIBRARIAN";
+}
+
 export interface AuthorType {
 	id: number;
 	firstName: string;
@@ -21,10 +25,14 @@ export interface BookType {
 	coverImageUrl?: string;
 }
 
+export interface BookPhysicalStatusType {
+	name: "AVAILABLE" | "BORROWED" | "RESERVED";
+}
+
 export interface BookPhysicalType {
 	id: number;
 	inventoryCode: string;
-	status: "AVAILABLE" | "BORROWED" | "RESERVED";
+	status: BookPhysicalStatusType["name"];
 	book: BookType;
 }
 
@@ -33,13 +41,17 @@ export interface CategoryType {
 	name: string;
 }
 
+export interface LoanStatusType {
+	name: "BORROWED" | "RETURNED" | "OVERDUE";
+}
+
 export interface LoanType {
 	id: number;
 	bookPhysical: BookPhysicalType;
 	loanDate: Date;
 	returnDate: Date;
 	dueDate: Date;
-	status: "BORROWED" | "RETURNED" | "OVERDUE";
+	status: LoanStatusType["name"];
 	user: UserType;
 }
 
@@ -49,7 +61,7 @@ export interface UserType {
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: "ADMIN" | "USER" | "LIBRARIAN";
+	role: UserRoleType["name"];
 }
 
 export interface UserData {
@@ -57,7 +69,11 @@ export interface UserData {
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: "ADMIN" | "USER" | "LIBRARIAN";
+	role: UserRoleType["name"];
+}
+
+export interface FeeStatusType {
+	name: "PAID" | "UNPAID" | "CANCELLED";
 }
 
 export type FeeType = {
@@ -66,7 +82,7 @@ export type FeeType = {
 	id: number;
 	loan: LoanType;
 	paidAt: Date | null;
-	status: "PAID" | "UNPAID" | "CANCELLED";
+	status: FeeStatusType["name"];
 	user: UserType;
 };
 
