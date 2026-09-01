@@ -11,7 +11,9 @@ const navItems = [
 	{ id: "authors", label: "Authors" },
 	{ id: "users", label: "Users" },
 	{ id: "loans", label: "Loans" },
+	{ id: "loanItems", label: "Loan Items" },
 	{ id: "fees", label: "Fees" },
+	{ id: "feeItems", label: "Fees Items" },
 	{ id: "shoppingCarts", label: "Shopping Carts" },
 	{ id: "shoppingCartItems", label: "Shopping Cart Items" },
 ];
@@ -24,6 +26,9 @@ const AdminNavPanel = ({ activeItem, onSelect }: NavPanelProps) => {
 				<div key={item.id}>
 					{item.id === "users" && <hr className="my-2 border-secondary-subtle" />}
 					{item.id === "books" && <hr className="my-2 border-secondary-subtle" />}
+					{item.id === "loans" && <hr className="my-2 border-secondary-subtle" />}
+					{item.id === "fees" && <hr className="my-2 border-secondary-subtle" />}
+					{item.id === "shoppingCarts" && <hr className="my-2 border-secondary-subtle" />}
 					<button
 						type="button"
 						className={`list-group-item list-group-item-action ${

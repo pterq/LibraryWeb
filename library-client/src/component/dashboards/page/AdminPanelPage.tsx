@@ -10,6 +10,8 @@ import LoansDashboard from "../admin-dasboards/LoansDashboard";
 import FeesDashboard from "../admin-dasboards/FeesDashboard";
 import ShoppinCartsDashboard from "../admin-dasboards/ShoppinCartsDashboard";
 import CategoriesDashboard from "../admin-dasboards/CategoriesDashboard";
+import LoanItemsDashboard from "../admin-dasboards/LoanItemsDashboard";
+import FeeItemsDashboard from "../admin-dasboards/FeeItemsDashboard";
 
 const contentMap: Record<string, { title: string; description: string }> = {
 	dashboard: {
@@ -40,6 +42,10 @@ const contentMap: Record<string, { title: string; description: string }> = {
 		title: "Loans",
 		description: "Manage loans and their return deadlines.",
 	},
+	loanItems: {
+		title: "Loan Items",
+		description: "Manage individual loan items and their statuses.",
+	},
 	shoppingCarts: {
 		title: "Shopping Carts",
 		description: "Manage shopping carts and their contents.",
@@ -47,6 +53,10 @@ const contentMap: Record<string, { title: string; description: string }> = {
 	fees: {
 		title: "Fees",
 		description: "Manage fees and their payment statuses.",
+	},
+	feeItems: {
+		title: "Fee Items",
+		description: "Manage individual fee items and their statuses.",
 	},
 	settings: {
 		title: "Settings",
@@ -66,7 +76,11 @@ const AdminPanelPage = () => {
 		categories: <CategoriesDashboard />,
 		users: <UsersDashboard />,
 		loans: <LoansDashboard />,
+		loanItems: <LoanItemsDashboard />,
+
 		fees: <FeesDashboard />,
+		feeItems: <FeeItemsDashboard />,
+
 		shoppingCarts: <ShoppinCartsDashboard />,
 		shoppingCartItems: <ShoppingCartItemsDashboard />,
 	};

@@ -2,7 +2,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-import LibrarianPanelPage from "./component/librarian/LibrarianPanelPage";
+import LibrarianPanelPage from "./component/dashboards/librarian/LibrarianPanelPage";
 import AdminPanelPage from "./component/dashboards/page/AdminPanelPage";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -31,6 +31,8 @@ import ViewEditAddFeePage from "./component/dashboards/ViewEditAddPages/ViewEdit
 import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddUserPage";
 import ViewEditAddCartPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartPage";
 import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartItemPage";
+import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeeItemPage";
+import ViewEditAddLoanItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoanItemPage";
 
 function App() {
 	return (
@@ -222,24 +224,60 @@ function App() {
 										</ProtectedRoute>
 									}
 								/>
+								<>
+									<Route
+										path="/loanItem/add"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddLoanItemPage />
+											</ProtectedRoute>
+										}
+									/>
+									<Route
+										path="/loanItem/view/:id"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddLoanItemPage />
+											</ProtectedRoute>
+										}
+									/>
+								</>
 							</>
 							<>
 								<Route
-									path="/fee/add"
+									path="/feeItem/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddFeePage />
+											<ViewEditAddFeeItemPage />
 										</ProtectedRoute>
 									}
 								/>
 								<Route
-									path="/fee/view/:id"
+									path="/feeItem/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddFeePage />
+											<ViewEditAddFeeItemPage />
 										</ProtectedRoute>
 									}
 								/>
+								<>
+									<Route
+										path="/fee/add"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddFeePage />
+											</ProtectedRoute>
+										}
+									/>
+									<Route
+										path="/fee/view/:id"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddFeePage />
+											</ProtectedRoute>
+										}
+									/>
+								</>
 							</>
 							<>
 								<Route
@@ -258,24 +296,24 @@ function App() {
 										</ProtectedRoute>
 									}
 								/>
-							</>
-							<>
-								<Route
-									path="/shoppingCartItem/add"
-									element={
-										<ProtectedRoute>
-											<ViewEditAddCartItemPage />
-										</ProtectedRoute>
-									}
-								/>
-								<Route
-									path="/shoppingCartItem/view/:id"
-									element={
-										<ProtectedRoute>
-											<ViewEditAddCartItemPage />
-										</ProtectedRoute>
-									}
-								/>
+								<>
+									<Route
+										path="/shoppingCartItem/add"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddCartItemPage />
+											</ProtectedRoute>
+										}
+									/>
+									<Route
+										path="/shoppingCartItem/view/:id"
+										element={
+											<ProtectedRoute>
+												<ViewEditAddCartItemPage />
+											</ProtectedRoute>
+										}
+									/>
+								</>
 							</>
 						</>
 
