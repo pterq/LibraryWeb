@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { UserData } from "../../types/UserType";
+import type { UserData } from "../../types/DbTypes";
 import { getUserDataFromLocalStorage } from "./UserDataFromStorage";
 
 const SettingsPage = () => {
@@ -17,7 +17,7 @@ const SettingsPage = () => {
 		field: keyof Pick<UserData, "firstName" | "lastName" | "email">,
 		value: string,
 	) => {
-		setFormData((prev) => {
+		setFormData((prev: UserData | null) => {
 			if (!prev) return prev;
 			return { ...prev, [field]: value };
 		});

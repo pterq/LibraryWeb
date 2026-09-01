@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { UserData } from "../../types/UserType";
+import type { UserData } from "../../types/DbTypes";
 
 interface UserDataFromStorageProps {
 	children: (userData: UserData | null) => ReactNode;

@@ -1,19 +1,12 @@
 import CartItem from "./CartItem";
-import type { Reservation } from "../../types/ReservationType";
+import type { ReservationType } from "../../types/DbTypes";
+import { MockData } from "../data/MockData";
 
 const CartPanel = () => {
 	const getCartItems = async () => {};
 
 	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
-	const items: Reservation[] = Array.from({ length: 5 }).map((_, i) => ({
-		id: i + 1,
-		title: `Book ${i + 1}`,
-		authors: [`Author ${i + 1}`],
-		reservedAt: new Date().toISOString(),
-		expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-		bookId: i + 1,
-		coverImageUrl: `https://m.media-amazon.com/images/I/71drokvxIVL._AC_UF894,1000_QL80_.jpg`,
-	}));
+	const items = MockData.mockReservations;
 
 	return (
 		<div>

@@ -82,7 +82,7 @@ const MyFeesPage = () => {
 	}, [filter, sortConfig]);
 
 	return (
-		<div>
+		<div className="container-fluid">
 			<h2>My Fees</h2>
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Fee by title" />

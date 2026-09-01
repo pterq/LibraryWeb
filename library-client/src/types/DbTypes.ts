@@ -52,6 +52,14 @@ export interface UserType {
 	role: "ADMIN" | "USER" | "LIBRARIAN";
 }
 
+export interface UserData {
+	token: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	role: "ADMIN" | "USER" | "LIBRARIAN";
+}
+
 export type FeeType = {
 	amount: number;
 	createdAt: Date;

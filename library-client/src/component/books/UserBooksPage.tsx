@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import SearchBar from "../common/SearchBar";
 
-import type { LoanType } from "../../types/LoanType";
+import type { LoanType } from "../../types/DbTypes";
 
 import { Link } from "react-router-dom";
 
@@ -90,7 +90,7 @@ const UserBooksPage = () => {
 	}, [filter, sortConfig]);
 
 	return (
-		<div>
+		<div className="container-fluid">
 			<h2>User's Books</h2>
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Book by title" />
