@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-
+import { Link } from "react-router-dom";
 import type { BookType } from "../../types/DbTypes";
 
 import { MockData } from "../data/MockData";
@@ -93,7 +93,12 @@ const BooksDashboard = () => {
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search book by title" />
 
 			<div className="d-flex justify-content-end mb-3">
-				<button className="btn btn-primary btn-sm me-2">Add Book</button>
+				<button
+					className="btn btn-primary btn-sm me-2"
+					onClick={() => (window.location.href = `/book/add`)}
+				>
+					Add Book
+				</button>
 
 				<button
 					className="btn btn-secondary btn-sm"
@@ -127,7 +132,7 @@ const BooksDashboard = () => {
 						<th scope="col" style={{ width: "18%" }}>
 							<div className="d-flex align-items-center gap-2">
 								<span onClick={() => requestSort("categories")}>
-									Category {getSortIcon("categories")}
+									Categories {getSortIcon("categories")}
 								</span>
 								<select
 									className="form-select form-select-sm py-0"
@@ -169,7 +174,12 @@ const BooksDashboard = () => {
 									.join(", ")}
 							</td>
 							<td>
-								<button className="btn btn-sm btn-primary">View Details</button>
+								<button
+									className="btn btn-sm btn-primary"
+									onClick={() => (window.location.href = `/book/view/${book.id}`)}
+								>
+									View Details
+								</button>
 							</td>
 						</tr>
 					))}

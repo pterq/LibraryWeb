@@ -22,6 +22,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
+import ViewEditAddBookPage from "./component/dashboards/ViewEditAddBookPage";
+import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddAuthorPage";
 
 function App() {
 	return (
@@ -83,6 +85,40 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<LibrarianPanelPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/book/add"
+							element={
+								<ProtectedRoute>
+									<ViewEditAddBookPage />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/book/view/:id"
+							element={
+								<ProtectedRoute>
+									<ViewEditAddBookPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/author/add"
+							element={
+								<ProtectedRoute>
+									<ViewEditAddAuthorPage />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/author/view/:id"
+							element={
+								<ProtectedRoute>
+									<ViewEditAddAuthorPage />
 								</ProtectedRoute>
 							}
 						/>
