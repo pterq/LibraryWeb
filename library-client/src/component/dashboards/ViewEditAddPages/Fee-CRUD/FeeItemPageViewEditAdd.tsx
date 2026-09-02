@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
+import { MockData } from "../../../../types/MockData";
 import ReturnButton from "../../../common/ReturnButton";
 
 type FeeStatus = "PENDING" | "PAID" | "CANCELLED";
@@ -35,12 +36,27 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 	return localDate.toISOString().slice(0, 16);
 };
 
-const ViewEditAddFeeItemPage = () => {
+const normalizeFeeStatus = (status?: string | null): FeeStatus => {
+	const normalized = status?.toUpperCase();
+
+	if (normalized === "PENDING" || normalized === "PAID" || normalized === "CANCELLED") {
+		return normalized as FeeStatus;
+	}
+
+	if (normalized === "UNPAID") {
+		return "PENDING";
+	}
+
+	return "PENDING";
+};
+
+const FeeItemPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
+	const isExistingFeeAction = action === "view";
 
 	const [formData, setFormData] = useState<FeeItemFormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<FeeItemFormData>(EMPTY_FORM);
@@ -49,8 +65,13 @@ const ViewEditAddFeeItemPage = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+	const mockFee =
+		linkId != null
+			? MockData.mockFees.find((fee) => Number(fee.id) === Number(linkId))
+			: undefined;
+
 	useEffect(() => {
-		if (action !== "view") {
+		if (!isExistingFeeAction) {
 			setFormData(EMPTY_FORM);
 			setOriginalFormData(EMPTY_FORM);
 			setError(null);
@@ -86,13 +107,29 @@ const ViewEditAddFeeItemPage = () => {
 					amount: fee.amount?.toString() ?? "",
 					createdAt: formatDateTimeLocal(fee.createdAt),
 					paidAt: formatDateTimeLocal(fee.paidAt),
-					status: fee.status ?? "PENDING",
+					status: normalizeFeeStatus(fee.status),
 				};
 
 				setFormData(nextFormData);
 				setOriginalFormData(nextFormData);
 			} catch {
 				if (!isActive) return;
+
+				if (mockFee) {
+					const fallbackData: FeeItemFormData = {
+						userId: String(mockFee.user.userId),
+						loanId: String(mockFee.loan.id),
+						amount: String(mockFee.amount),
+						createdAt: formatDateTimeLocal(mockFee.createdAt),
+						paidAt: formatDateTimeLocal(mockFee.paidAt),
+						status: normalizeFeeStatus(mockFee.status),
+					};
+
+					setFormData(fallbackData);
+					setOriginalFormData(fallbackData);
+					setError("Loaded fee from mock data.");
+					return;
+				}
 
 				setError("Failed to load fee data.");
 				setFormData(EMPTY_FORM);
@@ -107,7 +144,7 @@ const ViewEditAddFeeItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, linkId]);
+	}, [isExistingFeeAction, linkId, mockFee]);
 
 	const pageTitle = action === "view" ? (isEditing ? "Edit Fee" : "View Fee") : "Add Fee";
 
@@ -166,7 +203,7 @@ const ViewEditAddFeeItemPage = () => {
 				amount: updatedFee.amount?.toString() ?? "",
 				createdAt: formatDateTimeLocal(updatedFee.createdAt),
 				paidAt: formatDateTimeLocal(updatedFee.paidAt),
-				status: updatedFee.status ?? "PENDING",
+				status: normalizeFeeStatus(updatedFee.status),
 			};
 
 			setFormData(nextFormData);
@@ -191,7 +228,6 @@ const ViewEditAddFeeItemPage = () => {
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
-		window.history.back();
 	};
 
 	const handleDelete = () => {
@@ -210,29 +246,6 @@ const ViewEditAddFeeItemPage = () => {
 	return (
 		<div className="container py-3">
 			<ReturnButton />
-
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
 
 			<h2>{pageTitle}</h2>
 
@@ -348,22 +361,57 @@ const ViewEditAddFeeItemPage = () => {
 					)}
 				</div>
 
-				{!isReadOnly && (
-					<button
-						type="submit"
-						className="btn btn-primary"
-						disabled={isSubmitting || isLoading}
-					>
-						{isSubmitting
-							? "Saving..."
-							: action === "view"
-								? "Save Changes"
-								: "Create Fee"}
-					</button>
+				{isEditing && (
+					<div className="d-flex gap-2 mt-3">
+						<button
+							type="submit"
+							className="btn btn-primary"
+							disabled={isSubmitting || isLoading}
+						>
+							{isSubmitting
+								? "Saving..."
+								: action === "view"
+									? "Save Changes"
+									: "Create Fee"}
+						</button>
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+						disabled={isLoading}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button
+						type="button"
+						className="btn btn-warning"
+						onClick={handleCancelEdit}
+						disabled={isLoading}
+					>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddFeeItemPage;
+export default FeeItemPageViewEditAdd;

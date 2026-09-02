@@ -57,6 +57,7 @@ export interface UserType {
 	firstName: string;
 	lastName: string;
 	email: string;
+	phone: string | null;
 	role: UserRoleType["name"];
 }
 

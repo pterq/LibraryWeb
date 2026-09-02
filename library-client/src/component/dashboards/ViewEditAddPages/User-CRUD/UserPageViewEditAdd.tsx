@@ -117,7 +117,7 @@ const UserPageViewEditAdd = () => {
 						firstName: mockUser.firstName,
 						lastName: mockUser.lastName,
 						email: mockUser.email,
-						phone: "",
+						phone: mockUser.phone ?? "",
 						role: mockUser.role,
 					};
 

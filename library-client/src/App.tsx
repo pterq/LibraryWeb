@@ -30,9 +30,9 @@ import ViewEditAddLoanPage from "./component/dashboards/Tables/ViewEditAddLoansU
 import ViewEditAddFeesUserPage from "./component/dashboards/Tables/ViewEditAddFeesUserPage";
 import UserPageViewEditAdd from "./component/dashboards/ViewEditAddPages/User-CRUD/UserPageViewEditAdd";
 import ViewEditAddCartPage from "./component/dashboards/Tables/ViewEditAddCartPage";
-import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/CartItem-CRUD/ViewEditAddCartItemPage";
-import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/Fee-CRUD/ViewEditAddFeeItemPage";
-import ViewEditAddLoanItemPage from "./component/dashboards/ViewEditAddPages/Loan-CRUD/ViewEditAddLoanItemPage";
+import CartItemPageViewEditAdd from "./component/dashboards/ViewEditAddPages/CartItem-CRUD/CartItemPageViewEditAdd";
+import FeeItemPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Fee-CRUD/FeeItemPageViewEditAdd";
+import LoanItemPage from "./component/dashboards/ViewEditAddPages/Loan-CRUD/LoanItemPageViewEditAdd";
 import ViewEditAddLoansUserPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";
 
 function App() {
@@ -230,7 +230,7 @@ function App() {
 										path="/loanItem/add"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddLoanItemPage />
+												<LoanItemPage />
 											</ProtectedRoute>
 										}
 									/>
@@ -238,7 +238,7 @@ function App() {
 										path="/loanItem/view/:id"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddLoanItemPage />
+												<LoanItemPage />
 											</ProtectedRoute>
 										}
 									/>
@@ -266,7 +266,7 @@ function App() {
 										path="/feeItem/add"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddFeeItemPage />
+												<FeeItemPageViewEditAdd />
 											</ProtectedRoute>
 										}
 									/>
@@ -274,7 +274,7 @@ function App() {
 										path="/feeItem/view/:id"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddFeeItemPage />
+												<FeeItemPageViewEditAdd />
 											</ProtectedRoute>
 										}
 									/>
@@ -302,7 +302,7 @@ function App() {
 										path="/shoppingCartItem/add"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddCartItemPage />
+												<CartItemPageViewEditAdd />
 											</ProtectedRoute>
 										}
 									/>
@@ -310,7 +310,7 @@ function App() {
 										path="/shoppingCartItem/view/:id"
 										element={
 											<ProtectedRoute>
-												<ViewEditAddCartItemPage />
+												<CartItemPageViewEditAdd />
 											</ProtectedRoute>
 										}
 									/>

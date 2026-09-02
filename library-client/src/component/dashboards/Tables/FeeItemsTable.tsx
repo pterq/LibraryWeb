@@ -118,7 +118,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/fee/add`)}
+					onClick={() => (window.location.href = `/feeItem/add`)}
 				>
 					Add Fee
 				</button>

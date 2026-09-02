@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import type { UserType } from "../../../types/DbTypes";
-
 import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
@@ -98,19 +97,33 @@ const UsersDashboard = () => {
 				<thead>
 					<tr>
 						<th scope="col">#</th>
+
 						<th scope="col" onClick={() => requestSort("userId")}>
 							User ID {getSortIcon("userId")}
 						</th>
+
 						<th scope="col" onClick={() => requestSort("firstName")}>
 							First Name {getSortIcon("firstName")}
 						</th>
+
 						<th scope="col" onClick={() => requestSort("lastName")}>
 							Last Name {getSortIcon("lastName")}
 						</th>
-						<th scope="col" onClick={() => requestSort("email")}>
+
+						{/* 🔥 WĄSKA KOLUMNA EMAIL */}
+						<th
+							scope="col"
+							onClick={() => requestSort("email")}
+							style={{ width: "180px" }}
+						>
 							Email {getSortIcon("email")}
 						</th>
+
 						<th scope="col" style={{ width: "1%" }}>
+							Phone
+						</th>
+
+						<th scope="col" onClick={() => requestSort("role")}>
 							<div className="d-flex align-items-center gap-2">
 								<span>Role</span>
 								<select
@@ -130,9 +143,11 @@ const UsersDashboard = () => {
 								</select>
 							</div>
 						</th>
+
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
+
 				<tbody>
 					{filteredAndSortedUsers.map((user, index) => (
 						<tr key={user.userId}>
@@ -140,8 +155,22 @@ const UsersDashboard = () => {
 							<td>{user.userId}</td>
 							<td>{user.firstName}</td>
 							<td>{user.lastName}</td>
-							<td>{user.email}</td>
-							<td>{user.role}</td>
+
+							{/* 🔥 WĄSKA KOMÓRKA EMAIL */}
+							<td
+								className="text-nowrap"
+								style={{
+									maxWidth: "180px",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+								}}
+							>
+								{user.email}
+							</td>
+
+							<td className="text-nowrap">{user.phone}</td>
+							<td className="text-nowrap">{user.role}</td>
+
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

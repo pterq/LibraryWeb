@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
 import type { ReservationType } from "../../../../types/DbTypes";
+import { MockData } from "../../../../types/MockData";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
@@ -31,7 +32,7 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 	return localDate.toISOString().slice(0, 16);
 };
 
-const ViewEditAddCartItemPage = () => {
+const CartItemPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
@@ -45,17 +46,28 @@ const ViewEditAddCartItemPage = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	const mockReservation =
+		linkId != null
+			? MockData.mockReservations.reservations.find(
+					(reservation) => Number(reservation.id) === Number(linkId),
+				)
+			: undefined;
+
 	useEffect(() => {
 		if (!isExistingReservationAction) {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
 		}
 
+		setIsEditing(false);
+
 		if (!linkId) {
 			setError("Invalid or missing reservation id in URL.");
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -99,8 +111,23 @@ const ViewEditAddCartItemPage = () => {
 			} catch {
 				if (!isActive) return;
 
+				if (mockReservation) {
+					const fallbackData: CartItemFormData = {
+						userId: String(mockReservation.user.userId),
+						copyId: String(mockReservation.copyId),
+						reservedAt: formatDateTimeLocal(mockReservation.reservedAt),
+						expiresAt: formatDateTimeLocal(mockReservation.expiresAt),
+					};
+
+					setFormData(fallbackData);
+					setOriginalFormData(fallbackData);
+					setError("Loaded reservation from mock data.");
+					return;
+				}
+
 				setError("Failed to load reservation data.");
 				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) setIsLoading(false);
 			}
@@ -111,7 +138,7 @@ const ViewEditAddCartItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingReservationAction, linkId]);
+	}, [isExistingReservationAction, linkId, mockReservation]);
 
 	const pageTitle =
 		action === "view"
@@ -176,32 +203,6 @@ const ViewEditAddCartItemPage = () => {
 	return (
 		<div className="container py-3">
 			<ReturnButton />
-
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
-
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading reservation data...</p>}
@@ -274,13 +275,48 @@ const ViewEditAddCartItemPage = () => {
 				</div>
 
 				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Shopping Cart Item"}
-					</button>
+					<div className="d-flex gap-2 mt-3">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create Shopping Cart Item"}
+						</button>
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+						disabled={isLoading}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button
+						type="button"
+						className="btn btn-warning"
+						onClick={handleCancelEdit}
+						disabled={isLoading}
+					>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddCartItemPage;
+export default CartItemPageViewEditAdd;
