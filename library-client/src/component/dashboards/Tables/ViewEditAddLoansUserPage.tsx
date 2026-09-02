@@ -1,5 +1,6 @@
 import React from "react";
 import LoanItemsTable from "./LoanItemsTable";
+import ReturnButton from "../../common/ReturnButton";
 
 type PageAction = "view" | "add";
 
@@ -17,9 +18,7 @@ const ViewEditAddLoansUserPage = () => {
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
-				<button className="btn btn-secondary" onClick={() => window.history.back()}>
-					Back
-				</button>
+				<ReturnButton />
 			</div>
 
 			<h2>{pageTitle}</h2>

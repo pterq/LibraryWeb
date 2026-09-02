@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
-import type { ReservationType } from "../../../../types/DbTypes";
+import type { BookPhysicalType, ReservationType, UserType } from "../../../../types/DbTypes";
 import { MockData } from "../../../../types/MockData";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
+import { useAuth } from "../../../../context/AuthContext";
 
 type CartItemFormData = {
 	userId: string;
 	copyId: string;
 	reservedAt: string;
 	expiresAt: string;
+};
+
+type UserOption = {
+	id: number;
+	label: string;
+};
+
+type CopyOption = {
+	id: number;
+	label: string;
 };
 
 const EMPTY_FORM: CartItemFormData = {
@@ -32,17 +43,61 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 	return localDate.toISOString().slice(0, 16);
 };
 
+const extractArrayFromResponse = <T,>(payload: unknown): T[] => {
+	if (Array.isArray(payload)) return payload as T[];
+
+	if (payload && typeof payload === "object") {
+		const candidate = payload as { content?: unknown; data?: unknown; items?: unknown };
+
+		if (Array.isArray(candidate.content)) return candidate.content as T[];
+		if (Array.isArray(candidate.data)) return candidate.data as T[];
+		if (Array.isArray(candidate.items)) return candidate.items as T[];
+	}
+
+	return [];
+};
+
+const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">): string => {
+	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+	return `${fullName || "Unknown user"} (ID: ${user.userId})`;
+};
+
+const getCopyLabel = (copy: Pick<BookPhysicalType, "id" | "inventoryCode" | "status" | "book">) => {
+	const bookTitle = copy.book?.title ?? "Unknown book";
+	const inventoryCode = copy.inventoryCode ?? "No inventory code";
+	return `Copy #${copy.id} - ${bookTitle} - ${inventoryCode} (${copy.status})`;
+};
+
+const loadUsersFromMockData = (): UserOption[] =>
+	MockData.mockUsers.map((user) => ({
+		id: Number(user.userId),
+		label: getUserLabel(user),
+	}));
+
+const loadCopiesFromMockData = (): CopyOption[] =>
+	MockData.mockBookPhysicals.map((copy) => ({
+		id: Number(copy.id),
+		label: getCopyLabel(copy),
+	}));
+
 const CartItemPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
+	const auth = useAuth();
+	const userRole = auth.role;
+	const canEditReservedAt = userRole === "ADMIN" || userRole === "LIBRARIAN";
+	const canEditExpiresAt = userRole === "ADMIN";
 
-	// EDIT MODE TYLKO LOKALNY – NIE ZALEŻY OD ACTION
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingReservationAction = action === "view";
 
 	const [formData, setFormData] = useState<CartItemFormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<CartItemFormData>(EMPTY_FORM);
+	const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+	const [copyOptions, setCopyOptions] = useState<CopyOption[]>([]);
+	const [usersLoading, setUsersLoading] = useState(false);
+	const [copiesLoading, setCopiesLoading] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +107,65 @@ const CartItemPageViewEditAdd = () => {
 					(reservation) => Number(reservation.id) === Number(linkId),
 				)
 			: undefined;
+
+	useEffect(() => {
+		const loadUsers = async () => {
+			setUsersLoading(true);
+
+			try {
+				const response = await axiosClient.get("/user");
+				const users = extractArrayFromResponse<UserType>(response.data);
+
+				if (!users.length) {
+					setUserOptions(loadUsersFromMockData());
+					return;
+				}
+
+				setUserOptions(
+					users.map((user) => ({
+						id: Number(user.userId ?? 0),
+						label: getUserLabel({
+							userId: Number(user.userId ?? 0),
+							firstName: user.firstName ?? "",
+							lastName: user.lastName ?? "",
+						}),
+					})),
+				);
+			} catch {
+				setUserOptions(loadUsersFromMockData());
+			} finally {
+				setUsersLoading(false);
+			}
+		};
+
+		const loadCopies = async () => {
+			setCopiesLoading(true);
+
+			try {
+				const response = await axiosClient.get("/copies");
+				const copies = extractArrayFromResponse<BookPhysicalType>(response.data);
+
+				if (!copies.length) {
+					setCopyOptions(loadCopiesFromMockData());
+					return;
+				}
+
+				setCopyOptions(
+					copies.map((copy) => ({
+						id: Number(copy.id ?? 0),
+						label: getCopyLabel(copy),
+					})),
+				);
+			} catch {
+				setCopyOptions(loadCopiesFromMockData());
+			} finally {
+				setCopiesLoading(false);
+			}
+		};
+
+		void loadUsers();
+		void loadCopies();
+	}, []);
 
 	useEffect(() => {
 		if (!isExistingReservationAction) {
@@ -147,7 +261,13 @@ const CartItemPageViewEditAdd = () => {
 				: "View Item in Shopping Cart"
 			: "Add Item to Shopping Cart";
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const areMainFieldsLocked = isReadOnly || isLoading;
+	const isReservedAtLocked = !isEditing || isReadOnly || isLoading || !canEditReservedAt;
+	const isExpiresAtLocked = !isEditing || isReadOnly || isLoading || !canEditExpiresAt;
+
+	const handleChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+	) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
@@ -164,8 +284,6 @@ const CartItemPageViewEditAdd = () => {
 		});
 	};
 
-	//=============================================================
-
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -179,8 +297,6 @@ const CartItemPageViewEditAdd = () => {
 		setError(null);
 		window.history.back();
 	};
-
-	//=============================================================
 
 	const handleDelete = () => {
 		if (action !== "view" || !linkId) {
@@ -198,8 +314,6 @@ const CartItemPageViewEditAdd = () => {
 		setError("Mock delete executed. Connect API call here.");
 	};
 
-	//=============================================================
-
 	return (
 		<div className="container py-3">
 			<ReturnButton />
@@ -207,72 +321,104 @@ const CartItemPageViewEditAdd = () => {
 
 			{isLoading && <p>Loading reservation data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
-			<h3>Reservation Id: {linkId}</h3>
+			{action === "view" && <h3>Reservation Id: {linkId}</h3>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
-				<div className="mb-3">
-					<label htmlFor="userId" className="form-label">
-						User Id
-					</label>
-					<input
-						type="number"
-						id="userId"
-						name="userId"
-						className="form-control"
-						value={formData.userId}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						min="1"
-						required
-					/>
+				<div className="row g-3 mb-3">
+					<div className="col-12 col-md-6">
+						<label htmlFor="userId" className="form-label">
+							User
+						</label>
+						{usersLoading ? (
+							<p className="text-muted mb-0">Loading users...</p>
+						) : (
+							<select
+								id="userId"
+								name="userId"
+								className="form-select"
+								value={formData.userId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select user</option>
+								{userOptions.map((user) => (
+									<option key={user.id} value={String(user.id)}>
+										{user.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
+
+					<div className="col-12 col-md-6">
+						<label htmlFor="copyId" className="form-label">
+							Book Copy
+						</label>
+						{copiesLoading ? (
+							<p className="text-muted mb-0">Loading copies...</p>
+						) : (
+							<select
+								id="copyId"
+								name="copyId"
+								className="form-select"
+								value={formData.copyId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select book copy</option>
+								{copyOptions.map((copy) => (
+									<option key={copy.id} value={String(copy.id)}>
+										{copy.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
 				</div>
 
-				<div className="mb-3">
-					<label htmlFor="copyId" className="form-label">
-						Book Copy Id
-					</label>
-					<input
-						type="number"
-						id="copyId"
-						name="copyId"
-						className="form-control"
-						value={formData.copyId}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						min="1"
-						required
-					/>
-				</div>
+				{action === "view" && (
+					<>
+						<div className="mb-3">
+							<label htmlFor="reservedAt" className="form-label">
+								Reserved At
+							</label>
+							<input
+								type="datetime-local"
+								id="reservedAt"
+								name="reservedAt"
+								className="form-control"
+								value={formData.reservedAt}
+								onChange={handleChange}
+								disabled={isReservedAtLocked}
+								readOnly={!canEditReservedAt || !isEditing}
+							/>
+						</div>
 
-				<div className="mb-3">
-					<label htmlFor="reservedAt" className="form-label">
-						Reserved At
-					</label>
-					<input
-						type="datetime-local"
-						id="reservedAt"
-						name="reservedAt"
-						className="form-control"
-						value={formData.reservedAt}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-					/>
-				</div>
+						<div className="mb-3">
+							<label htmlFor="expiresAt" className="form-label">
+								Expires At
+							</label>
+							<input
+								type="datetime-local"
+								id="expiresAt"
+								name="expiresAt"
+								className="form-control"
+								value={formData.expiresAt}
+								onChange={handleChange}
+								disabled={isExpiresAtLocked}
+								readOnly={!canEditExpiresAt || !isEditing}
+							/>
+						</div>
+					</>
+				)}
 
-				<div className="mb-3">
-					<label htmlFor="expiresAt" className="form-label">
-						Expires At
-					</label>
-					<input
-						type="datetime-local"
-						id="expiresAt"
-						name="expiresAt"
-						className="form-control"
-						value={formData.expiresAt}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-					/>
-				</div>
+				{action === "add" && (
+					<div className="form-text">
+						Reservation dates are assigned automatically during item creation.
+					</div>
+				)}
 
 				{!isReadOnly && (
 					<div className="d-flex gap-2 mt-3">

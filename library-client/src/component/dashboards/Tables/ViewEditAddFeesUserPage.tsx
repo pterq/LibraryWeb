@@ -1,5 +1,6 @@
 import React from "react";
 import FeeItemsTable from "./FeeItemsTable";
+import ReturnButton from "../../common/ReturnButton";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
@@ -13,9 +14,7 @@ const ViewEditAddFeesUserPage = () => {
 	return (
 		<div className="container py-3">
 			<div className="d-flex flex-wrap gap-2 mb-3">
-				<button className="btn btn-secondary" onClick={() => window.history.back()}>
-					Back
-				</button>
+				<ReturnButton />
 			</div>
 
 			<h2>{pageTitle}ddddd</h2>
