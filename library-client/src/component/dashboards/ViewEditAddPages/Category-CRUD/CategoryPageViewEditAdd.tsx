@@ -13,7 +13,7 @@ const EMPTY_FORM: CategoryFormData = {
 	name: "",
 };
 
-const ViewEditAddCategoryPage = () => {
+const CategoryPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink; // teraz tylko "view" lub "add"
 	const linkId = idFromLink;
 
@@ -124,32 +124,6 @@ const ViewEditAddCategoryPage = () => {
 	return (
 		<div className="container py-3">
 			<ReturnButton />
-
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
-
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading category data...</p>}
@@ -173,13 +147,61 @@ const ViewEditAddCategoryPage = () => {
 				</div>
 
 				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Category"}
-					</button>
+					<div className="d-flex gap-2 mt-3">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create Category"}
+						</button>
+						{(action === "add" || action === "view") && (
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={() => {
+									if (action === "view") {
+										setFormData(originalFormData);
+										setError(null);
+										return;
+									}
+									setFormData(EMPTY_FORM);
+									setOriginalFormData(EMPTY_FORM);
+									setError(null);
+								}}
+							>
+								Clear
+							</button>
+						)}
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddCategoryPage;
+export default CategoryPageViewEditAdd;
