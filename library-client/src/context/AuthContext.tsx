@@ -9,6 +9,7 @@ interface AuthContextType {
 	email: string | null;
 	login: (authData: AuthLoginData) => void;
 	logout: () => void;
+	hasFees: boolean;
 }
 
 interface AuthLoginData {
@@ -18,6 +19,7 @@ interface AuthLoginData {
 	lastName: string;
 	email: string;
 	role: string;
+	hasFees: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -31,9 +33,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	const [firstName, setFirstName] = useState<string | null>(localStorage.getItem("firstName"));
 	const [lastName, setLastName] = useState<string | null>(localStorage.getItem("lastName"));
 	const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
+	const [hasFees, setHasFees] = useState<boolean>(
+		localStorage.getItem("hasFees") === "false" ? false : true,
+	);
 
-	const login = ({ userId, accessToken, firstName, lastName, email, role }: AuthLoginData) => {
-		console.log("Logging in user:", { userId, accessToken, firstName, lastName, email, role });
+	const login = ({
+		userId,
+		accessToken,
+		firstName,
+		lastName,
+		email,
+		role,
+		hasFees,
+	}: AuthLoginData) => {
+		console.log("Logging in user:", {
+			userId,
+			accessToken,
+			firstName,
+			lastName,
+			email,
+			role,
+			hasFees,
+		});
 
 		localStorage.setItem("token", accessToken);
 		localStorage.setItem("userId", userId.toString());
@@ -47,6 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setFirstName(firstName);
 		setLastName(lastName);
 		setEmail(email);
+		localStorage.setItem("hasFees", hasFees.toString());
+		setHasFees(hasFees);
 	};
 
 	const logout = () => {
@@ -56,17 +79,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		localStorage.removeItem("lastName");
 		localStorage.removeItem("email");
 		localStorage.removeItem("role");
+		localStorage.removeItem("hasFees");
 		setToken(null);
 		setRole(null);
 		setUserId(null);
 		setFirstName(null);
 		setLastName(null);
 		setEmail(null);
+		setHasFees(false);
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ token, role, userId, firstName, lastName, email, login, logout }}
+			value={{ token, role, userId, firstName, lastName, email, hasFees, login, logout }}
 		>
 			{children}
 		</AuthContext.Provider>

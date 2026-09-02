@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import CartPanel from "../shoppingCart/CartPanel";
 
 const NavBar = () => {
-	const { token, role, logout } = useAuth();
+	const { token, role, logout, hasFees } = useAuth();
 	const cartOffcanvasRef = useRef<HTMLDivElement | null>(null);
 	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
@@ -95,6 +95,18 @@ const NavBar = () => {
 											<li className="nav-item">
 												<Link className="nav-link active" to={"/my-fees"}>
 													My Fees
+													{hasFees && (
+														<span
+															className="badge rounded-pill bg-danger ms-2 align-middle"
+															aria-label="Outstanding fees"
+														>
+															1
+															<span className="visually-hidden">
+																{" "}
+																outstanding fee
+															</span>
+														</span>
+													)}
 												</Link>
 											</li>
 
