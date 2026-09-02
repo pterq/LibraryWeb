@@ -5,13 +5,12 @@ import type { FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
 import { MockData } from "../../types/MockData";
 import { useAuth } from "../../context/AuthContext";
-import { idFromLink } from "../../context/DataFromLink";
 
 const MyFeesPage = () => {
-	const { hasFees: userHasFees, setHasFees } = useAuth();
+	const { hasFees: userHasFees, userId: authUserId, setHasFees } = useAuth();
 	const [showOutstandingAlert, setShowOutstandingAlert] = useState(userHasFees);
 
-	const userId = idFromLink;
+	const userId = authUserId;
 
 	useEffect(() => {
 		if (!userHasFees) return;
