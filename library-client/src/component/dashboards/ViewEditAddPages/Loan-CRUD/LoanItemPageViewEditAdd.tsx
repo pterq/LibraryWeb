@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
-import type { LoanType } from "../../../../types/DbTypes";
+import type { BookPhysicalType, LoanType, UserType } from "../../../../types/DbTypes";
 import ReturnButton from "../../../common/ReturnButton";
 import { idFromLink, actionFromLink, type PageAction } from "../../../../context/DataFromLink";
 import { MockData } from "../../../../types/MockData";
+import { useAuth } from "../../../../context/AuthContext";
 
 type LoanItemFormData = {
 	userId: string;
@@ -13,6 +14,16 @@ type LoanItemFormData = {
 	dueDate: string;
 	returnDate: string;
 	status: LoanType["status"];
+};
+
+type UserOption = {
+	id: number;
+	label: string;
+};
+
+type CopyOption = {
+	id: number;
+	label: string;
 };
 
 const LOAN_STATUSES: LoanType["status"][] = ["BORROWED", "RETURNED", "OVERDUE"];
@@ -35,9 +46,66 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 	return localDate.toISOString().slice(0, 16);
 };
 
+const normalizeLoanStatus = (status?: string | null): LoanType["status"] => {
+	const normalized = status?.toUpperCase();
+
+	if (normalized === "BORROWED" || normalized === "RETURNED" || normalized === "OVERDUE") {
+		return normalized as LoanType["status"];
+	}
+
+	if (normalized === "ACTIVE") {
+		return "BORROWED";
+	}
+
+	return "BORROWED";
+};
+
+const extractArrayFromResponse = <T,>(payload: unknown): T[] => {
+	if (Array.isArray(payload)) return payload as T[];
+
+	if (payload && typeof payload === "object") {
+		const candidate = payload as { content?: unknown; data?: unknown; items?: unknown };
+
+		if (Array.isArray(candidate.content)) return candidate.content as T[];
+		if (Array.isArray(candidate.data)) return candidate.data as T[];
+		if (Array.isArray(candidate.items)) return candidate.items as T[];
+	}
+
+	return [];
+};
+
+const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">): string => {
+	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+	return `${fullName || "Unknown user"} (ID: ${user.userId})`;
+};
+
+const getCopyLabel = (copy: Pick<BookPhysicalType, "id" | "inventoryCode" | "status" | "book">) => {
+	const bookTitle = copy.book?.title ?? "Unknown book";
+	const inventoryCode = copy.inventoryCode ?? "No inventory code";
+	return `Copy #${copy.id} - ${bookTitle} - ${inventoryCode} (${copy.status})`;
+};
+
+const loadUsersFromMockData = (): UserOption[] =>
+	MockData.mockUsers.map((user) => ({
+		id: Number(user.userId),
+		label: getUserLabel(user),
+	}));
+
+const loadCopiesFromMockData = (): CopyOption[] =>
+	MockData.mockBookPhysicals.map((copy) => ({
+		id: Number(copy.id),
+		label: getCopyLabel(copy),
+	}));
+
 const LoanItemPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
+	const auth = useAuth();
+	const userRole = auth.role;
+	const canEditLoanDate = userRole === "ADMIN" || userRole === "LIBRARIAN";
+	const canEditDueDate = userRole === "ADMIN" || userRole === "LIBRARIAN";
+	const canEditReturnDate = userRole === "ADMIN";
+	const canEditStatus = userRole === "ADMIN" || userRole === "LIBRARIAN";
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
@@ -45,6 +113,10 @@ const LoanItemPageViewEditAdd = () => {
 
 	const [formData, setFormData] = useState<LoanItemFormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<LoanItemFormData>(EMPTY_FORM);
+	const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+	const [copyOptions, setCopyOptions] = useState<CopyOption[]>([]);
+	const [usersLoading, setUsersLoading] = useState(false);
+	const [copiesLoading, setCopiesLoading] = useState(false);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -53,6 +125,65 @@ const LoanItemPageViewEditAdd = () => {
 		linkId != null
 			? MockData.mockLoans.find((loan) => Number(loan.id) === Number(linkId))
 			: undefined;
+
+	useEffect(() => {
+		const loadUsers = async () => {
+			setUsersLoading(true);
+
+			try {
+				const response = await axiosClient.get("/user");
+				const users = extractArrayFromResponse<UserType>(response.data);
+
+				if (!users.length) {
+					setUserOptions(loadUsersFromMockData());
+					return;
+				}
+
+				setUserOptions(
+					users.map((user) => ({
+						id: Number(user.userId ?? 0),
+						label: getUserLabel({
+							userId: Number(user.userId ?? 0),
+							firstName: user.firstName ?? "",
+							lastName: user.lastName ?? "",
+						}),
+					})),
+				);
+			} catch {
+				setUserOptions(loadUsersFromMockData());
+			} finally {
+				setUsersLoading(false);
+			}
+		};
+
+		const loadCopies = async () => {
+			setCopiesLoading(true);
+
+			try {
+				const response = await axiosClient.get("/copies");
+				const copies = extractArrayFromResponse<BookPhysicalType>(response.data);
+
+				if (!copies.length) {
+					setCopyOptions(loadCopiesFromMockData());
+					return;
+				}
+
+				setCopyOptions(
+					copies.map((copy) => ({
+						id: Number(copy.id ?? 0),
+						label: getCopyLabel(copy),
+					})),
+				);
+			} catch {
+				setCopyOptions(loadCopiesFromMockData());
+			} finally {
+				setCopiesLoading(false);
+			}
+		};
+
+		void loadUsers();
+		void loadCopies();
+	}, []);
 
 	useEffect(() => {
 		if (!isExistingLoanAction) {
@@ -87,7 +218,7 @@ const LoanItemPageViewEditAdd = () => {
 					loanDate?: string | Date | null;
 					dueDate?: string | Date | null;
 					returnDate?: string | Date | null;
-					status?: LoanType["status"];
+					status?: string | null;
 				};
 
 				if (!isActive) return;
@@ -102,7 +233,7 @@ const LoanItemPageViewEditAdd = () => {
 					loanDate: formatDateTimeLocal(loan.loanDate),
 					dueDate: formatDateTimeLocal(loan.dueDate),
 					returnDate: loan.returnDate ? formatDateTimeLocal(loan.returnDate) : "",
-					status: loan.status ?? "BORROWED",
+					status: normalizeLoanStatus(loan.status),
 				};
 
 				setFormData(loaded);
@@ -117,7 +248,7 @@ const LoanItemPageViewEditAdd = () => {
 						loanDate: formatDateTimeLocal(mockLoan.loanDate),
 						dueDate: formatDateTimeLocal(mockLoan.dueDate),
 						returnDate: formatDateTimeLocal(mockLoan.returnDate),
-						status: mockLoan.status,
+						status: normalizeLoanStatus(mockLoan.status),
 					};
 
 					setFormData(fallbackData);
@@ -143,6 +274,11 @@ const LoanItemPageViewEditAdd = () => {
 
 	const pageTitle =
 		action === "view" ? (isEditing ? "Edit Loan Item" : "View Loan Item") : "Add Loan Item";
+	const areMainFieldsLocked = isReadOnly || isLoading;
+	const isLoanDateLocked = !isEditing || isReadOnly || isLoading || !canEditLoanDate;
+	const isDueDateLocked = !isEditing || isReadOnly || isLoading || !canEditDueDate;
+	const isReturnDateLocked = !isEditing || isReadOnly || isLoading || !canEditReturnDate;
+	const isStatusLocked = !isEditing || isReadOnly || isLoading || !canEditStatus;
 
 	const handleChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -158,10 +294,18 @@ const LoanItemPageViewEditAdd = () => {
 		console.log("Form submit payload:", {
 			user: { userId: Number(formData.userId) },
 			copy: { id: Number(formData.copyId) },
-			loanDate: formData.loanDate ? new Date(formData.loanDate).toISOString() : null,
-			dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null,
-			returnDate: formData.returnDate ? new Date(formData.returnDate).toISOString() : null,
-			status: formData.status,
+			...(action === "view"
+				? {
+						loanDate: formData.loanDate
+							? new Date(formData.loanDate).toISOString()
+							: null,
+						dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null,
+						returnDate: formData.returnDate
+							? new Date(formData.returnDate).toISOString()
+							: null,
+						status: formData.status,
+					}
+				: {}),
 		});
 	};
 
@@ -200,106 +344,139 @@ const LoanItemPageViewEditAdd = () => {
 			{error && <p className="text-danger mb-3">{error}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
-				<div className="mb-3">
-					<label htmlFor="userId" className="form-label">
-						User Id
-					</label>
-					<input
-						type="number"
-						id="userId"
-						name="userId"
-						className="form-control"
-						value={formData.userId}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						min="1"
-						required
-					/>
+				<div className="row g-3 mb-3">
+					<div className="col-12 col-md-6">
+						<label htmlFor="userId" className="form-label">
+							User
+						</label>
+						{usersLoading ? (
+							<p className="text-muted mb-0">Loading users...</p>
+						) : (
+							<select
+								id="userId"
+								name="userId"
+								className="form-select"
+								value={formData.userId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select user</option>
+								{userOptions.map((user) => (
+									<option key={user.id} value={String(user.id)}>
+										{user.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
+
+					<div className="col-12 col-md-6">
+						<label htmlFor="copyId" className="form-label">
+							Book Copy
+						</label>
+						{copiesLoading ? (
+							<p className="text-muted mb-0">Loading copies...</p>
+						) : (
+							<select
+								id="copyId"
+								name="copyId"
+								className="form-select"
+								value={formData.copyId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select book copy</option>
+								{copyOptions.map((copy) => (
+									<option key={copy.id} value={String(copy.id)}>
+										{copy.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
 				</div>
 
-				<div className="mb-3">
-					<label htmlFor="copyId" className="form-label">
-						Book Copy Id
-					</label>
-					<input
-						type="number"
-						id="copyId"
-						name="copyId"
-						className="form-control"
-						value={formData.copyId}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						min="1"
-						required
-					/>
-				</div>
+				{action === "view" && (
+					<>
+						<div className="mb-3">
+							<label htmlFor="loanDate" className="form-label">
+								Loan Date
+							</label>
+							<input
+								type="datetime-local"
+								id="loanDate"
+								name="loanDate"
+								className="form-control"
+								value={formData.loanDate}
+								onChange={handleChange}
+								disabled={isLoanDateLocked}
+								readOnly={!canEditLoanDate || !isEditing}
+								required
+							/>
+						</div>
 
-				<div className="mb-3">
-					<label htmlFor="loanDate" className="form-label">
-						Loan Date
-					</label>
-					<input
-						type="datetime-local"
-						id="loanDate"
-						name="loanDate"
-						className="form-control"
-						value={formData.loanDate}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						required
-					/>
-				</div>
+						<div className="mb-3">
+							<label htmlFor="dueDate" className="form-label">
+								Due Date
+							</label>
+							<input
+								type="datetime-local"
+								id="dueDate"
+								name="dueDate"
+								className="form-control"
+								value={formData.dueDate}
+								onChange={handleChange}
+								disabled={isDueDateLocked}
+								readOnly={!canEditDueDate || !isEditing}
+								required
+							/>
+						</div>
 
-				<div className="mb-3">
-					<label htmlFor="dueDate" className="form-label">
-						Due Date
-					</label>
-					<input
-						type="datetime-local"
-						id="dueDate"
-						name="dueDate"
-						className="form-control"
-						value={formData.dueDate}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						required
-					/>
-				</div>
+						<div className="mb-3">
+							<label htmlFor="returnDate" className="form-label">
+								Return Date
+							</label>
+							<input
+								type="datetime-local"
+								id="returnDate"
+								name="returnDate"
+								className="form-control"
+								value={formData.returnDate}
+								onChange={handleChange}
+								disabled={isReturnDateLocked}
+								readOnly={!canEditReturnDate || !isEditing}
+							/>
+						</div>
 
-				<div className="mb-3">
-					<label htmlFor="returnDate" className="form-label">
-						Return Date
-					</label>
-					<input
-						type="datetime-local"
-						id="returnDate"
-						name="returnDate"
-						className="form-control"
-						value={formData.returnDate}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-					/>
-				</div>
+						<div className="mb-3">
+							<label htmlFor="status" className="form-label">
+								Status
+							</label>
+							<select
+								id="status"
+								name="status"
+								className="form-select"
+								value={formData.status}
+								onChange={handleChange}
+								disabled={isStatusLocked}
+							>
+								{LOAN_STATUSES.map((status) => (
+									<option key={status} value={status}>
+										{status}
+									</option>
+								))}
+							</select>
+						</div>
+					</>
+				)}
 
-				<div className="mb-3">
-					<label htmlFor="status" className="form-label">
-						Status
-					</label>
-					<select
-						id="status"
-						name="status"
-						className="form-select"
-						value={formData.status}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-					>
-						{LOAN_STATUSES.map((status) => (
-							<option key={status} value={status}>
-								{status}
-							</option>
-						))}
-					</select>
-				</div>
+				{action === "add" && (
+					<div className="form-text">
+						Loan dates and status are assigned automatically during loan creation.
+					</div>
+				)}
 
 				{isEditing && (
 					<div className="d-flex gap-2 mt-3">

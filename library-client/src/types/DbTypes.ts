@@ -59,6 +59,7 @@ export interface UserType {
 	email: string;
 	phone: string | null;
 	role: UserRoleType["name"];
+	hasFee: boolean;
 }
 
 export interface UserData {

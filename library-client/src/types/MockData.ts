@@ -26,6 +26,7 @@ const mockUser: UserType = {
 	email: "jan.kowalski@example.com",
 	phone: "123-456-7890",
 	role: "USER",
+	hasFee: false,
 };
 
 const mockAuthor: AuthorType = {
@@ -114,6 +115,7 @@ const mockUsers: UserType[] = Array.from({ length: 5 }, (_, i) => ({
 	role: i % 3 === 0 ? "USER" : i % 3 === 1 ? "ADMIN" : "LIBRARIAN",
 	phone: `123-456-78${i + 10}`,
 	userId: i + 1,
+	hasFee: i % 2 === 0,
 }));
 
 const mockAuthors: AuthorType[] = Array.from({ length: 15 }, (_, i) => ({
