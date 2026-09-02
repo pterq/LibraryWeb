@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../../api/axiosClient";
-
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
+
+import { MockData } from "../../../../types/MockData";
 
 type AuthorFormData = {
 	firstName: string;
@@ -17,7 +17,7 @@ const EMPTY_FORM: AuthorFormData = {
 	biography: "",
 };
 
-const ViewEditAddAuthorPage = () => {
+const AuthorPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
@@ -48,26 +48,27 @@ const ViewEditAddAuthorPage = () => {
 
 		let isActive = true;
 
-		const loadAuthor = async () => {
+		const loadAuthor = () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/authors/${linkId}`);
-				const author = response.data as {
-					firstName?: string;
-					lastName?: string;
-					biography?: string;
-				};
+				const author = MockData.mockAuthors.find((a) => a.id === Number(linkId));
 
 				if (!isActive) {
+					return;
+				}
+
+				if (!author) {
+					setError("Author not found in MockData.");
+					setFormData(EMPTY_FORM);
 					return;
 				}
 
 				const nextFormData = {
 					firstName: author.firstName ?? "",
 					lastName: author.lastName ?? "",
-					biography: author.biography ?? "",
+					biography: author.bio ?? "",
 				};
 
 				setFormData(nextFormData);
@@ -86,7 +87,7 @@ const ViewEditAddAuthorPage = () => {
 			}
 		};
 
-		void loadAuthor();
+		loadAuthor();
 
 		return () => {
 			isActive = false;
@@ -126,6 +127,12 @@ const ViewEditAddAuthorPage = () => {
 		window.history.back();
 	};
 
+	const handleClearAddForm = () => {
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
+	};
+
 	//=============================================================
 
 	const handleDelete = () => {
@@ -150,34 +157,12 @@ const ViewEditAddAuthorPage = () => {
 		<div className="container py-3">
 			<ReturnButton />
 
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
-			<h2>{pageTitle}</h2>
-
 			{isLoading && <p>Loading author data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
+				<h2>{pageTitle}</h2>
+
 				<div className="mb-3">
 					<label htmlFor="firstName" className="form-label">
 						First Name
@@ -226,13 +211,50 @@ const ViewEditAddAuthorPage = () => {
 				</div>
 
 				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Author"}
-					</button>
+					<div className="d-flex gap-2 mt-3">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create Author"}
+						</button>
+						<button
+							type="button"
+							className="btn btn-secondary"
+							onClick={handleClearAddForm}
+							disabled={isLoading}
+						>
+							Clear Form
+						</button>
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddAuthorPage;
+export default AuthorPageViewEditAdd;
