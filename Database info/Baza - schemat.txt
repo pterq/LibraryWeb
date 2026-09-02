@@ -11,6 +11,7 @@ Table users {
   phone varchar
   password_hash varchar [not null] //hashed password 
   created_at datetime
+  has_fee bool
 }
 
 
@@ -42,6 +43,7 @@ Table books {
   isbn varchar [unique]
   published_year integer
   category_id integer [ref: > categories.id]
+  cover_image_url varchar
 }
 
 //////////////////////////////////////////////////////
