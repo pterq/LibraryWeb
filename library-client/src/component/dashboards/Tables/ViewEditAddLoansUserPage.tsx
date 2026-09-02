@@ -1,4 +1,3 @@
-import React from "react";
 import LoanItemsTable from "./LoanItemsTable";
 import ReturnButton from "../../common/ReturnButton";
 

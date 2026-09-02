@@ -1,4 +1,3 @@
-import React from "react";
 import FeeItemsTable from "./FeeItemsTable";
 import ReturnButton from "../../common/ReturnButton";
 

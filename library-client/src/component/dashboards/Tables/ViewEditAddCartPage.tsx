@@ -1,4 +1,3 @@
-import React from "react";
 import CartItemsTable from "./CartItemsTable";
 import ReturnButton from "../../common/ReturnButton";
 

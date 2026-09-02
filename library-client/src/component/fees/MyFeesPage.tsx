@@ -1,11 +1,28 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import type { FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
 import { MockData } from "../../types/MockData";
+import { useAuth } from "../../context/AuthContext";
 
 const MyFeesPage = () => {
+	const { hasFees: userHasFees, setHasFees } = useAuth();
+	const [showOutstandingAlert, setShowOutstandingAlert] = useState(userHasFees);
+
+	useEffect(() => {
+		if (!userHasFees) return;
+
+		// Hide navbar indicator immediately after entering My Fees page.
+		setHasFees(false);
+
+		const alertTimeout = setTimeout(() => {
+			setShowOutstandingAlert(false);
+		}, 15_000);
+
+		return () => clearTimeout(alertTimeout);
+	}, [userHasFees, setHasFees]);
+
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
@@ -84,6 +101,9 @@ const MyFeesPage = () => {
 	return (
 		<div className="container-fluid">
 			<h2>My Fees</h2>
+			{showOutstandingAlert && (
+				<div className="alert alert-warning py-2 mb-3">You have outstanding fees.</div>
+			)}
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Fee by title" />
 

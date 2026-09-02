@@ -9,6 +9,7 @@ interface AuthContextType {
 	email: string | null;
 	login: (authData: AuthLoginData) => void;
 	logout: () => void;
+	setHasFees: (hasFees: boolean) => void;
 	hasFees: boolean;
 }
 
@@ -19,7 +20,7 @@ interface AuthLoginData {
 	lastName: string;
 	email: string;
 	role: string;
-	hasFees: boolean;
+	hasFees?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -37,6 +38,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		localStorage.getItem("hasFees") === "false" ? false : true,
 	);
 
+	const updateHasFees = (nextValue: boolean) => {
+		localStorage.setItem("hasFees", nextValue.toString());
+		setHasFees(nextValue);
+	};
+
 	const login = ({
 		userId,
 		accessToken,
@@ -46,6 +52,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		role,
 		hasFees,
 	}: AuthLoginData) => {
+		const nextHasFees =
+			typeof hasFees === "boolean" ? hasFees : localStorage.getItem("hasFees") === "true";
 		console.log("Logging in user:", {
 			userId,
 			accessToken,
@@ -53,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			lastName,
 			email,
 			role,
-			hasFees,
+			hasFees: nextHasFees,
 		});
 
 		localStorage.setItem("token", accessToken);
@@ -68,8 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setFirstName(firstName);
 		setLastName(lastName);
 		setEmail(email);
-		localStorage.setItem("hasFees", hasFees.toString());
-		setHasFees(hasFees);
+		updateHasFees(nextHasFees);
 	};
 
 	const logout = () => {
@@ -86,12 +93,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setFirstName(null);
 		setLastName(null);
 		setEmail(null);
-		setHasFees(false);
+		updateHasFees(false);
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ token, role, userId, firstName, lastName, email, hasFees, login, logout }}
+			value={{
+				token,
+				role,
+				userId,
+				firstName,
+				lastName,
+				email,
+				hasFees,
+				login,
+				logout,
+				setHasFees: updateHasFees,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>
