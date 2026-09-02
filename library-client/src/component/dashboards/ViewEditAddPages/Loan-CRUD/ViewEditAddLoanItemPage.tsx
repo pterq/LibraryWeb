@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../api/axiosClient";
-import type { LoanType } from "../../../types/DbTypes";
-import ReturnButton from "../../common/ReturnButton";
-import { idFromLink } from "../../../context/DataFromLink";
+import axiosClient from "../../../../api/axiosClient";
+import type { LoanType } from "../../../../types/DbTypes";
+import ReturnButton from "../../../common/ReturnButton";
+import { idFromLink } from "../../../../context/DataFromLink";
 
 type LoanItemFormData = {
 	userId: string;

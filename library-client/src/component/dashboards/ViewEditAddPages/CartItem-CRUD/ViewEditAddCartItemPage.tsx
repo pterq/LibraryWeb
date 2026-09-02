@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../api/axiosClient";
-import type { ReservationType } from "../../../types/DbTypes";
+import axiosClient from "../../../../api/axiosClient";
+import type { ReservationType } from "../../../../types/DbTypes";
 
-import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
-import ReturnButton from "../../common/ReturnButton";
+import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
+import ReturnButton from "../../../common/ReturnButton";
 
 type CartItemFormData = {
 	userId: string;

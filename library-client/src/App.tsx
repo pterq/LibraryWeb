@@ -22,17 +22,17 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
-import ViewEditAddBookPage from "./component/dashboards/ViewEditAddPages/ViewEditAddBookPage";
-import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddPages/ViewEditAddAuthorPage";
-import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddPages/ViewEditAddBookCopyPage";
-import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCategoryPage";
+import BookPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Book-CRUD/BookPageViewEditAdd";
+import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddPages/Author-CRUD/ViewEditAddAuthorPage";
+import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddPages/BookCopy-CRUD/ViewEditAddBookCopyPage";
+import ViewEditAddCategoryPage from "./component/dashboards/ViewEditAddPages/Category-CRUD/ViewEditAddCategoryPage";
 import ViewEditAddLoanPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";
 import ViewEditAddFeesUserPage from "./component/dashboards/Tables/ViewEditAddFeesUserPage";
-import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/ViewEditAddUserPage";
+import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/User-CRUD/ViewEditAddUserPage";
 import ViewEditAddCartPage from "./component/dashboards/Tables/ViewEditAddCartPage";
-import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddCartItemPage";
-import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddFeeItemPage";
-import ViewEditAddLoanItemPage from "./component/dashboards/ViewEditAddPages/ViewEditAddLoanItemPage";
+import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/CartItem-CRUD/ViewEditAddCartItemPage";
+import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/Fee-CRUD/ViewEditAddFeeItemPage";
+import ViewEditAddLoanItemPage from "./component/dashboards/ViewEditAddPages/Loan-CRUD/ViewEditAddLoanItemPage";
 import ViewEditAddLoansUserPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";
 
 function App() {
@@ -105,7 +105,7 @@ function App() {
 									path="/book/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddBookPage />
+											<BookPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>
@@ -113,7 +113,7 @@ function App() {
 									path="/book/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddBookPage />
+											<BookPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../api/axiosClient";
+import axiosClient from "../../../../api/axiosClient";
 
-import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
-import ReturnButton from "../../common/ReturnButton";
+import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
+import ReturnButton from "../../../common/ReturnButton";
 
 type CategoryFormData = {
 	name: string;

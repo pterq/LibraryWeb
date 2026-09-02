@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../api/axiosClient";
-import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
-import { MockData } from "../../../types/MockData";
-import type { BookPhysicalStatusType } from "../../../types/DbTypes";
-import ReturnButton from "../../common/ReturnButton";
+import axiosClient from "../../../../api/axiosClient";
+import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
+import { MockData } from "../../../../types/MockData";
+import type { BookPhysicalStatusType } from "../../../../types/DbTypes";
+import ReturnButton from "../../../common/ReturnButton";
 
 type BookOption = {
 	id: number;

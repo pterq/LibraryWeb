@@ -1,38 +1,60 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../api/axiosClient";
+import axiosClient from "../../../../api/axiosClient";
+import type { UserType } from "../../../../types/DbTypes";
+import { useAuth } from "../../../../context/AuthContext";
+import ReturnButton from "../../../common/ReturnButton";
+import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 
-import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
-import ReturnButton from "../../common/ReturnButton";
-
-type AuthorFormData = {
+type UserFormData = {
 	firstName: string;
 	lastName: string;
-	biography: string;
+	email: string;
+	phone: string;
+	role: UserType["role"];
 };
 
-const EMPTY_FORM: AuthorFormData = {
+const USER_ROLES: UserType["role"][] = ["ADMIN", "LIBRARIAN", "USER"];
+
+const EMPTY_FORM: UserFormData = {
 	firstName: "",
 	lastName: "",
-	biography: "",
+	email: "",
+	phone: "",
+	role: "USER",
 };
 
-const ViewEditAddAuthorPage = () => {
+const ViewEditAddUserPage = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
-	const isExistingAuthorAction = action === "view";
+	const isExistingUserAction = action === "view";
 
-	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<UserFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	//=============================================================
+
+	const auth = useAuth();
+	const LoggedInUsersRole = auth.role;
+
+	const allowedRoles = [];
+	if (LoggedInUsersRole === "ADMIN") {
+		allowedRoles.push("ADMIN", "LIBRARIAN", "USER");
+	} else if (LoggedInUsersRole === "LIBRARIAN") {
+		allowedRoles.push("USER");
+	} else if (LoggedInUsersRole === "USER") {
+		allowedRoles.push("USER");
+	}
+
+	//=============================================================
+
 	useEffect(() => {
-		if (!isExistingAuthorAction) {
+		if (!isExistingUserAction) {
 			setFormData(EMPTY_FORM);
-			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
@@ -41,43 +63,44 @@ const ViewEditAddAuthorPage = () => {
 		setIsEditing(false);
 
 		if (!linkId) {
-			setError("Invalid or missing author id in URL.");
+			setError("Invalid or missing user id in URL.");
 			setFormData(EMPTY_FORM);
 			return;
 		}
 
 		let isActive = true;
 
-		const loadAuthor = async () => {
+		const loadUser = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/authors/${linkId}`);
-				const author = response.data as {
+				const response = await axiosClient.get(`/user/${linkId}`);
+				const user = response.data as {
 					firstName?: string;
 					lastName?: string;
-					biography?: string;
+					email?: string;
+					phone?: string | null;
+					role?: UserType["role"];
 				};
 
 				if (!isActive) {
 					return;
 				}
 
-				const nextFormData = {
-					firstName: author.firstName ?? "",
-					lastName: author.lastName ?? "",
-					biography: author.biography ?? "",
-				};
-
-				setFormData(nextFormData);
-				setOriginalFormData(nextFormData);
+				setFormData({
+					firstName: user.firstName ?? "",
+					lastName: user.lastName ?? "",
+					email: user.email ?? "",
+					phone: user.phone ?? "",
+					role: user.role ?? "USER",
+				});
 			} catch {
 				if (!isActive) {
 					return;
 				}
 
-				setError("Failed to load author data.");
+				setError("Failed to load user data.");
 				setFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) {
@@ -86,20 +109,23 @@ const ViewEditAddAuthorPage = () => {
 			}
 		};
 
-		void loadAuthor();
+		void loadUser();
 
 		return () => {
 			isActive = false;
 		};
-	}, [action, linkId, isExistingAuthorAction]);
+	}, [action, isExistingUserAction, linkId]);
 
-	const pageTitle =
-		action === "view" ? (isEditing ? "Edit Author" : "View Author") : "Add Author";
+	const pageTitle = action === "view" ? (isEditing ? "Edit User" : "View User") : "Add User";
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+	const handleChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+	) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
+
+	//=============================================================
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -108,10 +134,11 @@ const ViewEditAddAuthorPage = () => {
 			return;
 		}
 
+		// API write actions can be attached here later.
 		console.log("Form submit payload:", formData);
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<UserFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -130,17 +157,17 @@ const ViewEditAddAuthorPage = () => {
 
 	const handleDelete = () => {
 		if (action !== "view" || !linkId) {
-			setError("Cannot delete item: invalid item id.");
+			setError("Cannot delete user: invalid user id.");
 			return;
 		}
 
-		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		const shouldDelete = window.confirm("Are you sure you want to delete this user?");
 		if (!shouldDelete) {
 			return;
 		}
 
 		// Mock delete action - replace with API call when backend endpoint is ready.
-		console.log("Mock delete item with id:", linkId);
+		console.log("Mock delete user with id:", linkId);
 		setError("Mock delete executed. Connect API call here.");
 	};
 
@@ -174,7 +201,7 @@ const ViewEditAddAuthorPage = () => {
 			</div>
 			<h2>{pageTitle}</h2>
 
-			{isLoading && <p>Loading author data...</p>}
+			{isLoading && <p>Loading user data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
@@ -211,23 +238,59 @@ const ViewEditAddAuthorPage = () => {
 				</div>
 
 				<div className="mb-3">
-					<label htmlFor="biography" className="form-label">
-						Biography
+					<label htmlFor="email" className="form-label">
+						Email
 					</label>
-					<textarea
-						id="biography"
-						name="biography"
+					<input
+						type="email"
+						id="email"
+						name="email"
 						className="form-control"
-						rows={5}
-						value={formData.biography}
+						value={formData.email}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+						required
+					/>
+				</div>
+
+				<div className="mb-3">
+					<label htmlFor="phone" className="form-label">
+						Phone
+					</label>
+					<input
+						type="text"
+						id="phone"
+						name="phone"
+						className="form-control"
+						value={formData.phone}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
 					/>
 				</div>
 
+				<div className="mb-3">
+					<label htmlFor="role" className="form-label">
+						Role
+					</label>
+					<select
+						id="role"
+						name="role"
+						className="form-select"
+						value={formData.role}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+					>
+						{USER_ROLES.map((role) => (
+							<option key={role} value={role}>
+								{role}
+							</option>
+						))}
+					</select>
+				</div>
+
 				{!isReadOnly && (
 					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Author"}
+						{action === "view" ? "Save Changes" : "Create User"}
 					</button>
 				)}
 			</form>
@@ -235,4 +298,4 @@ const ViewEditAddAuthorPage = () => {
 	);
 };
 
-export default ViewEditAddAuthorPage;
+export default ViewEditAddUserPage;
