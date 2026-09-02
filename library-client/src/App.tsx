@@ -28,7 +28,7 @@ import BookCopyPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Boo
 import CategoryPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Category-CRUD/CategoryPageViewEditAdd";
 import ViewEditAddLoanPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";
 import ViewEditAddFeesUserPage from "./component/dashboards/Tables/ViewEditAddFeesUserPage";
-import ViewEditAddUserPage from "./component/dashboards/ViewEditAddPages/User-CRUD/ViewEditAddUserPage";
+import UserPageViewEditAdd from "./component/dashboards/ViewEditAddPages/User-CRUD/UserPageViewEditAdd";
 import ViewEditAddCartPage from "./component/dashboards/Tables/ViewEditAddCartPage";
 import ViewEditAddCartItemPage from "./component/dashboards/ViewEditAddPages/CartItem-CRUD/ViewEditAddCartItemPage";
 import ViewEditAddFeeItemPage from "./component/dashboards/ViewEditAddPages/Fee-CRUD/ViewEditAddFeeItemPage";
@@ -195,7 +195,7 @@ function App() {
 									path="/user/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddUserPage />
+											<UserPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>
@@ -203,7 +203,7 @@ function App() {
 									path="/user/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddUserPage />
+											<UserPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>

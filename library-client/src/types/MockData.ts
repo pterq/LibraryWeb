@@ -102,12 +102,15 @@ const mockReservation: ReservationType = {
 	bookPhysical: mockBookPhysical,
 };
 
+//=================================================================
+
 //fill mock data arrays with multiple copies of the mock data with different ids
 const mockUsers: UserType[] = Array.from({ length: 5 }, (_, i) => ({
 	firstName: `FUs${i + 1}`,
 	lastName: `NUs${i + 1}${i + 1}`,
 	email: `user${i + 1}@example.com`,
-	role: "USER",
+	// all 3 roles have to be represented
+	role: i % 3 === 0 ? "USER" : i % 3 === 1 ? "ADMIN" : "LIBRARIAN",
 	userId: i + 1,
 }));
 

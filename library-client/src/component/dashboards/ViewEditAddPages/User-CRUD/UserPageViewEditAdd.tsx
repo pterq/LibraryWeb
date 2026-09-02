@@ -5,6 +5,7 @@ import type { UserType } from "../../../../types/DbTypes";
 import { useAuth } from "../../../../context/AuthContext";
 import ReturnButton from "../../../common/ReturnButton";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
+import { MockData } from "../../../../types/MockData";
 
 type UserFormData = {
 	firstName: string;
@@ -24,7 +25,7 @@ const EMPTY_FORM: UserFormData = {
 	role: "USER",
 };
 
-const ViewEditAddUserPage = () => {
+const UserPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
@@ -33,8 +34,14 @@ const ViewEditAddUserPage = () => {
 	const isExistingUserAction = action === "view";
 
 	const [formData, setFormData] = useState<UserFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<UserFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const mockUser =
+		linkId != null
+			? MockData.mockUsers.find((user) => Number(user.userId) === Number(linkId))
+			: undefined;
 
 	//=============================================================
 
@@ -55,6 +62,7 @@ const ViewEditAddUserPage = () => {
 	useEffect(() => {
 		if (!isExistingUserAction) {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
@@ -65,6 +73,7 @@ const ViewEditAddUserPage = () => {
 		if (!linkId) {
 			setError("Invalid or missing user id in URL.");
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -88,20 +97,39 @@ const ViewEditAddUserPage = () => {
 					return;
 				}
 
-				setFormData({
+				const loadedData: UserFormData = {
 					firstName: user.firstName ?? "",
 					lastName: user.lastName ?? "",
 					email: user.email ?? "",
 					phone: user.phone ?? "",
 					role: user.role ?? "USER",
-				});
+				};
+
+				setFormData(loadedData);
+				setOriginalFormData(loadedData);
 			} catch {
 				if (!isActive) {
 					return;
 				}
 
+				if (mockUser) {
+					const fallbackData: UserFormData = {
+						firstName: mockUser.firstName,
+						lastName: mockUser.lastName,
+						email: mockUser.email,
+						phone: "",
+						role: mockUser.role,
+					};
+
+					setFormData(fallbackData);
+					setOriginalFormData(fallbackData);
+					setError("Loaded user from mock data.");
+					return;
+				}
+
 				setError("Failed to load user data.");
 				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) {
 					setIsLoading(false);
@@ -114,7 +142,7 @@ const ViewEditAddUserPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingUserAction, linkId]);
+	}, [action, isExistingUserAction, linkId, mockUser]);
 
 	const pageTitle = action === "view" ? (isEditing ? "Edit User" : "View User") : "Add User";
 
@@ -138,7 +166,6 @@ const ViewEditAddUserPage = () => {
 		console.log("Form submit payload:", formData);
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<UserFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -151,6 +178,11 @@ const ViewEditAddUserPage = () => {
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
 		window.history.back();
+	};
+
+	const handleClearForm = () => {
+		setFormData(EMPTY_FORM);
+		setError(null);
 	};
 
 	//=============================================================
@@ -176,29 +208,6 @@ const ViewEditAddUserPage = () => {
 	return (
 		<div className="container py-3">
 			<ReturnButton />
-
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading user data...</p>}
@@ -288,14 +297,51 @@ const ViewEditAddUserPage = () => {
 					</select>
 				</div>
 
-				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create User"}
-					</button>
+				{isEditing && (
+					<div className="d-flex gap-2 mt-3">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create User"}
+						</button>
+						<button
+							type="button"
+							className="btn btn-secondary"
+							onClick={handleClearForm}
+							disabled={isLoading}
+						>
+							Clear Form
+						</button>
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddUserPage;
+export default UserPageViewEditAdd;
