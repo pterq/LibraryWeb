@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { MockData } from "../../types/MockData";
+import ImageFrame from "../common/ImageFrame";
 
 const BookCard = () => {
 	const { id } = useParams<{ id?: string }>();
@@ -16,7 +17,7 @@ const BookCard = () => {
 	}
 
 	return (
-		<div>
+		<div className="container mt-4 border p-4">
 			<h2>Book info</h2>
 
 			<button className="btn btn-secondary" onClick={() => window.history.back()}>
@@ -24,23 +25,24 @@ const BookCard = () => {
 			</button>
 
 			<div className="row mt-4 g-4 align-items-start">
-				<div className="col-12 col-md-4 col-lg-3">
-					<img
-						src={book.coverImageUrl ?? "/src/assets/book-placeholder.jpg"}
-						className="img-fluid rounded shadow-sm"
-						alt={book.title}
-					/>
+				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
+					<ImageFrame imageUrl={book.coverImageUrl ?? null} alt={book.title} />
 				</div>
 
 				<div className="col-12 col-md-8 col-lg-9">
-					<p>Book Title: {book.title}</p>
 					<p>
-						Author:{" "}
+						<strong>Book Title:</strong> {book.title}
+					</p>
+					<p>
+						<strong>Authors:</strong>{" "}
 						{book.authors.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
 					</p>
-					<p>ISBN: {book.isbn}</p>
-					<p>Published Year: {book.publishedYear}</p>
-					<p>Description: {book.description}</p>
+					<p>
+						<strong>Published Year:</strong> {book.publishedYear}
+					</p>
+					<p>
+						<strong>Description:</strong> {book.description}
+					</p>
 				</div>
 			</div>
 		</div>

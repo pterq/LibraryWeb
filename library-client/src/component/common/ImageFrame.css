@@ -1,0 +1,30 @@
+.image-frame-thumbnail {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	cursor: zoom-in;
+	border-radius: 8px;
+}
+
+.image-frame-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	z-index: 2000;
+	cursor: zoom-out;
+}
+
+.image-frame-open {
+	max-width: min(96vw, 1600px);
+	max-height: 94vh;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: 10px;
+	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+	cursor: default;
+}

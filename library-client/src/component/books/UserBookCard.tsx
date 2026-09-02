@@ -1,6 +1,7 @@
 import { MockData } from "../../types/MockData";
 import type { LoanType } from "../../types/DbTypes";
 import { useParams } from "react-router-dom";
+import ImageFrame from "../common/ImageFrame";
 
 const loans = MockData.mockLoans;
 
@@ -13,7 +14,7 @@ const UserBookCard = () => {
 	}
 
 	return (
-		<div>
+		<div className="container mt-4 border p-4">
 			<h2>Book Card info for Loan from UserBookPage</h2>
 
 			{/*back link*/}
@@ -21,23 +22,20 @@ const UserBookCard = () => {
 				Return
 			</button>
 
-			{/*Display loan information here */}
 			<div className="row mt-4 g-4 align-items-start">
-				<div className="col-12 col-md-4 col-lg-3">
-					<img
-						src={
-							loan.bookPhysical.book.coverImageUrl ??
-							"/src/assets/book-placeholder.jpg"
-						}
-						className="img-fluid rounded shadow-sm"
+				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
+					<ImageFrame
+						imageUrl={loan.bookPhysical.book.coverImageUrl ?? null}
 						alt={loan.bookPhysical.book.title}
 					/>
 				</div>
 
 				<div className="col-12 col-md-8 col-lg-9">
-					<p>Book Title: {loan.bookPhysical.book.title}</p>
 					<p>
-						Author:{" "}
+						<strong>Book Title:</strong> {loan.bookPhysical.book.title}
+					</p>
+					<p>
+						<strong>Authors:</strong>{" "}
 						{loan.bookPhysical.book.authors.authors
 							.map(
 								(a: { firstName: string; lastName: string }) =>
@@ -45,11 +43,18 @@ const UserBookCard = () => {
 							)
 							.join(", ")}
 					</p>
-					<p>Loan Date: {new Date(loan.loanDate).toLocaleDateString()}</p>
-					<p>Return Date: {new Date(loan.returnDate).toLocaleDateString()}</p>
-					<p>Status: {loan.status}</p>
 					<p>
-						User info: {loan.user.firstName} {loan.user.lastName}
+						<strong>Loan Date:</strong> {new Date(loan.loanDate).toLocaleDateString()}
+					</p>
+					<p>
+						<strong>Return Date:</strong>{" "}
+						{new Date(loan.returnDate).toLocaleDateString()}
+					</p>
+					<p>
+						<strong>Status:</strong> {loan.status}
+					</p>
+					<p>
+						<strong>User info:</strong> {loan.user.firstName} {loan.user.lastName}
 					</p>
 				</div>
 			</div>

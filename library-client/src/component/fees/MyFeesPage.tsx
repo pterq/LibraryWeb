@@ -58,6 +58,10 @@ const MyFeesPage = () => {
 	};
 
 	const fees = useMemo(() => {
+		if (userId === null) {
+			return [];
+		}
+
 		let data = [...MockData.mockFees];
 
 		data = data.filter((fee) => fee.user.userId === userId);
@@ -109,6 +113,9 @@ const MyFeesPage = () => {
 	return (
 		<div className="container-fluid">
 			<h2>My Fees</h2>
+			{userId === null && (
+				<div className="alert alert-info py-2 mb-3">No user id available.</div>
+			)}
 			{showOutstandingAlert && (
 				<div className="alert alert-warning py-2 mb-3">You have outstanding fees.</div>
 			)}

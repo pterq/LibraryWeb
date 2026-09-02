@@ -15,7 +15,7 @@ const FeeCard = () => {
 	}
 
 	return (
-		<div>
+		<div className="container mt-4 border p-4">
 			{/*back link*/}
 			<button className="btn btn-secondary" onClick={() => window.history.back()}>
 				Return

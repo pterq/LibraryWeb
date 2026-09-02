@@ -26,6 +26,12 @@ const NavBar = () => {
 
 	const closeProfileDropdown = () => setProfileDropdownOpen(false);
 
+	const handleLogout = () => {
+		logout();
+		closeProfileDropdown();
+		window.location.replace("/");
+	};
+
 	return (
 		<div>
 			<nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
@@ -160,10 +166,7 @@ const NavBar = () => {
 											<li>
 												<button
 													className="dropdown-item"
-													onClick={() => {
-														logout();
-														closeProfileDropdown();
-													}}
+													onClick={handleLogout}
 												>
 													Logout
 												</button>

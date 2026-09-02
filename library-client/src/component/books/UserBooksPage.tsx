@@ -100,6 +100,10 @@ const UserBooksPage = () => {
 		<div className="container-fluid">
 			<h2>User's Books</h2>
 
+			{userId === null && (
+				<div className="alert alert-info py-2 mb-3">No user id available.</div>
+			)}
+
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Book by title" />
 
 			<div className="d-flex justify-content-end mb-3">
