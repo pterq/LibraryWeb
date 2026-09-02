@@ -2,7 +2,6 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-import LibrarianPanelPage from "./component/dashboards/librarian/LibrarianPanelPage";
 import AdminPanelPage from "./component/dashboards/page/AdminPanelPage";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -94,7 +93,7 @@ function App() {
 							path="/librarian-panel"
 							element={
 								<ProtectedRoute>
-									<LibrarianPanelPage />
+									<AdminPanelPage />
 								</ProtectedRoute>
 							}
 						/>

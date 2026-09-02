@@ -1,12 +1,17 @@
 import CartItem from "./CartItem";
 import type { ReservationType } from "../../types/DbTypes";
 import { MockData } from "../../types/MockData";
+import { useAuth } from "../../context/AuthContext";
 
 const CartPanel = () => {
+	const { userId } = useAuth();
+
 	const getCartItems = async () => {};
 
 	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
-	const items = MockData.mockReservations.reservations;
+	const items: ReservationType[] = MockData.mockReservations.reservations.filter(
+		(item) => item.user.userId === userId,
+	);
 
 	return (
 		<div>
