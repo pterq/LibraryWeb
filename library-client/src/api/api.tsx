@@ -1,7 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { UserType } from "../types/DbTypes";
-
-type BackendUserRole = "ADMIN" | "USER" | "LIBRARIAN";
+import type { UserType, UserRoleType } from "../types/DbTypes";
 
 type BackendUserType = {
 	id: number;
@@ -9,7 +7,7 @@ type BackendUserType = {
 	lastName: string;
 	email: string;
 	phone: string | null;
-	role: BackendUserRole;
+	role: UserRoleType;
 	hasFee?: boolean;
 };
 
@@ -33,8 +31,19 @@ export const getUsers = async () => {
 	}
 };
 
+export const getUserById = async (id: number) => {
+	try {
+		const response = await axiosClient.get<BackendUserType>(`/user/${id}`);
+		return normalizeUser(response.data);
+	} catch (error) {
+		console.error(`Failed to fetch user with id ${id}:`, error);
+		throw error;
+	}
+};
+
 const api = {
 	getUsers,
+	getUserById,
 };
 
 export default api;

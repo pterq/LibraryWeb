@@ -1,6 +1,4 @@
-export interface UserRoleType {
-	name: "ADMIN" | "USER" | "LIBRARIAN";
-}
+export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN";
 
 export interface AuthorType {
 	id: number;
@@ -58,7 +56,7 @@ export interface UserType {
 	lastName: string;
 	email: string;
 	phone: string | null;
-	role: UserRoleType["name"];
+	role: UserRoleType;
 	hasFee: boolean;
 }
 
@@ -67,7 +65,7 @@ export interface UserData {
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: UserRoleType["name"];
+	role: UserRoleType;
 }
 
 export type FeeStatusType = "PAID" | "UNPAID" | "CANCELLED";
