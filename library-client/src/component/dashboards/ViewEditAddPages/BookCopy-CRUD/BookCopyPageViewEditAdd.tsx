@@ -13,6 +13,7 @@ type BookOption = {
 	isbn: string;
 	description: string;
 	publishedYear?: number | null;
+	coverImageUrl?: string;
 };
 
 type BookCopyFormData = {
@@ -38,6 +39,8 @@ type ApiBook = {
 	isbn?: string;
 	description?: string;
 	publishedYear?: number | null;
+	coverImageUrl?: string;
+	coverUrl?: string;
 };
 
 const EMPTY_FORM: BookCopyFormData = {
@@ -71,9 +74,10 @@ const loadBooksFromMockData = (): BookOption[] =>
 		isbn: book.isbn ?? "",
 		description: book.description ?? "",
 		publishedYear: book.publishedYear ?? null,
+		coverImageUrl: book.coverImageUrl ?? "/src/assets/book-placeholder.jpg",
 	}));
 
-const ViewEditAddBookCopyPage = () => {
+const BookCopyPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
@@ -87,6 +91,11 @@ const ViewEditAddBookCopyPage = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [booksLoading, setBooksLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const mockBookCopy =
+		linkId != null
+			? MockData.mockBookPhysicals.find((copy) => Number(copy.id) === Number(linkId))
+			: undefined;
 
 	useEffect(() => {
 		const loadBooks = async () => {
@@ -109,6 +118,10 @@ const ViewEditAddBookCopyPage = () => {
 						isbn: book.isbn ?? "",
 						description: book.description ?? "",
 						publishedYear: book.publishedYear ?? null,
+						coverImageUrl:
+							book.coverImageUrl ??
+							book.coverUrl ??
+							"/src/assets/book-placeholder.jpg",
 					})),
 				);
 			} catch {
@@ -158,13 +171,26 @@ const ViewEditAddBookCopyPage = () => {
 				const loadedData: BookCopyFormData = {
 					bookId: copy.book?.id != null ? String(copy.book.id) : "",
 					inventoryCode: copy.inventoryCode ?? "",
-					status: copy.status ?? "AVAILABLE",
+					status: copy.status ?? mockBookCopy?.status ?? "AVAILABLE",
 				};
 
 				setFormData(loadedData);
 				setOriginalFormData(loadedData);
 			} catch {
 				if (!isActive) return;
+
+				if (mockBookCopy) {
+					const fallbackData: BookCopyFormData = {
+						bookId: String(mockBookCopy.book.id),
+						inventoryCode: mockBookCopy.inventoryCode,
+						status: mockBookCopy.status,
+					};
+
+					setFormData(fallbackData);
+					setOriginalFormData(fallbackData);
+					setError("Loaded book copy from mock data.");
+					return;
+				}
 
 				setError("Failed to load book copy data.");
 				setFormData(EMPTY_FORM);
@@ -179,12 +205,14 @@ const ViewEditAddBookCopyPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, linkId, isExistingBookCopyAction]);
+	}, [action, linkId, isExistingBookCopyAction, mockBookCopy]);
 
 	const pageTitle =
 		action === "view" ? (isEditing ? "Edit Book Copy" : "View Book Copy") : "Add Book Copy";
+	const selectedBookId =
+		action === "view" && !formData.bookId && linkId != null ? String(linkId) : formData.bookId;
 	const selectedBook =
-		bookOptions.find((book) => Number(book.id) === Number(formData.bookId)) ?? null;
+		bookOptions.find((book) => Number(book.id) === Number(selectedBookId)) ?? null;
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = event.target;
@@ -238,29 +266,6 @@ const ViewEditAddBookCopyPage = () => {
 		<div className="container py-3">
 			<ReturnButton />
 
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
-				)}
-				{action === "view" && !isEditing && (
-					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-						Edit
-					</button>
-				)}
-				{isEditing && (
-					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
-						Cancel
-					</button>
-				)}
-			</div>
-
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading book copy data...</p>}
@@ -278,12 +283,12 @@ const ViewEditAddBookCopyPage = () => {
 							id="bookId"
 							name="bookId"
 							className="form-select"
-							value={formData.bookId}
+							value={selectedBookId || "NO_BOOK_ID"}
 							onChange={handleChange}
 							disabled={isReadOnly || isLoading}
 							required
 						>
-							<option value="">Select a book</option>
+							<option value="NO_BOOK_ID">No BookID</option>
 							{bookOptions.map((book) => (
 								<option key={book.id} value={String(book.id)}>
 									{book.title} - {book.authorsLabel} - {book.publishedYear ?? "-"}{" "}
@@ -297,23 +302,58 @@ const ViewEditAddBookCopyPage = () => {
 				{selectedBook && (
 					<div className="card mb-3">
 						<div className="card-body">
-							<h5 className="card-title">Book information</h5>
-							<p className="mb-1">
-								<strong>Title:</strong> {selectedBook.title}
-							</p>
-							<p className="mb-1">
-								<strong>Author(s):</strong> {selectedBook.authorsLabel}
-							</p>
-							<p className="mb-1">
-								<strong>ISBN:</strong> {selectedBook.isbn || "-"}
-							</p>
-							<p className="mb-1">
-								<strong>Published year:</strong> {selectedBook.publishedYear ?? "-"}
-							</p>
-							<p className="mb-0">
-								<strong>Description:</strong>{" "}
-								{selectedBook.description || "No description."}
-							</p>
+							<div className="d-flex align-items-start gap-3">
+								<div className="flex-shrink-0">
+									<img
+										src={
+											selectedBook.coverImageUrl ??
+											"/src/assets/book-placeholder.jpg"
+										}
+										alt={selectedBook.title}
+										className="img-fluid border rounded"
+										style={{
+											width: "120px",
+											height: "180px",
+											objectFit: "cover",
+										}}
+										onError={(event) => {
+											const target = event.currentTarget;
+											target.onerror = null;
+											target.src = "/src/assets/book-placeholder.jpg";
+										}}
+									/>
+								</div>
+
+								<div className="flex-grow-1">
+									<h5 className="card-title">Book information</h5>
+									<div className="row g-3">
+										<div className="col-12 col-md-6">
+											<p className="mb-2">
+												<strong>Title:</strong> {selectedBook.title}
+											</p>
+											<p className="mb-2">
+												<strong>Authors:</strong>{" "}
+												{selectedBook.authorsLabel}
+											</p>
+											<p className="mb-2">
+												<strong>ISBN:</strong> {selectedBook.isbn || "-"}
+											</p>
+											<p className="mb-0">
+												<strong>Published year:</strong>{" "}
+												{selectedBook.publishedYear ?? "-"}
+											</p>
+										</div>
+										<div className="col-12 col-md-6">
+											<p className="mb-0">
+												<strong>Description:</strong>
+											</p>
+											<p className="mb-0 mt-1">
+												{selectedBook.description || "No description."}
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				)}
@@ -354,13 +394,60 @@ const ViewEditAddBookCopyPage = () => {
 				</div>
 
 				{!isReadOnly && (
-					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Book Copy"}
-					</button>
+					<div className="d-flex gap-2 mt-3">
+						<button type="submit" className="btn btn-primary" disabled={isLoading}>
+							{action === "view" ? "Save Changes" : "Create Book Copy"}
+						</button>
+						{(action === "add" || action === "view") && (
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={() => {
+									if (action === "view") {
+										setFormData(originalFormData);
+										setError(null);
+										return;
+									}
+									setFormData(EMPTY_FORM);
+									setOriginalFormData(EMPTY_FORM);
+									setError(null);
+								}}
+							>
+								Clear
+							</button>
+						)}
+					</div>
 				)}
 			</form>
+
+			<div className="d-flex flex-wrap gap-2 mt-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+				{action === "view" && !isEditing && (
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={() => setIsEditing(true)}
+					>
+						Edit
+					</button>
+				)}
+				{action === "view" && isEditing && (
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
+						Cancel
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };
 
-export default ViewEditAddBookCopyPage;
+export default BookCopyPageViewEditAdd;

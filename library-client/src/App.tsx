@@ -24,7 +24,7 @@ import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
 import BookPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Book-CRUD/BookPageViewEditAdd";
 import ViewEditAddAuthorPage from "./component/dashboards/ViewEditAddPages/Author-CRUD/ViewEditAddAuthorPage";
-import ViewEditAddBookCopyPage from "./component/dashboards/ViewEditAddPages/BookCopy-CRUD/ViewEditAddBookCopyPage";
+import BookCopyPageViewEditAdd from "./component/dashboards/ViewEditAddPages/BookCopy-CRUD/BookCopyPageViewEditAdd";
 import CategoryPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Category-CRUD/CategoryPageViewEditAdd";
 import ViewEditAddLoanPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";
 import ViewEditAddFeesUserPage from "./component/dashboards/Tables/ViewEditAddFeesUserPage";
@@ -123,7 +123,7 @@ function App() {
 									path="/book-copy/add"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddBookCopyPage />
+											<BookCopyPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>
@@ -131,7 +131,7 @@ function App() {
 									path="/book-copy/view/:id"
 									element={
 										<ProtectedRoute>
-											<ViewEditAddBookCopyPage />
+											<BookCopyPageViewEditAdd />
 										</ProtectedRoute>
 									}
 								/>
