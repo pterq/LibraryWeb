@@ -1,11 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { UserType } from "../../../types/DbTypes";
-import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
+import { getUsers } from "../../../api/api";
+
 const UsersDashboard = () => {
-	const users: UserType[] = MockData.mockUsers;
+	const [users, setUsers] = useState<UserType[]>([]);
+
+	useEffect(() => {
+		getUsers().then(setUsers).catch(console.error);
+
+		console.log("Fetched users:", users);
+	}, []);
+
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | UserType["role"]>("ALL");
 
