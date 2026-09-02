@@ -1,9 +1,18 @@
 import { useParams } from "react-router-dom";
 import { MockData } from "../../types/MockData";
 import ImageFrame from "../common/ImageFrame";
+import { useAuth } from "../../context/AuthContext";
 
 const BookCard = () => {
 	const { id } = useParams<{ id?: string }>();
+	const { role } = useAuth();
+
+	const handleAddToCart = () => {
+		console.log("Dodano do koszyka bookId:", book?.id);
+		// tutaj logika dodawania do koszyka
+
+		// backend musi sprawdzić czy jest dostępna kopia książki, jeśli nie to zwrócić błąd i wyświetlić komunikat użytkownikowi
+	};
 
 	if (!id) {
 		return <div>Book not found</div>;
@@ -17,7 +26,7 @@ const BookCard = () => {
 	}
 
 	return (
-		<div className="container mt-4 border p-4">
+		<div className="container mt-4 border p-4 position-relative pb-5">
 			<h2>Book info</h2>
 
 			<button className="btn btn-secondary" onClick={() => window.history.back()}>
@@ -45,6 +54,15 @@ const BookCard = () => {
 					</p>
 				</div>
 			</div>
+
+			{role === "USER" && (
+				<button
+					className="btn btn-secondary position-absolute bottom-0 end-0 m-3"
+					onClick={handleAddToCart}
+				>
+					<i className="bi bi-cart"></i>
+				</button>
+			)}
 		</div>
 	);
 };

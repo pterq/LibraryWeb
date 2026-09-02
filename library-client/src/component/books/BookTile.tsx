@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 
 import type { BookType } from "../../types/DbTypes";
+import { useAuth } from "../../context/AuthContext";
 
 interface BookTileProps {
 	book: BookType;
 }
 
 const BookTile: React.FC<BookTileProps> = ({ book }) => {
+	const { role } = useAuth();
+
 	const handleAddToCart = (book: BookType) => {
-		console.log("Dodano do koszyka:", book);
+		console.log("Dodano do koszyka bookId:", book?.id);
 		// tutaj logika dodawania do koszyka
 
 		//backend musi sprawdzić czy jest dostępna kopia książki, jeśli nie to zwrócić błąd i wyświetlić komunikat użytkownikowi
@@ -42,12 +45,14 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 							Details
 						</Link>
 
-						<button
-							className="btn btn-secondary flex-shrink-0 flex-grow-0"
-							onClick={() => handleAddToCart(book)}
-						>
-							<i className="bi bi-cart"></i>
-						</button>
+						{role === "USER" && (
+							<button
+								className="btn btn-secondary flex-shrink-0 flex-grow-0"
+								onClick={() => handleAddToCart(book)}
+							>
+								<i className="bi bi-cart"></i>
+							</button>
+						)}
 					</div>
 				</div>
 			</div>
