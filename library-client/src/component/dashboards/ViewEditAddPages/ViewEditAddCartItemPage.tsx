@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 import type { ReservationType } from "../../../types/DbTypes";
 
-type PageAction = "view" | "add";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
 type CartItemFormData = {
 	userId: string;
@@ -20,14 +20,10 @@ const EMPTY_FORM: CartItemFormData = {
 };
 
 const formatDateTimeLocal = (value: Date | string | null | undefined) => {
-	if (!value) {
-		return "";
-	}
+	if (!value) return "";
 
 	const date = typeof value === "string" ? new Date(value) : value;
-	if (Number.isNaN(date.getTime())) {
-		return "";
-	}
+	if (Number.isNaN(date.getTime())) return "";
 
 	const timezoneOffset = date.getTimezoneOffset();
 	const localDate = new Date(date.getTime() - timezoneOffset * 60000);
@@ -35,20 +31,16 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 };
 
 const ViewEditAddCartItemPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-	const queryParams = new URLSearchParams(window.location.search);
-	const isEditModeFromQuery = queryParams.get("mode") === "edit";
+	const action: PageAction = actionFromLink;
+	const linkId = idFromLink;
 
-	const rawId = path.split("/").pop() ?? "";
-	const parsedReservationId = Number(rawId);
-	const reservationId = Number.isFinite(parsedReservationId) ? parsedReservationId : null;
-
-	const [isEditing, setIsEditing] = useState(action === "add" || isEditModeFromQuery);
+	// EDIT MODE TYLKO LOKALNY – NIE ZALEŻY OD ACTION
+	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingReservationAction = action === "view";
 
 	const [formData, setFormData] = useState<CartItemFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<CartItemFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -60,9 +52,7 @@ const ViewEditAddCartItemPage = () => {
 			return;
 		}
 
-		setIsEditing(isEditModeFromQuery);
-
-		if (!reservationId) {
+		if (!linkId) {
 			setError("Invalid or missing reservation id in URL.");
 			setFormData(EMPTY_FORM);
 			return;
@@ -75,7 +65,7 @@ const ViewEditAddCartItemPage = () => {
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/reservations/${reservationId}`);
+				const response = await axiosClient.get(`/reservations/${linkId}`);
 				const reservation = response.data as {
 					user?: { userId?: number | string | null; id?: number | string | null } | null;
 					copy?: { id?: number | string | null } | null;
@@ -85,46 +75,33 @@ const ViewEditAddCartItemPage = () => {
 					expiresAt?: ReservationType["expiresAt"] | null;
 				};
 
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
 				const resolvedCopyId =
-					typeof reservation.copy?.id === "number" ||
-					typeof reservation.copy?.id === "string"
-						? reservation.copy.id
-						: typeof reservation.copyId === "number" ||
-							  typeof reservation.copyId === "string"
-							? reservation.copyId
-							: typeof reservation.bookPhysical?.id === "number" ||
-								  typeof reservation.bookPhysical?.id === "string"
-								? reservation.bookPhysical.id
-								: null;
+					reservation.copy?.id ??
+					reservation.copyId ??
+					reservation.bookPhysical?.id ??
+					null;
 
-				setFormData({
+				const loadedData: CartItemFormData = {
 					userId:
-						typeof reservation.user?.userId === "number" ||
-						typeof reservation.user?.userId === "string"
-							? String(reservation.user.userId)
-							: typeof reservation.user?.id === "number" ||
-								  typeof reservation.user?.id === "string"
-								? String(reservation.user.id)
-								: "",
+						reservation.user?.userId?.toString() ??
+						reservation.user?.id?.toString() ??
+						"",
 					copyId: resolvedCopyId !== null ? String(resolvedCopyId) : "",
 					reservedAt: formatDateTimeLocal(reservation.reservedAt),
 					expiresAt: formatDateTimeLocal(reservation.expiresAt),
-				});
+				};
+
+				setFormData(loadedData);
+				setOriginalFormData(loadedData);
 			} catch {
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
 				setError("Failed to load reservation data.");
 				setFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
@@ -133,7 +110,7 @@ const ViewEditAddCartItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isEditModeFromQuery, isExistingReservationAction, reservationId]);
+	}, [action, isExistingReservationAction, linkId]);
 
 	const pageTitle =
 		action === "view"
@@ -149,10 +126,7 @@ const ViewEditAddCartItemPage = () => {
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-
-		if (isReadOnly) {
-			return;
-		}
+		if (isReadOnly) return;
 
 		console.log("Form submit payload:", {
 			user: { userId: Number(formData.userId) },
@@ -162,7 +136,8 @@ const ViewEditAddCartItemPage = () => {
 		});
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<CartItemFormData>(EMPTY_FORM);
+	//=============================================================
+
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -177,28 +152,64 @@ const ViewEditAddCartItemPage = () => {
 		window.history.back();
 	};
 
+	//=============================================================
+
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete item: invalid item id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) {
+			return;
+		}
+
+		// Mock delete action - replace with API call when backend endpoint is ready.
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
+	//=============================================================
+
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
+
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}
 			</div>
+
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading reservation data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
-			<h3>Reservation Id: {reservationId}</h3>
+			<h3>Reservation Id: {linkId}</h3>
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<div className="mb-3">

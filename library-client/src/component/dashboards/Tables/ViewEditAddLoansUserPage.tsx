@@ -1,5 +1,5 @@
 import React from "react";
-import LoanItemsTable from "../Tables/LoanItemsTable";
+import LoanItemsTable from "./LoanItemsTable";
 
 type PageAction = "view" | "add";
 

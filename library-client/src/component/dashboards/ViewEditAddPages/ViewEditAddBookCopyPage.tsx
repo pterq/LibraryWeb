@@ -1,43 +1,35 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
-type PageAction = "view" | "add";
-type CopyStatus = "AVAILABLE" | "RESERVED" | "BORROWED" | "DAMAGED" | "LOST";
-
-type BookCopyFormData = {
-	bookId: string;
-	inventoryCode: string;
-	status: CopyStatus;
+type AuthorFormData = {
+	firstName: string;
+	lastName: string;
+	biography: string;
 };
 
-const COPY_STATUSES: CopyStatus[] = ["AVAILABLE", "RESERVED", "BORROWED", "DAMAGED", "LOST"];
-
-const EMPTY_FORM: BookCopyFormData = {
-	bookId: "",
-	inventoryCode: "",
-	status: "AVAILABLE",
+const EMPTY_FORM: AuthorFormData = {
+	firstName: "",
+	lastName: "",
+	biography: "",
 };
 
-const ViewEditAddBookCopyPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-
-	const rawId = path.split("/").pop() ?? "";
-	const parsedCopyId = Number(rawId);
-	const copyId = Number.isFinite(parsedCopyId) ? parsedCopyId : null;
+const ViewEditAddAuthorPage = () => {
+	const action: PageAction = actionFromLink;
+	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
-	const isExistingCopyAction = action === "view";
+	const isExistingAuthorAction = action === "view";
 
-	const [formData, setFormData] = useState<BookCopyFormData>(EMPTY_FORM);
-
+	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!isExistingCopyAction) {
+		if (!isExistingAuthorAction) {
 			setFormData(EMPTY_FORM);
 			setOriginalFormData(EMPTY_FORM);
 			setError(null);
@@ -47,8 +39,8 @@ const ViewEditAddBookCopyPage = () => {
 
 		setIsEditing(false);
 
-		if (!copyId) {
-			setError("Invalid or missing book copy id in URL.");
+		if (!linkId) {
+			setError("Invalid or missing author id in URL.");
 			setFormData(EMPTY_FORM);
 			setOriginalFormData(EMPTY_FORM);
 			return;
@@ -56,141 +48,142 @@ const ViewEditAddBookCopyPage = () => {
 
 		let isActive = true;
 
-		const loadCopy = async () => {
+		const loadAuthor = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/copies/${copyId}`);
-				const copy = response.data as {
-					book?: { id?: number | string | null } | null;
-					inventoryCode?: string;
-					status?: CopyStatus;
+				const response = await axiosClient.get(`/authors/${linkId}`);
+				const author = response.data as {
+					firstName?: string;
+					lastName?: string;
+					biography?: string;
 				};
 
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
-				const loadedFormData: BookCopyFormData = {
-					bookId:
-						typeof copy.book?.id === "number" || typeof copy.book?.id === "string"
-							? String(copy.book.id)
-							: "",
-					inventoryCode: copy.inventoryCode ?? "",
-					status: copy.status ?? "AVAILABLE",
+				const nextFormData = {
+					firstName: author.firstName ?? "",
+					lastName: author.lastName ?? "",
+					biography: author.biography ?? "",
 				};
 
-				setFormData(loadedFormData);
-				setOriginalFormData(loadedFormData);
+				setFormData(nextFormData);
+				setOriginalFormData(nextFormData);
 			} catch {
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
-				setError("Failed to load book copy data.");
+				setError("Failed to load author data.");
 				setFormData(EMPTY_FORM);
 				setOriginalFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
-		void loadCopy();
+		void loadAuthor();
 
 		return () => {
 			isActive = false;
 		};
-	}, [action, copyId, isExistingCopyAction]);
+	}, [action, linkId, isExistingAuthorAction]);
 
 	const pageTitle =
-		action === "view" ? (isEditing ? "Edit Book Copy" : "View Book Copy") : "Add Book Copy";
+		action === "view" ? (isEditing ? "Edit Author" : "View Author") : "Add Author";
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
+		if (isReadOnly) return;
 
-		if (isReadOnly) {
-			return;
-		}
-
-		console.log("Form submit payload:", {
-			book: { id: Number(formData.bookId) },
-			inventoryCode: formData.inventoryCode,
-			status: formData.status,
-		});
+		console.log("Form submit payload:", formData);
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<BookCopyFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
-		if (action !== "view") {
+		if (action === "view") {
 			setFormData(originalFormData);
 			setIsEditing(false);
 			setError(null);
 			return;
 		}
 
-		setFormData(originalFormData);
-		setIsEditing(false);
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
 		setError(null);
+		window.history.back();
 	};
+
+	//=============================================================
+
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete item: invalid item id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) {
+			return;
+		}
+
+		// Mock delete action - replace with API call when backend endpoint is ready.
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
+	//=============================================================
 
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}
 			</div>
+
 			<h2>{pageTitle}</h2>
 
-			{isLoading && <p>Loading book copy data...</p>}
+			{isLoading && <p>Loading author data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<div className="mb-3">
-					<label htmlFor="bookId" className="form-label">
-						Book Id
-					</label>
-					<input
-						type="number"
-						id="bookId"
-						name="bookId"
-						className="form-control"
-						value={formData.bookId}
-						onChange={handleChange}
-						disabled={isReadOnly || isLoading}
-						min="1"
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label htmlFor="inventoryCode" className="form-label">
-						Inventory Code
+					<label htmlFor="firstName" className="form-label">
+						First Name
 					</label>
 					<input
 						type="text"
-						id="inventoryCode"
-						name="inventoryCode"
+						id="firstName"
+						name="firstName"
 						className="form-control"
-						value={formData.inventoryCode}
+						value={formData.firstName}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
 						required
@@ -198,35 +191,44 @@ const ViewEditAddBookCopyPage = () => {
 				</div>
 
 				<div className="mb-3">
-					<label htmlFor="status" className="form-label">
-						Status
+					<label htmlFor="lastName" className="form-label">
+						Last Name
 					</label>
-					<select
-						id="status"
-						name="status"
-						className="form-select"
-						value={formData.status}
+					<input
+						type="text"
+						id="lastName"
+						name="lastName"
+						className="form-control"
+						value={formData.lastName}
 						onChange={handleChange}
 						disabled={isReadOnly || isLoading}
-					>
-						{COPY_STATUSES.map((status) => (
-							<option key={status} value={status}>
-								{status}
-							</option>
-						))}
-					</select>
+						required
+					/>
+				</div>
+
+				<div className="mb-3">
+					<label htmlFor="biography" className="form-label">
+						Biography
+					</label>
+					<textarea
+						id="biography"
+						name="biography"
+						className="form-control"
+						rows={5}
+						value={formData.biography}
+						onChange={handleChange}
+						disabled={isReadOnly || isLoading}
+					/>
 				</div>
 
 				{!isReadOnly && (
-					<div className="d-flex flex-wrap gap-2">
-						<button type="submit" className="btn btn-primary" disabled={isLoading}>
-							{action === "view" ? "Save Changes" : "Create Book Copy"}
-						</button>
-					</div>
+					<button type="submit" className="btn btn-primary" disabled={isLoading}>
+						{action === "view" ? "Save Changes" : "Create Author"}
+					</button>
 				)}
 			</form>
 		</div>
 	);
 };
 
-export default ViewEditAddBookCopyPage;
+export default ViewEditAddAuthorPage;

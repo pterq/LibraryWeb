@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
 
-type PageAction = "view" | "add";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
 type AuthorFormData = {
 	firstName: string;
@@ -17,19 +17,14 @@ const EMPTY_FORM: AuthorFormData = {
 };
 
 const ViewEditAddAuthorPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-
-	const rawId = path.split("/").pop() ?? "";
-	const parsedAuthorId = Number(rawId);
-	const authorId = Number.isFinite(parsedAuthorId) ? parsedAuthorId : null;
+	const action: PageAction = actionFromLink;
+	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingAuthorAction = action === "view";
 
 	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
-	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +39,7 @@ const ViewEditAddAuthorPage = () => {
 
 		setIsEditing(false);
 
-		if (!authorId) {
+		if (!linkId) {
 			setError("Invalid or missing author id in URL.");
 			setFormData(EMPTY_FORM);
 			return;
@@ -57,7 +52,7 @@ const ViewEditAddAuthorPage = () => {
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/authors/${authorId}`);
+				const response = await axiosClient.get(`/authors/${linkId}`);
 				const author = response.data as {
 					firstName?: string;
 					lastName?: string;
@@ -95,7 +90,7 @@ const ViewEditAddAuthorPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, authorId, isExistingAuthorAction]);
+	}, [action, linkId, isExistingAuthorAction]);
 
 	const pageTitle =
 		action === "view" ? (isEditing ? "Edit Author" : "View Author") : "Add Author";
@@ -115,7 +110,8 @@ const ViewEditAddAuthorPage = () => {
 		console.log("Form submit payload:", formData);
 	};
 
-	const handleCancel = () => {
+	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
 			setIsEditing(false);
@@ -129,19 +125,52 @@ const ViewEditAddAuthorPage = () => {
 		window.history.back();
 	};
 
+	//=============================================================
+
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete item: invalid item id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) {
+			return;
+		}
+
+		// Mock delete action - replace with API call when backend endpoint is ready.
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
+	//=============================================================
+
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancel}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}

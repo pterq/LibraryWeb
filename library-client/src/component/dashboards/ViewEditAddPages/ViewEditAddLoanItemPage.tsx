@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 import type { LoanType } from "../../../types/DbTypes";
 
-type PageAction = "view" | "add";
+import { idFromLink } from "../../../context/DataFromLink";
+
 type LoanItemFormData = {
 	userId: string;
 	copyId: string;
@@ -25,49 +26,29 @@ const EMPTY_FORM: LoanItemFormData = {
 };
 
 const formatDateTimeLocal = (value: Date | string | null | undefined) => {
-	if (!value) {
-		return "";
-	}
-
+	if (!value) return "";
 	const date = typeof value === "string" ? new Date(value) : value;
-	if (Number.isNaN(date.getTime())) {
-		return "";
-	}
-
+	if (Number.isNaN(date.getTime())) return "";
 	const timezoneOffset = date.getTimezoneOffset();
 	const localDate = new Date(date.getTime() - timezoneOffset * 60000);
 	return localDate.toISOString().slice(0, 16);
 };
 
 const ViewEditAddLoanItemPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
+	const linkId = idFromLink;
 
-	const rawId = path.split("/").pop() ?? "";
-	const parsedLoanId = Number(rawId);
-	const loanId = Number.isFinite(parsedLoanId) ? parsedLoanId : null;
-
-	const [isEditing, setIsEditing] = useState(action === "add");
-	const isReadOnly = action === "view" && !isEditing;
-	const isExistingLoanAction = action === "view";
+	const [isEditing, setIsEditing] = useState(false);
+	const isReadOnly = !isEditing;
 
 	const [formData, setFormData] = useState<LoanItemFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<LoanItemFormData>(EMPTY_FORM);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!isExistingLoanAction) {
-			setFormData(EMPTY_FORM);
-			setError(null);
-			setIsEditing(true);
-			return;
-		}
-
-		setIsEditing(false);
-
-		if (!loanId) {
+		if (!linkId) {
 			setError("Invalid or missing loan id in URL.");
-			setFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -78,7 +59,7 @@ const ViewEditAddLoanItemPage = () => {
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/loans/${loanId}`);
+				const response = await axiosClient.get(`/loans/${linkId}`);
 				const loan = response.data as {
 					user?: { userId?: number | string | null } | null;
 					copy?: { id?: number | string | null } | null;
@@ -88,36 +69,24 @@ const ViewEditAddLoanItemPage = () => {
 					status?: LoanType["status"];
 				};
 
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
-				setFormData({
-					userId:
-						typeof loan.user?.userId === "number" ||
-						typeof loan.user?.userId === "string"
-							? String(loan.user.userId)
-							: "",
-					copyId:
-						typeof loan.copy?.id === "number" || typeof loan.copy?.id === "string"
-							? String(loan.copy.id)
-							: "",
+				const loaded: LoanItemFormData = {
+					userId: loan.user?.userId ? String(loan.user.userId) : "",
+					copyId: loan.copy?.id ? String(loan.copy.id) : "",
 					loanDate: formatDateTimeLocal(loan.loanDate),
 					dueDate: formatDateTimeLocal(loan.dueDate),
 					returnDate: loan.returnDate ? formatDateTimeLocal(loan.returnDate) : "",
 					status: loan.status ?? "BORROWED",
-				});
-			} catch {
-				if (!isActive) {
-					return;
-				}
+				};
 
+				setFormData(loaded);
+				setOriginalFormData(loaded);
+			} catch {
+				if (!isActive) return;
 				setError("Failed to load loan data.");
-				setFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
@@ -126,10 +95,9 @@ const ViewEditAddLoanItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingLoanAction, loanId]);
+	}, [linkId]);
 
-	const pageTitle =
-		action === "view" ? (isEditing ? "Edit Loan Item" : "View Loan Item") : "Add Loan Item";
+	const pageTitle = isEditing ? "Edit Loan Item" : "View Loan Item";
 
 	const handleChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -140,10 +108,7 @@ const ViewEditAddLoanItemPage = () => {
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-
-		if (isReadOnly) {
-			return;
-		}
+		if (isReadOnly) return;
 
 		console.log("Form submit payload:", {
 			user: { userId: Number(formData.userId) },
@@ -155,38 +120,56 @@ const ViewEditAddLoanItemPage = () => {
 		});
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<LoanItemFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
-		if (action === "view") {
-			setFormData(originalFormData);
-			setIsEditing(false);
-			setError(null);
+		setFormData(originalFormData);
+		setIsEditing(false);
+		setError(null);
+	};
+
+	const handleDelete = () => {
+		if (!linkId) {
+			setError("Cannot delete item: invalid item id.");
 			return;
 		}
 
-		setFormData(EMPTY_FORM);
-		setOriginalFormData(EMPTY_FORM);
-		setError(null);
-		window.history.back();
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) return;
+
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
 	};
 
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
-				{action === "view" && !isEditing && (
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				<button
+					type="button"
+					className="btn btn-danger"
+					onClick={handleDelete}
+					disabled={isLoading}
+				>
+					Delete
+				</button>
+
+				{!isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
+
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}
 			</div>
+
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading loan data...</p>}
@@ -294,9 +277,9 @@ const ViewEditAddLoanItemPage = () => {
 					</select>
 				</div>
 
-				{!isReadOnly && (
+				{isEditing && (
 					<button type="submit" className="btn btn-primary" disabled={isLoading}>
-						{action === "view" ? "Save Changes" : "Create Loan"}
+						Save Changes
 					</button>
 				)}
 			</form>

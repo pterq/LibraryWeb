@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 import type { UserType } from "../../../types/DbTypes";
 import { useAuth } from "../../../context/AuthContext";
-
-type PageAction = "view" | "add";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
 type UserFormData = {
 	firstName: string;
@@ -25,12 +24,8 @@ const EMPTY_FORM: UserFormData = {
 };
 
 const ViewEditAddUserPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-
-	const rawId = path.split("/").pop() ?? "";
-	const parsedUserId = Number(rawId);
-	const userId = Number.isFinite(parsedUserId) ? parsedUserId : null;
+	const action: PageAction = actionFromLink;
+	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
@@ -39,6 +34,22 @@ const ViewEditAddUserPage = () => {
 	const [formData, setFormData] = useState<UserFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	//=============================================================
+
+	const auth = useAuth();
+	const LoggedInUsersRole = auth.role;
+
+	const allowedRoles = [];
+	if (LoggedInUsersRole === "ADMIN") {
+		allowedRoles.push("ADMIN", "LIBRARIAN", "USER");
+	} else if (LoggedInUsersRole === "LIBRARIAN") {
+		allowedRoles.push("USER");
+	} else if (LoggedInUsersRole === "USER") {
+		allowedRoles.push("USER");
+	}
+
+	//=============================================================
 
 	useEffect(() => {
 		if (!isExistingUserAction) {
@@ -50,7 +61,7 @@ const ViewEditAddUserPage = () => {
 
 		setIsEditing(false);
 
-		if (!userId) {
+		if (!linkId) {
 			setError("Invalid or missing user id in URL.");
 			setFormData(EMPTY_FORM);
 			return;
@@ -63,7 +74,7 @@ const ViewEditAddUserPage = () => {
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/user/${userId}`);
+				const response = await axiosClient.get(`/user/${linkId}`);
 				const user = response.data as {
 					firstName?: string;
 					lastName?: string;
@@ -102,7 +113,7 @@ const ViewEditAddUserPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, isExistingUserAction, userId]);
+	}, [action, isExistingUserAction, linkId]);
 
 	const pageTitle = action === "view" ? (isEditing ? "Edit User" : "View User") : "Add User";
 
@@ -112,6 +123,8 @@ const ViewEditAddUserPage = () => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
+
+	//=============================================================
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -139,31 +152,52 @@ const ViewEditAddUserPage = () => {
 		window.history.back();
 	};
 
-	const auth = useAuth();
-	const LoggedInUsersRole = auth.role;
+	//=============================================================
 
-	const allowedRoles = [];
-	if (LoggedInUsersRole === "ADMIN") {
-		allowedRoles.push("ADMIN", "LIBRARIAN", "USER");
-	} else if (LoggedInUsersRole === "LIBRARIAN") {
-		allowedRoles.push("USER");
-	} else if (LoggedInUsersRole === "USER") {
-		allowedRoles.push("USER");
-	}
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete user: invalid user id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this user?");
+		if (!shouldDelete) {
+			return;
+		}
+
+		// Mock delete action - replace with API call when backend endpoint is ready.
+		console.log("Mock delete user with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
+	//=============================================================
 
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}

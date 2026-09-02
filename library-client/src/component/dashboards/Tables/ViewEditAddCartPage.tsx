@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 import type { ReservationType } from "../../../types/DbTypes";
 
-import CartItemsTable from "../Tables/CartItemsTable";
+import CartItemsTable from "./CartItemsTable";
 
 type PageAction = "view" | "add";
 

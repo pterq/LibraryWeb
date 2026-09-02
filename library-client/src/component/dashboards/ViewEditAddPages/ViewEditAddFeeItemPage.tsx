@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
-type PageAction = "view" | "add";
 type FeeStatus = "PENDING" | "PAID" | "CANCELLED";
 
 type FeeItemFormData = {
@@ -26,75 +26,43 @@ const EMPTY_FORM: FeeItemFormData = {
 };
 
 const formatDateTimeLocal = (value: Date | string | null | undefined) => {
-	if (!value) {
-		return "";
-	}
-
+	if (!value) return "";
 	const date = typeof value === "string" ? new Date(value) : value;
-	if (Number.isNaN(date.getTime())) {
-		return "";
-	}
-
+	if (Number.isNaN(date.getTime())) return "";
 	const timezoneOffset = date.getTimezoneOffset();
 	const localDate = new Date(date.getTime() - timezoneOffset * 60000);
 	return localDate.toISOString().slice(0, 16);
 };
 
-const mapFeeToFormData = (fee: {
-	user?: { userId?: number | string | null } | null;
-	loan?: { id?: number | string | null } | null;
-	amount?: number | string | null;
-	createdAt?: string | Date | null;
-	paidAt?: string | Date | null;
-	status?: FeeStatus | null;
-}): FeeItemFormData => ({
-	userId:
-		typeof fee.user?.userId === "number" || typeof fee.user?.userId === "string"
-			? String(fee.user.userId)
-			: "",
-	loanId:
-		typeof fee.loan?.id === "number" || typeof fee.loan?.id === "string"
-			? String(fee.loan.id)
-			: "",
-	amount:
-		typeof fee.amount === "number" || typeof fee.amount === "string" ? String(fee.amount) : "",
-	createdAt: formatDateTimeLocal(fee.createdAt),
-	paidAt: fee.paidAt ? formatDateTimeLocal(fee.paidAt) : "",
-	status: fee.status ?? "PENDING",
-});
-
 const ViewEditAddFeeItemPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-
-	const rawId = path.split("/").pop() ?? "";
-	const parsedFeeId = Number(rawId);
-	const feeId = Number.isFinite(parsedFeeId) ? parsedFeeId : null;
+	const action: PageAction = actionFromLink;
+	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
-	const isExistingFeeAction = action === "view";
 
 	const [formData, setFormData] = useState<FeeItemFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<FeeItemFormData>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!isExistingFeeAction) {
+		if (action !== "view") {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
-			setSuccessMessage(null);
 			setIsEditing(true);
 			return;
 		}
 
 		setIsEditing(false);
 
-		if (!feeId) {
+		if (!linkId) {
 			setError("Invalid or missing fee id in URL.");
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -106,32 +74,30 @@ const ViewEditAddFeeItemPage = () => {
 			setSuccessMessage(null);
 
 			try {
-				const response = await axiosClient.get(`/fees/${feeId}`);
-				const fee = response.data as {
-					user?: { userId?: number | string | null } | null;
-					loan?: { id?: number | string | null } | null;
-					amount?: number | string | null;
-					createdAt?: string | Date | null;
-					paidAt?: string | Date | null;
-					status?: FeeStatus | null;
+				const response = await axiosClient.get(`/fees/${linkId}`);
+				const fee = response.data;
+
+				if (!isActive) return;
+
+				const nextFormData: FeeItemFormData = {
+					userId: fee.user?.userId?.toString() ?? "",
+					loanId: fee.loan?.id?.toString() ?? "",
+					amount: fee.amount?.toString() ?? "",
+					createdAt: formatDateTimeLocal(fee.createdAt),
+					paidAt: formatDateTimeLocal(fee.paidAt),
+					status: fee.status ?? "PENDING",
 				};
 
-				if (!isActive) {
-					return;
-				}
-
-				setFormData(mapFeeToFormData(fee));
+				setFormData(nextFormData);
+				setOriginalFormData(nextFormData);
 			} catch {
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
 				setError("Failed to load fee data.");
 				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
@@ -140,11 +106,12 @@ const ViewEditAddFeeItemPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, feeId, isExistingFeeAction]);
+	}, [action, linkId]);
 
 	const pageTitle = action === "view" ? (isEditing ? "Edit Fee" : "View Fee") : "Add Fee";
-	const areMainFieldsLocked = isExistingFeeAction || isLoading || isSubmitting;
-	const isStatusLocked = isReadOnly || isLoading || isSubmitting || action === "add";
+
+	const areMainFieldsLocked = isReadOnly || isLoading || isSubmitting;
+	const isStatusLocked = isReadOnly || isLoading || isSubmitting;
 
 	const handleChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -155,10 +122,7 @@ const ViewEditAddFeeItemPage = () => {
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
-
-		if (isReadOnly) {
-			return;
-		}
+		if (isReadOnly) return;
 
 		setIsSubmitting(true);
 		setError(null);
@@ -172,7 +136,7 @@ const ViewEditAddFeeItemPage = () => {
 					amount: Number(formData.amount),
 				});
 
-				const createdFee = response.data as { id?: number };
+				const createdFee = response.data;
 				if (typeof createdFee.id === "number") {
 					window.location.href = `/fee/view/${createdFee.id}`;
 					return;
@@ -183,26 +147,29 @@ const ViewEditAddFeeItemPage = () => {
 				return;
 			}
 
-			if (!feeId) {
+			if (!linkId) {
 				setError("Invalid fee id.");
 				return;
 			}
 
 			const response =
 				formData.status === "PAID"
-					? await axiosClient.post(`/fees/pay/${feeId}`)
-					: await axiosClient.patch(`/fees/${feeId}/${formData.status}`);
+					? await axiosClient.post(`/fees/pay/${linkId}`)
+					: await axiosClient.patch(`/fees/${linkId}/${formData.status}`);
 
-			const updatedFee = response.data as {
-				user?: { userId?: number | string | null } | null;
-				loan?: { id?: number | string | null } | null;
-				amount?: number | string | null;
-				createdAt?: string | Date | null;
-				paidAt?: string | Date | null;
-				status?: FeeStatus | null;
+			const updatedFee = response.data;
+
+			const nextFormData: FeeItemFormData = {
+				userId: updatedFee.user?.userId?.toString() ?? "",
+				loanId: updatedFee.loan?.id?.toString() ?? "",
+				amount: updatedFee.amount?.toString() ?? "",
+				createdAt: formatDateTimeLocal(updatedFee.createdAt),
+				paidAt: formatDateTimeLocal(updatedFee.paidAt),
+				status: updatedFee.status ?? "PENDING",
 			};
 
-			setFormData(mapFeeToFormData(updatedFee));
+			setFormData(nextFormData);
+			setOriginalFormData(nextFormData);
 			setIsEditing(false);
 			setSuccessMessage("Fee updated successfully.");
 		} catch {
@@ -212,7 +179,6 @@ const ViewEditAddFeeItemPage = () => {
 		}
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<FeeItemFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -227,23 +193,50 @@ const ViewEditAddFeeItemPage = () => {
 		window.history.back();
 	};
 
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete item: invalid item id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) return;
+
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}
 			</div>
+
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading fee data...</p>}

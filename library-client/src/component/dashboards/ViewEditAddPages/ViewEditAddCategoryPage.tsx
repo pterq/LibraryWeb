@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
 
-type PageAction = "view" | "add";
+import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
 type CategoryFormData = {
 	name: string;
@@ -13,24 +13,23 @@ const EMPTY_FORM: CategoryFormData = {
 };
 
 const ViewEditAddCategoryPage = () => {
-	const path = window.location.pathname;
-	const action: PageAction = path.includes("/view") ? "view" : "add";
-
-	const rawId = path.split("/").pop() ?? "";
-	const parsedCategoryId = Number(rawId);
-	const categoryId = Number.isFinite(parsedCategoryId) ? parsedCategoryId : null;
+	const action: PageAction = actionFromLink; // teraz tylko "view" lub "add"
+	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingCategoryAction = action === "view";
 
 	const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<CategoryFormData>(EMPTY_FORM);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!isExistingCategoryAction) {
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			setError(null);
 			setIsEditing(true);
 			return;
@@ -38,9 +37,10 @@ const ViewEditAddCategoryPage = () => {
 
 		setIsEditing(false);
 
-		if (!categoryId) {
+		if (!linkId) {
 			setError("Invalid or missing category id in URL.");
 			setFormData(EMPTY_FORM);
+			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
@@ -51,29 +51,23 @@ const ViewEditAddCategoryPage = () => {
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/categories/${categoryId}`);
-				const category = response.data as {
-					name?: string;
-				};
+				const response = await axiosClient.get(`/categories/${linkId}`);
+				const category = response.data as { name?: string };
 
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
-				setFormData({
-					name: category.name ?? "",
-				});
+				const loaded = { name: category.name ?? "" };
+
+				setFormData(loaded);
+				setOriginalFormData(loaded);
 			} catch {
-				if (!isActive) {
-					return;
-				}
+				if (!isActive) return;
 
 				setError("Failed to load category data.");
 				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
@@ -82,7 +76,7 @@ const ViewEditAddCategoryPage = () => {
 		return () => {
 			isActive = false;
 		};
-	}, [action, categoryId, isExistingCategoryAction]);
+	}, [action, linkId, isExistingCategoryAction]);
 
 	const pageTitle =
 		action === "view" ? (isEditing ? "Edit Category" : "View Category") : "Add Category";
@@ -94,15 +88,11 @@ const ViewEditAddCategoryPage = () => {
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-
-		if (isReadOnly) {
-			return;
-		}
+		if (isReadOnly) return;
 
 		console.log("Form submit payload:", formData);
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<CategoryFormData>(EMPTY_FORM);
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
@@ -117,23 +107,52 @@ const ViewEditAddCategoryPage = () => {
 		window.history.back();
 	};
 
+	const handleDelete = () => {
+		if (action !== "view" || !linkId) {
+			setError("Cannot delete item: invalid item id.");
+			return;
+		}
+
+		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
+		if (!shouldDelete) return;
+
+		console.log("Mock delete item with id:", linkId);
+		setError("Mock delete executed. Connect API call here.");
+	};
+
 	return (
 		<div className="container py-3">
-			<div className="d-flex flex-wrap gap-2 mb-3">
+			<div className="mb-2">
 				<button className="btn btn-secondary" onClick={() => window.history.back()}>
 					Back
 				</button>
+			</div>
+
+			<div className="d-flex flex-wrap gap-2 mb-3">
+				{action === "view" && (
+					<button
+						type="button"
+						className="btn btn-danger"
+						onClick={handleDelete}
+						disabled={isLoading}
+					>
+						Delete
+					</button>
+				)}
+
 				{action === "view" && !isEditing && (
 					<button className="btn btn-primary" onClick={() => setIsEditing(true)}>
 						Edit
 					</button>
 				)}
+
 				{isEditing && (
-					<button type="button" className="btn btn-danger" onClick={handleCancelEdit}>
+					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
 					</button>
 				)}
 			</div>
+
 			<h2>{pageTitle}</h2>
 
 			{isLoading && <p>Loading category data...</p>}
