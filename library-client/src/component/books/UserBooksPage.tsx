@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import SearchBar from "../common/SearchBar";
 
 import type { LoanType } from "../../types/DbTypes";
@@ -8,6 +9,8 @@ import { Link } from "react-router-dom";
 import { MockData } from "../../types/MockData";
 
 const UserBooksPage = () => {
+	const { userId } = useAuth();
+
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "BORROWED" | "RETURNED" | "OVERDUE">("ALL");
 
@@ -39,7 +42,11 @@ const UserBooksPage = () => {
 
 	//use mock data for now
 	const loans: LoanType[] = useMemo(() => {
-		let data = [...MockData.mockLoans];
+		if (userId === null) {
+			return [];
+		}
+
+		let data = MockData.mockLoans.filter((loan) => loan.user.userId === userId);
 
 		if (filter !== "ALL") {
 			data = data.filter((loan) => loan.status === filter);
@@ -87,7 +94,7 @@ const UserBooksPage = () => {
 		}
 
 		return data;
-	}, [filter, sortConfig]);
+	}, [filter, sortConfig, userId]);
 
 	return (
 		<div className="container-fluid">

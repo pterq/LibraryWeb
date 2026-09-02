@@ -1,7 +1,7 @@
 import React from "react";
 
 import { MockData } from "../../types/MockData";
-import type { LoanType } from "../../types/LoanType";
+import type { LoanType } from "../../types/DbTypes";
 import { useParams } from "react-router-dom";
 
 const loans = MockData.mockLoans;
@@ -41,7 +41,10 @@ const UserBookCard = () => {
 					<p>
 						Author:{" "}
 						{loan.bookPhysical.book.authors.authors
-							.map((a) => `${a.firstName} ${a.lastName}`)
+							.map(
+								(a: { firstName: string; lastName: string }) =>
+									`${a.firstName} ${a.lastName}`,
+							)
 							.join(", ")}
 					</p>
 					<p>Loan Date: {new Date(loan.loanDate).toLocaleDateString()}</p>
