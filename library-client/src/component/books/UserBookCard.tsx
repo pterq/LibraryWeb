@@ -1,5 +1,3 @@
-import React from "react";
-
 import { MockData } from "../../types/MockData";
 import type { LoanType } from "../../types/DbTypes";
 import { useParams } from "react-router-dom";

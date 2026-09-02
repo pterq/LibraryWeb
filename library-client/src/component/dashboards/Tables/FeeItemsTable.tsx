@@ -8,8 +8,6 @@ import { MockData } from "../../../types/MockData";
 const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
 
-	const fees: FeeType[] = MockData.mockFees;
-
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
@@ -41,6 +39,10 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 
 	const filteredFees: FeeType[] = useMemo(() => {
 		let data = [...MockData.mockFees];
+
+		if (selectedUserId !== null) {
+			data = data.filter((fee) => fee.user.userId === selectedUserId);
+		}
 
 		if (filter !== "ALL") {
 			data = data.filter((fee) => fee.status === filter);
@@ -105,7 +107,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		return data;
-	}, [search, filter, sortConfig]);
+	}, [search, filter, sortConfig, selectedUserId]);
 
 	return (
 		<>
@@ -185,7 +187,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{fees.map((fee, index) => (
+					{filteredFees.map((fee, index) => (
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
