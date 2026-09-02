@@ -1,87 +1,87 @@
 import React, { useEffect, useState } from "react";
 
-import axiosClient from "../../../../api/axiosClient";
-
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
+
+import { MockData } from "../../../../types/MockData";
 
 type CategoryFormData = {
 	name: string;
 };
 
-const EMPTY_FORM: CategoryFormData = {
-	name: "",
-};
+const EMPTY_FORM: CategoryFormData = { name: "" };
 
 const CategoryPageViewEditAdd = () => {
-	const action: PageAction = actionFromLink; // teraz tylko "view" lub "add"
+	const action: PageAction = actionFromLink; // "view" lub "add"
 	const linkId = idFromLink;
-
-	const [isEditing, setIsEditing] = useState(action === "add");
-	const isReadOnly = action === "view" && !isEditing;
-	const isExistingCategoryAction = action === "view";
 
 	const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<CategoryFormData>(EMPTY_FORM);
 
+	const [isEditing, setIsEditing] = useState(action === "add");
+	const isReadOnly = action === "view" && !isEditing;
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	// ============================
+	// LOAD CATEGORY FROM MOCKDATA
+	// ============================
 	useEffect(() => {
-		if (!isExistingCategoryAction) {
+		if (action !== "view") {
+			// ADD MODE
 			setFormData(EMPTY_FORM);
 			setOriginalFormData(EMPTY_FORM);
-			setError(null);
 			setIsEditing(true);
 			return;
 		}
 
+		// VIEW MODE
 		setIsEditing(false);
 
 		if (!linkId) {
 			setError("Invalid or missing category id in URL.");
-			setFormData(EMPTY_FORM);
-			setOriginalFormData(EMPTY_FORM);
 			return;
 		}
 
 		let isActive = true;
 
-		const loadCategory = async () => {
+		const loadCategory = () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const response = await axiosClient.get(`/categories/${linkId}`);
-				const category = response.data as { name?: string };
+				const category = MockData.mockCategories.find((c) => c.id === Number(linkId));
 
 				if (!isActive) return;
 
-				const loaded = { name: category.name ?? "" };
+				if (!category) {
+					setError("Category not found in MockData.");
+					return;
+				}
+
+				const loaded = { name: category.name };
 
 				setFormData(loaded);
 				setOriginalFormData(loaded);
 			} catch {
 				if (!isActive) return;
-
 				setError("Failed to load category data.");
-				setFormData(EMPTY_FORM);
-				setOriginalFormData(EMPTY_FORM);
 			} finally {
 				if (isActive) setIsLoading(false);
 			}
 		};
 
-		void loadCategory();
+		loadCategory();
 
 		return () => {
 			isActive = false;
 		};
-	}, [action, linkId, isExistingCategoryAction]);
+	}, [action, linkId]);
 
-	const pageTitle =
-		action === "view" ? (isEditing ? "Edit Category" : "View Category") : "Add Category";
-
+	// ============================
+	// HANDLERS
+	// ============================
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -102,10 +102,23 @@ const CategoryPageViewEditAdd = () => {
 			return;
 		}
 
+		// ADD MODE
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
 		window.history.back();
+	};
+
+	const handleClear = () => {
+		if (action === "view") {
+			setFormData(originalFormData);
+			setError(null);
+			return;
+		}
+
+		setFormData(EMPTY_FORM);
+		setOriginalFormData(EMPTY_FORM);
+		setError(null);
 	};
 
 	const handleDelete = () => {
@@ -120,6 +133,12 @@ const CategoryPageViewEditAdd = () => {
 		console.log("Mock delete item with id:", linkId);
 		setError("Mock delete executed. Connect API call here.");
 	};
+
+	// ============================
+	// RENDER
+	// ============================
+	const pageTitle =
+		action === "view" ? (isEditing ? "Edit Category" : "View Category") : "Add Category";
 
 	return (
 		<div className="container py-3">
@@ -151,24 +170,10 @@ const CategoryPageViewEditAdd = () => {
 						<button type="submit" className="btn btn-primary" disabled={isLoading}>
 							{action === "view" ? "Save Changes" : "Create Category"}
 						</button>
-						{(action === "add" || action === "view") && (
-							<button
-								type="button"
-								className="btn btn-secondary"
-								onClick={() => {
-									if (action === "view") {
-										setFormData(originalFormData);
-										setError(null);
-										return;
-									}
-									setFormData(EMPTY_FORM);
-									setOriginalFormData(EMPTY_FORM);
-									setError(null);
-								}}
-							>
-								Clear
-							</button>
-						)}
+
+						<button type="button" className="btn btn-secondary" onClick={handleClear}>
+							Clear
+						</button>
 					</div>
 				)}
 			</form>
@@ -194,6 +199,7 @@ const CategoryPageViewEditAdd = () => {
 						Edit
 					</button>
 				)}
+
 				{action === "view" && isEditing && (
 					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel

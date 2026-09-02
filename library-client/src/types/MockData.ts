@@ -175,7 +175,7 @@ const mockReservations: ReservastionsType = {
 //=============================================
 const mockCategoriesCount: CategoryCountType[] = Array.from({ length: 5 }, (_, i) => ({
 	id: i + 1,
-	name: `Category ${i + 1}`,
+	name: mockCategories[i].name,
 	numberOfBooks: i * 10,
 }));
 
