@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
 import type { AuthorType } from "../../../../types/DbTypes";
 import type { PageAction } from "../../../../context/DataFromLink";
+import { MockData } from "../../../../types/MockData";
 
 type BookCreatePayload = {
 	title: string;
@@ -61,6 +62,7 @@ type AddBookProps = {
 	autofillSelection: AutofillSelection;
 	setAutofillSelection: React.Dispatch<React.SetStateAction<AutofillSelection>>;
 	showLoading: boolean;
+	setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const BookAddEdit = ({
@@ -78,12 +80,134 @@ const BookAddEdit = ({
 	autofillSelection,
 	setAutofillSelection,
 	showLoading,
+	setShowLoading,
 }: AddBookProps) => {
+	const isExistingBookAction = action === "view";
+	const mockBook =
+		linkId != null
+			? MockData.mockBooks.find((book) => Number(book.id) === Number(linkId))
+			: undefined;
+
 	const [authorQuery, setAuthorQuery] = useState("");
 	const [authorResults, setAuthorResults] = useState<AuthorType[]>([]);
 	const [isAuthorLoading, setIsAuthorLoading] = useState(false);
 	const [showAddAuthorModal, setShowAddAuthorModal] = useState(false);
 	const [newAuthor, setNewAuthor] = useState({ firstName: "", lastName: "", bio: "" });
+
+	type ApiBook = {
+		title?: string;
+		description?: string;
+		isbn?: string;
+		publishedYear?: number | string | null;
+		authors?: { authors?: AuthorType[] } | AuthorType[] | null;
+		categories?: { name?: string }[] | null;
+		coverImageUrl?: string | null;
+		coverUrl?: string | null;
+	};
+
+	useEffect(() => {
+		if (!isExistingBookAction) {
+			setFormData(EMPTY_BOOK_FORM);
+			setOriginalFormData(EMPTY_BOOK_FORM);
+			setAutofillSelection(DEFAULT_AUTOFILL_SELECTION);
+			setError(null);
+			setIsEditing(true);
+			setAuthorQuery("");
+			setAuthorResults([]);
+			setShowLoading(false);
+			return;
+		}
+
+		setIsEditing(false);
+
+		if (!linkId) {
+			setError("Invalid or missing book id in URL.");
+			setFormData(EMPTY_BOOK_FORM);
+			setOriginalFormData(EMPTY_BOOK_FORM);
+			setShowLoading(false);
+			return;
+		}
+
+		let isActive = true;
+
+		const loadBook = async () => {
+			setShowLoading(true);
+			setError(null);
+
+			try {
+				const response = await axiosClient.get(`/books/${linkId}`);
+				const book = response.data as ApiBook;
+
+				if (!isActive) return;
+
+				const resolvedAuthors = Array.isArray(book.authors)
+					? book.authors
+					: (book.authors?.authors ?? []);
+
+				const loadedData: BookFormData = {
+					title: book.title ?? "",
+					description: book.description ?? "",
+					isbn: book.isbn ?? "",
+					publishedYear: book.publishedYear != null ? String(book.publishedYear) : "",
+					authors: resolvedAuthors,
+					categories:
+						book.categories?.map((category) => category.name ?? "").filter(Boolean) ??
+						[],
+					genre: [],
+					coverImageUrl: book.coverImageUrl ?? book.coverUrl ?? "",
+				};
+
+				setFormData(loadedData);
+				setOriginalFormData(loadedData);
+			} catch {
+				if (!isActive) return;
+
+				if (mockBook) {
+					const fallbackData: BookFormData = {
+						title: mockBook.title ?? "",
+						description: mockBook.description ?? "",
+						isbn: mockBook.isbn ?? "",
+						publishedYear:
+							mockBook.publishedYear != null ? String(mockBook.publishedYear) : "",
+						authors: mockBook.authors?.authors ?? [],
+						categories:
+							mockBook.categories
+								?.map((category) => category.name ?? "")
+								.filter(Boolean) ?? [],
+						genre: [],
+						coverImageUrl: mockBook.coverImageUrl ?? "",
+					};
+
+					setFormData(fallbackData);
+					setOriginalFormData(fallbackData);
+					setError("Loaded book from mock data.");
+					return;
+				}
+
+				setError("Failed to load book data.");
+				setFormData(EMPTY_BOOK_FORM);
+				setOriginalFormData(EMPTY_BOOK_FORM);
+			} finally {
+				if (isActive) setShowLoading(false);
+			}
+		};
+
+		void loadBook();
+
+		return () => {
+			isActive = false;
+		};
+	}, [
+		isExistingBookAction,
+		linkId,
+		mockBook,
+		setAutofillSelection,
+		setError,
+		setFormData,
+		setIsEditing,
+		setOriginalFormData,
+		setShowLoading,
+	]);
 
 	const searchAuthors = async (query: string) => {
 		if (!query.trim()) {

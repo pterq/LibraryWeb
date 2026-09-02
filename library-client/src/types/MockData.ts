@@ -136,6 +136,7 @@ const mockBooks: BookType[] = Array.from({ length: 15 }, (_, i) => ({
 	id: i + 1,
 	title: `Clean Code ${i + 1}`,
 	categories: [mockCategories[i % mockCategories.length]],
+	coverImageUrl: `https://books.google.com/books/content?id=NwxLAQAAIAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api`,
 }));
 
 const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 15 }, (_, i) => ({

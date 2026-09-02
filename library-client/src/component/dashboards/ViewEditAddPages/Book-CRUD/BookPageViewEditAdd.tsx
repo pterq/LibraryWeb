@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import ReturnButton from "../../../common/ReturnButton";
-import axiosClient from "../../../../api/axiosClient";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import BookSearch from "./BookSearch";
@@ -11,15 +10,12 @@ import BookAddEdit, {
 	type BookFormData,
 } from "./BookAddEdit";
 
-import type { BookType } from "../../../../types/DbTypes";
-
 const BookPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
-	const isExistingBookAction = action === "view";
 
 	const [formData, setFormData] = useState<BookFormData>(EMPTY_BOOK_FORM);
 	const [originalFormData, setOriginalFormData] = useState<BookFormData>(EMPTY_BOOK_FORM);
@@ -28,65 +24,6 @@ const BookPageViewEditAdd = () => {
 	const [autofillSelection, setAutofillSelection] = useState<AutofillSelection>(
 		DEFAULT_AUTOFILL_SELECTION,
 	);
-
-	useEffect(() => {
-		if (!isExistingBookAction) {
-			setFormData(EMPTY_BOOK_FORM);
-			setAutofillSelection(DEFAULT_AUTOFILL_SELECTION);
-			setError(null);
-			setIsEditing(true);
-			return;
-		}
-
-		setIsEditing(false);
-
-		if (!linkId) {
-			setError("Invalid or missing book id in URL.");
-			setFormData(EMPTY_BOOK_FORM);
-			return;
-		}
-
-		let isActive = true;
-
-		const loadBook = async () => {
-			setIsLoading(true);
-			setError(null);
-
-			try {
-				const response = await axiosClient.get(`/books/${linkId}`);
-				const book = response.data as BookType;
-
-				if (!isActive) return;
-
-				const nextFormData: BookFormData = {
-					title: book.title ?? "",
-					description: book.description ?? "",
-					isbn: book.isbn ?? "",
-					publishedYear: book.publishedYear ? String(book.publishedYear) : "",
-					authors: book.authors?.authors ?? [],
-					categories: book.categories?.map((c: { name: string }) => c.name) ?? [],
-					genre: [],
-					coverImageUrl: book.coverImageUrl ?? "",
-				};
-
-				setFormData(nextFormData);
-				setOriginalFormData(nextFormData);
-			} catch {
-				if (!isActive) return;
-
-				setError("Failed to load book data.");
-				setFormData(EMPTY_BOOK_FORM);
-			} finally {
-				if (isActive) setIsLoading(false);
-			}
-		};
-
-		void loadBook();
-
-		return () => {
-			isActive = false;
-		};
-	}, [action, isExistingBookAction, linkId]);
 
 	return (
 		<div className="container py-3">
@@ -107,6 +44,7 @@ const BookPageViewEditAdd = () => {
 					autofillSelection={autofillSelection}
 					setAutofillSelection={setAutofillSelection}
 					showLoading={isLoading}
+					setShowLoading={setIsLoading}
 				/>
 
 				<div className="d-none d-lg-flex col-lg-2 justify-content-center">
