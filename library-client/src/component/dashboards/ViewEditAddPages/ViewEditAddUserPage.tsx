@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 import type { UserType } from "../../../types/DbTypes";
 import { useAuth } from "../../../context/AuthContext";
+import ReturnButton from "../../common/ReturnButton";
 import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
 
 type UserFormData = {
@@ -174,11 +175,7 @@ const ViewEditAddUserPage = () => {
 
 	return (
 		<div className="container py-3">
-			<div className="mb-2">
-				<button className="btn btn-secondary" onClick={() => window.history.back()}>
-					Back
-				</button>
-			</div>
+			<ReturnButton />
 
 			<div className="d-flex flex-wrap gap-2 mb-3">
 				{action === "view" && (

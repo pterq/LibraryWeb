@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../api/axiosClient";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../context/DataFromLink";
+import ReturnButton from "../../common/ReturnButton";
 
 type CategoryFormData = {
 	name: string;
@@ -122,11 +123,7 @@ const ViewEditAddCategoryPage = () => {
 
 	return (
 		<div className="container py-3">
-			<div className="mb-2">
-				<button className="btn btn-secondary" onClick={() => window.history.back()}>
-					Back
-				</button>
-			</div>
+			<ReturnButton />
 
 			<div className="d-flex flex-wrap gap-2 mb-3">
 				{action === "view" && (

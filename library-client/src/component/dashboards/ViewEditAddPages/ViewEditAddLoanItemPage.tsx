@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../api/axiosClient";
 import type { LoanType } from "../../../types/DbTypes";
-
+import ReturnButton from "../../common/ReturnButton";
 import { idFromLink } from "../../../context/DataFromLink";
 
 type LoanItemFormData = {
@@ -141,11 +141,7 @@ const ViewEditAddLoanItemPage = () => {
 
 	return (
 		<div className="container py-3">
-			<div className="mb-2">
-				<button className="btn btn-secondary" onClick={() => window.history.back()}>
-					Back
-				</button>
-			</div>
+			<ReturnButton />
 
 			<div className="d-flex flex-wrap gap-2 mb-3">
 				<button
