@@ -5,10 +5,13 @@ import type { FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
 import { MockData } from "../../types/MockData";
 import { useAuth } from "../../context/AuthContext";
+import { idFromLink } from "../../context/DataFromLink";
 
 const MyFeesPage = () => {
 	const { hasFees: userHasFees, setHasFees } = useAuth();
 	const [showOutstandingAlert, setShowOutstandingAlert] = useState(userHasFees);
+
+	const userId = idFromLink;
 
 	useEffect(() => {
 		if (!userHasFees) return;
@@ -22,6 +25,10 @@ const MyFeesPage = () => {
 
 		return () => clearTimeout(alertTimeout);
 	}, [userHasFees, setHasFees]);
+
+	//================================================
+
+	//================================================
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
@@ -53,6 +60,8 @@ const MyFeesPage = () => {
 
 	const fees = useMemo(() => {
 		let data = [...MockData.mockFees];
+
+		data = data.filter((fee) => fee.user.userId === userId);
 
 		if (filter !== "ALL") {
 			data = data.filter((fee) => fee.status === filter);
@@ -96,7 +105,7 @@ const MyFeesPage = () => {
 		}
 
 		return data;
-	}, [filter, sortConfig]);
+	}, [filter, sortConfig, userId]);
 
 	return (
 		<div className="container-fluid">
