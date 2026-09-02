@@ -1,22 +1,28 @@
 import { useMemo, useState } from "react";
 
-import type { FeeType } from "../../../types/DbTypes";
+import type { FeeType, FeeStatusType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import { MockData } from "../../../types/MockData";
 
-const FeeItemsTable = () => {
+const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
+	const selectedUserId = userId ?? null;
+
+	const fees: FeeType[] = MockData.mockFees;
+
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt";
+		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId";
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt") => {
+	const requestSort = (
+		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId",
+	) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -26,12 +32,14 @@ const FeeItemsTable = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt") => {
+	const getSortIcon = (
+		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId",
+	) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const fees: FeeType[] = useMemo(() => {
+	const filteredFees: FeeType[] = useMemo(() => {
 		let data = [...MockData.mockFees];
 
 		if (filter !== "ALL") {
@@ -79,6 +87,10 @@ const FeeItemsTable = () => {
 					case "paidAt":
 						aVal = a.paidAt ? new Date(a.paidAt).getTime() : -Infinity;
 						bVal = b.paidAt ? new Date(b.paidAt).getTime() : -Infinity;
+						break;
+					case "userId":
+						aVal = a.user.userId;
+						bVal = b.user.userId;
 						break;
 				}
 
@@ -133,8 +145,11 @@ const FeeItemsTable = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							Fee ID {getSortIcon("id")}
 						</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							User ID {getSortIcon("userId")}
+						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User {getSortIcon("user")}
+							User Name {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("amount")}>
 							Amount {getSortIcon("amount")}
@@ -156,13 +171,7 @@ const FeeItemsTable = () => {
 									style={{ width: "auto" }}
 									value={filter}
 									onChange={(e) =>
-										setFilter(
-											e.target.value as
-												| "ALL"
-												| "PAID"
-												| "UNPAID"
-												| "CANCELLED",
-										)
+										setFilter(e.target.value as FeeStatusType | "ALL")
 									}
 								>
 									<option value="ALL">All</option>
@@ -180,6 +189,7 @@ const FeeItemsTable = () => {
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
+							<td>{fee.user.userId}</td>
 							<td>
 								{fee.user.firstName} {fee.user.lastName}
 							</td>

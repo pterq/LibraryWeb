@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BookTile from "./BookTile";
 import PageNav from "../dashboards/page/PageNav";
 
-import type { BookType } from "../../types/BookType";
+import type { BookType } from "../../types/DbTypes";
 
 import { MockData } from "../../types/MockData";
 
