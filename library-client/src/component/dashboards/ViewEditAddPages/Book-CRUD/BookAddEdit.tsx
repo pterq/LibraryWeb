@@ -88,11 +88,47 @@ const BookAddEdit = ({
 			? MockData.mockBooks.find((book) => Number(book.id) === Number(linkId))
 			: undefined;
 
-	const [authorQuery, setAuthorQuery] = useState("");
-	const [authorResults, setAuthorResults] = useState<AuthorType[]>([]);
+	const [authorOptions, setAuthorOptions] = useState<AuthorType[]>([]);
+	const [selectedAuthorIds, setSelectedAuthorIds] = useState<string[]>(["NO_AUTHOR_ID"]);
 	const [isAuthorLoading, setIsAuthorLoading] = useState(false);
 	const [showAddAuthorModal, setShowAddAuthorModal] = useState(false);
 	const [newAuthor, setNewAuthor] = useState({ firstName: "", lastName: "", bio: "" });
+
+	const getAuthorLabel = (author: AuthorType) =>
+		`${author.firstName} ${author.lastName}`.trim() || `Author #${author.id}`;
+
+	useEffect(() => {
+		let isActive = true;
+
+		const loadAuthors = async () => {
+			setIsAuthorLoading(true);
+
+			try {
+				const res = await axiosClient.get("/authors");
+				const apiAuthors = res.data as AuthorType[];
+
+				if (!isActive) return;
+
+				if (Array.isArray(apiAuthors) && apiAuthors.length > 0) {
+					setAuthorOptions(apiAuthors);
+					return;
+				}
+
+				setAuthorOptions(MockData.mockAuthors);
+			} catch {
+				if (!isActive) return;
+				setAuthorOptions(MockData.mockAuthors);
+			} finally {
+				if (isActive) setIsAuthorLoading(false);
+			}
+		};
+
+		void loadAuthors();
+
+		return () => {
+			isActive = false;
+		};
+	}, []);
 
 	type ApiBook = {
 		title?: string;
@@ -112,8 +148,7 @@ const BookAddEdit = ({
 			setAutofillSelection(DEFAULT_AUTOFILL_SELECTION);
 			setError(null);
 			setIsEditing(true);
-			setAuthorQuery("");
-			setAuthorResults([]);
+			setSelectedAuthorIds(["NO_AUTHOR_ID"]);
 			setShowLoading(false);
 			return;
 		}
@@ -124,6 +159,7 @@ const BookAddEdit = ({
 			setError("Invalid or missing book id in URL.");
 			setFormData(EMPTY_BOOK_FORM);
 			setOriginalFormData(EMPTY_BOOK_FORM);
+			setSelectedAuthorIds(["NO_AUTHOR_ID"]);
 			setShowLoading(false);
 			return;
 		}
@@ -159,6 +195,11 @@ const BookAddEdit = ({
 
 				setFormData(loadedData);
 				setOriginalFormData(loadedData);
+				setSelectedAuthorIds(
+					loadedData.authors.length > 0
+						? loadedData.authors.map((author) => String(author.id))
+						: ["NO_AUTHOR_ID"],
+				);
 			} catch {
 				if (!isActive) return;
 
@@ -180,6 +221,11 @@ const BookAddEdit = ({
 
 					setFormData(fallbackData);
 					setOriginalFormData(fallbackData);
+					setSelectedAuthorIds(
+						fallbackData.authors.length > 0
+							? fallbackData.authors.map((author) => String(author.id))
+							: ["NO_AUTHOR_ID"],
+					);
 					setError("Loaded book from mock data.");
 					return;
 				}
@@ -187,6 +233,7 @@ const BookAddEdit = ({
 				setError("Failed to load book data.");
 				setFormData(EMPTY_BOOK_FORM);
 				setOriginalFormData(EMPTY_BOOK_FORM);
+				setSelectedAuthorIds(["NO_AUTHOR_ID"]);
 			} finally {
 				if (isActive) setShowLoading(false);
 			}
@@ -209,43 +256,50 @@ const BookAddEdit = ({
 		setShowLoading,
 	]);
 
-	const searchAuthors = async (query: string) => {
-		if (!query.trim()) {
-			setAuthorResults([]);
-			return;
-		}
-
-		setIsAuthorLoading(true);
-
-		try {
-			const res = await axiosClient.get(`/authors/search?query=${query}`);
-			setAuthorResults(res.data as AuthorType[]);
-		} catch {
-			setAuthorResults([]);
-		}
-
-		setIsAuthorLoading(false);
-	};
-
 	useEffect(() => {
-		const timer = setTimeout(() => searchAuthors(authorQuery), 300);
-		return () => clearTimeout(timer);
-	}, [authorQuery]);
+		setFormData((prev) => {
+			const selectedAuthors = selectedAuthorIds
+				.filter((authorId) => authorId !== "NO_AUTHOR_ID")
+				.map((authorId) => Number(authorId))
+				.filter((authorId, index, array) => array.indexOf(authorId) === index)
+				.map(
+					(authorId) =>
+						authorOptions.find((author) => author.id === authorId) ??
+						prev.authors.find((author) => author.id === authorId),
+				)
+				.filter((author): author is AuthorType => Boolean(author));
 
-	const addAuthorToForm = (author: AuthorType) => {
-		setFormData((prev) => ({
-			...prev,
-			authors: prev.authors.some((a) => a.id === author.id)
-				? prev.authors
-				: [...prev.authors, author],
-		}));
+			const hasSameAuthors =
+				prev.authors.length === selectedAuthors.length &&
+				prev.authors.every((author, index) => author.id === selectedAuthors[index]?.id);
+
+			if (hasSameAuthors) return prev;
+
+			return {
+				...prev,
+				authors: selectedAuthors,
+			};
+		});
+	}, [selectedAuthorIds, authorOptions, setFormData]);
+
+	const handleAuthorSelectChange = (index: number, value: string) => {
+		setSelectedAuthorIds((prev) => {
+			const next = [...prev];
+			next[index] = value;
+			return next;
+		});
 	};
 
-	const removeAuthorFromForm = (id: number) => {
-		setFormData((prev) => ({
-			...prev,
-			authors: prev.authors.filter((a) => a.id !== id),
-		}));
+	const handleAddNextAuthorDropdown = () => {
+		setSelectedAuthorIds((prev) => [...prev, "NO_AUTHOR_ID"]);
+	};
+
+	const handleRemoveAuthorDropdown = (index: number) => {
+		setSelectedAuthorIds((prev) => {
+			if (prev.length <= 1) return ["NO_AUTHOR_ID"];
+			const next = prev.filter((_, itemIndex) => itemIndex !== index);
+			return next.length > 0 ? next : ["NO_AUTHOR_ID"];
+		});
 	};
 
 	const handleAddNewAuthor = async () => {
@@ -253,7 +307,20 @@ const BookAddEdit = ({
 			const res = await axiosClient.post("/authors", newAuthor);
 			const created = res.data as AuthorType;
 
-			addAuthorToForm(created);
+			setAuthorOptions((prev) =>
+				prev.some((author) => author.id === created.id) ? prev : [...prev, created],
+			);
+			setSelectedAuthorIds((prev) => {
+				const emptyIndex = prev.findIndex((id) => id === "NO_AUTHOR_ID");
+
+				if (emptyIndex >= 0) {
+					const next = [...prev];
+					next[emptyIndex] = String(created.id);
+					return next;
+				}
+
+				return [...prev, String(created.id)];
+			});
 			setShowAddAuthorModal(false);
 			setNewAuthor({ firstName: "", lastName: "", bio: "" });
 		} catch {
@@ -301,6 +368,11 @@ const BookAddEdit = ({
 	const handleCancelEdit = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
+			setSelectedAuthorIds(
+				originalFormData.authors.length > 0
+					? originalFormData.authors.map((author) => String(author.id))
+					: ["NO_AUTHOR_ID"],
+			);
 			setIsEditing(false);
 			setError(null);
 			return;
@@ -315,8 +387,7 @@ const BookAddEdit = ({
 		setFormData(EMPTY_BOOK_FORM);
 		setAutofillSelection(DEFAULT_AUTOFILL_SELECTION);
 		setError(null);
-		setAuthorQuery("");
-		setAuthorResults([]);
+		setSelectedAuthorIds(["NO_AUTHOR_ID"]);
 	};
 
 	const handleDelete = async () => {
@@ -346,7 +417,7 @@ const BookAddEdit = ({
 				<div className="mb-3">
 					<div className="d-flex align-items-center gap-3">
 						<div className="flex-grow-1">
-							<label className="form-label">Title</label>
+							<label className="form-label">Title : </label>
 							<input
 								type="text"
 								name="title"
@@ -375,7 +446,7 @@ const BookAddEdit = ({
 				<div className="mb-3">
 					<div className="d-flex align-items-center gap-3">
 						<div className="flex-grow-1">
-							<label className="form-label">ISBN</label>
+							<label className="form-label">ISBN : </label>
 							<input
 								type="text"
 								name="isbn"
@@ -404,7 +475,7 @@ const BookAddEdit = ({
 				<div className="mb-3">
 					<div className="d-flex align-items-center gap-3">
 						<div className="flex-grow-1">
-							<label className="form-label">Cover Image URL</label>
+							<label className="form-label">Cover Image URL : </label>
 							<input
 								type="text"
 								name="coverImageUrl"
@@ -439,68 +510,88 @@ const BookAddEdit = ({
 				)}
 
 				<div className="mb-3">
-					<label className="form-label">Authors</label>
+					<label className="form-label">Authors : </label>
 
-					<div className="mb-2">
-						{formData.authors.length === 0 && (
-							<p className="text-muted mb-2">No authors added yet.</p>
-						)}
-						{formData.authors.map((a) => (
-							<div key={a.id} className="d-flex align-items-center gap-2 mb-1">
-								<span>
+					{!isEditing && (
+						<div className="mb-2">
+							{formData.authors.length === 0 && (
+								<p className="text-muted mb-2">No authors added yet.</p>
+							)}
+							{formData.authors.map((a) => (
+								<div key={a.id} className="mb-1">
 									{a.firstName} {a.lastName}
-								</span>
-								{isEditing && (
-									<button
-										type="button"
-										className="btn btn-sm btn-danger"
-										onClick={() => removeAuthorFromForm(a.id)}
-									>
-										Remove
-									</button>
-								)}
-							</div>
-						))}
-					</div>
+								</div>
+							))}
+						</div>
+					)}
 
 					{isEditing && (
 						<>
-							<input
-								type="text"
-								className="form-control mb-2"
-								placeholder="Search author..."
-								value={authorQuery}
-								onChange={(e) => setAuthorQuery(e.target.value)}
-							/>
-
-							{isAuthorLoading && <p>Searching...</p>}
-
-							<div className="list-group mb-2">
-								{authorResults.map((a) => (
-									<button
-										key={a.id}
-										type="button"
-										className="list-group-item list-group-item-action"
-										disabled={formData.authors.some(
-											(selected) => selected.id === a.id,
-										)}
-										onClick={() => addAuthorToForm(a)}
+							{selectedAuthorIds.map((selectedAuthorId, index) => (
+								<div key={`author-select-${index}`} className="d-flex gap-2 mb-2">
+									<select
+										className="form-select"
+										value={selectedAuthorId}
+										onChange={(event) =>
+											handleAuthorSelectChange(index, event.target.value)
+										}
+										disabled={isReadOnly || isAuthorLoading}
+										required={index === 0}
 									>
-										{a.firstName} {a.lastName}
-										{formData.authors.some((selected) => selected.id === a.id)
-											? " (added)"
-											: ""}
-									</button>
-								))}
+										<option value="NO_AUTHOR_ID">Select author</option>
+										{authorOptions.map((author) => {
+											const authorId = String(author.id);
+											const selectedInAnotherDropdown =
+												selectedAuthorIds.some(
+													(id, itemIndex) =>
+														itemIndex !== index && id === authorId,
+												);
+
+											return (
+												<option
+													key={author.id}
+													value={authorId}
+													disabled={selectedInAnotherDropdown}
+												>
+													{getAuthorLabel(author)} (ID: {author.id})
+												</option>
+											);
+										})}
+									</select>
+
+									{selectedAuthorIds.length > 1 && (
+										<button
+											type="button"
+											className="btn btn-outline-danger"
+											onClick={() => handleRemoveAuthorDropdown(index)}
+										>
+											Remove
+										</button>
+									)}
+								</div>
+							))}
+
+							<div className="d-flex flex-wrap gap-2">
+								<button
+									type="button"
+									className="btn btn-outline-secondary"
+									onClick={handleAddNextAuthorDropdown}
+									disabled={isAuthorLoading}
+								>
+									Add Next Author
+								</button>
+								<button
+									type="button"
+									className="btn btn-outline-primary"
+									onClick={() => setShowAddAuthorModal(true)}
+								>
+									Create New Author
+								</button>
 							</div>
 
-							<button
-								type="button"
-								className="btn btn-outline-primary"
-								onClick={() => setShowAddAuthorModal(true)}
-							>
-								Create New Author
-							</button>
+							{isAuthorLoading && (
+								<p className="text-muted mt-2 mb-0">Loading authors...</p>
+							)}
 						</>
 					)}
 				</div>
@@ -508,7 +599,7 @@ const BookAddEdit = ({
 				<div className="mb-3">
 					<div className="d-flex align-items-center gap-3">
 						<div className="flex-grow-1">
-							<label className="form-label">Published Year</label>
+							<label className="form-label">Published Year : </label>
 							<input
 								type="number"
 								name="publishedYear"
@@ -536,7 +627,7 @@ const BookAddEdit = ({
 				<div className="mb-3">
 					<div className="d-flex align-items-start gap-3">
 						<div className="flex-grow-1">
-							<label className="form-label">Description</label>
+							<label className="form-label">Description : </label>
 							<textarea
 								name="description"
 								className="form-control"

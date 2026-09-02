@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import { MockData } from "../../../../types/MockData";
+import type { LoanType, UserType } from "../../../../types/DbTypes";
 import ReturnButton from "../../../common/ReturnButton";
+import { useAuth } from "../../../../context/AuthContext";
 
 type FeeStatus = "PENDING" | "PAID" | "CANCELLED";
 
@@ -14,6 +16,16 @@ type FeeItemFormData = {
 	createdAt: string;
 	paidAt: string;
 	status: FeeStatus;
+};
+
+type UserOption = {
+	id: number;
+	label: string;
+};
+
+type LoanOption = {
+	id: number;
+	label: string;
 };
 
 const FEE_STATUSES: FeeStatus[] = ["PENDING", "PAID", "CANCELLED"];
@@ -50,9 +62,50 @@ const normalizeFeeStatus = (status?: string | null): FeeStatus => {
 	return "PENDING";
 };
 
+const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">): string => {
+	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+	return `${fullName || "Unknown user"} (ID: ${user.userId})`;
+};
+
+const getLoanLabel = (loan: LoanType): string => {
+	const userName = `${loan.user.firstName} ${loan.user.lastName}`.trim();
+	const bookTitle = loan.bookPhysical?.book?.title ?? "Unknown book";
+	return `Loan #${loan.id} - ${userName || "Unknown user"} - ${bookTitle}`;
+};
+
+const loadUsersFromMockData = (): UserOption[] =>
+	MockData.mockUsers.map((user) => ({
+		id: Number(user.userId),
+		label: getUserLabel(user),
+	}));
+
+const loadLoansFromMockData = (): LoanOption[] =>
+	MockData.mockLoans.map((loan) => ({
+		id: Number(loan.id),
+		label: getLoanLabel(loan),
+	}));
+
+const extractArrayFromResponse = <T,>(payload: unknown): T[] => {
+	if (Array.isArray(payload)) return payload as T[];
+
+	if (payload && typeof payload === "object") {
+		const candidate = payload as { content?: unknown; data?: unknown; items?: unknown };
+
+		if (Array.isArray(candidate.content)) return candidate.content as T[];
+		if (Array.isArray(candidate.data)) return candidate.data as T[];
+		if (Array.isArray(candidate.items)) return candidate.items as T[];
+	}
+
+	return [];
+};
+
 const FeeItemPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
+	const auth = useAuth();
+	const userRole = auth.role;
+	const canEditCreatedAt = userRole === "ADMIN" || userRole === "LIBRARIAN";
+	const canEditPaidAt = userRole === "ADMIN";
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;
@@ -60,6 +113,10 @@ const FeeItemPageViewEditAdd = () => {
 
 	const [formData, setFormData] = useState<FeeItemFormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<FeeItemFormData>(EMPTY_FORM);
+	const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+	const [loanOptions, setLoanOptions] = useState<LoanOption[]>([]);
+	const [usersLoading, setUsersLoading] = useState(false);
+	const [loansLoading, setLoansLoading] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -69,6 +126,65 @@ const FeeItemPageViewEditAdd = () => {
 		linkId != null
 			? MockData.mockFees.find((fee) => Number(fee.id) === Number(linkId))
 			: undefined;
+
+	useEffect(() => {
+		const loadUsers = async () => {
+			setUsersLoading(true);
+
+			try {
+				const response = await axiosClient.get("/user");
+				const users = extractArrayFromResponse<UserType>(response.data);
+
+				if (!users.length) {
+					setUserOptions(loadUsersFromMockData());
+					return;
+				}
+
+				setUserOptions(
+					users.map((user) => ({
+						id: Number(user.userId ?? 0),
+						label: getUserLabel({
+							userId: Number(user.userId ?? 0),
+							firstName: user.firstName ?? "",
+							lastName: user.lastName ?? "",
+						}),
+					})),
+				);
+			} catch {
+				setUserOptions(loadUsersFromMockData());
+			} finally {
+				setUsersLoading(false);
+			}
+		};
+
+		const loadLoans = async () => {
+			setLoansLoading(true);
+
+			try {
+				const response = await axiosClient.get("/loans");
+				const loans = extractArrayFromResponse<LoanType>(response.data);
+
+				if (!loans.length) {
+					setLoanOptions(loadLoansFromMockData());
+					return;
+				}
+
+				setLoanOptions(
+					loans.map((loan) => ({
+						id: Number(loan.id ?? 0),
+						label: getLoanLabel(loan),
+					})),
+				);
+			} catch {
+				setLoanOptions(loadLoansFromMockData());
+			} finally {
+				setLoansLoading(false);
+			}
+		};
+
+		void loadUsers();
+		void loadLoans();
+	}, []);
 
 	useEffect(() => {
 		if (!isExistingFeeAction) {
@@ -150,6 +266,9 @@ const FeeItemPageViewEditAdd = () => {
 
 	const areMainFieldsLocked = isReadOnly || isLoading || isSubmitting;
 	const isStatusLocked = isReadOnly || isLoading || isSubmitting;
+	const isCreatedAtLocked =
+		!isEditing || isReadOnly || isLoading || isSubmitting || !canEditCreatedAt;
+	const isPaidAtLocked = !isEditing || isReadOnly || isLoading || isSubmitting || !canEditPaidAt;
 
 	const handleChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -254,38 +373,58 @@ const FeeItemPageViewEditAdd = () => {
 			{successMessage && <p className="text-success mb-3">{successMessage}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
-				<div className="mb-3">
-					<label htmlFor="userId" className="form-label">
-						User Id
-					</label>
-					<input
-						type="number"
-						id="userId"
-						name="userId"
-						className="form-control"
-						value={formData.userId}
-						onChange={handleChange}
-						disabled={areMainFieldsLocked}
-						min="1"
-						required
-					/>
-				</div>
+				<div className="row g-3 mb-3">
+					<div className="col-12 col-md-6">
+						<label htmlFor="userId" className="form-label">
+							User
+						</label>
+						{usersLoading ? (
+							<p className="text-muted mb-0">Loading users...</p>
+						) : (
+							<select
+								id="userId"
+								name="userId"
+								className="form-select"
+								value={formData.userId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select user</option>
+								{userOptions.map((user) => (
+									<option key={user.id} value={String(user.id)}>
+										{user.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
 
-				<div className="mb-3">
-					<label htmlFor="loanId" className="form-label">
-						Loan Id
-					</label>
-					<input
-						type="number"
-						id="loanId"
-						name="loanId"
-						className="form-control"
-						value={formData.loanId}
-						onChange={handleChange}
-						disabled={areMainFieldsLocked}
-						min="1"
-						required
-					/>
+					<div className="col-12 col-md-6">
+						<label htmlFor="loanId" className="form-label">
+							Loan Item
+						</label>
+						{loansLoading ? (
+							<p className="text-muted mb-0">Loading loans...</p>
+						) : (
+							<select
+								id="loanId"
+								name="loanId"
+								className="form-select"
+								value={formData.loanId}
+								onChange={handleChange}
+								disabled={areMainFieldsLocked}
+								required
+							>
+								<option value="">Select loan item</option>
+								{loanOptions.map((loan) => (
+									<option key={loan.id} value={String(loan.id)}>
+										{loan.label}
+									</option>
+								))}
+							</select>
+						)}
+					</div>
 				</div>
 
 				<div className="mb-3">
@@ -316,8 +455,9 @@ const FeeItemPageViewEditAdd = () => {
 						name="createdAt"
 						className="form-control"
 						value={formData.createdAt}
-						disabled
-						readOnly
+						onChange={handleChange}
+						disabled={isCreatedAtLocked}
+						readOnly={!canEditCreatedAt || !isEditing}
 					/>
 				</div>
 
@@ -331,8 +471,9 @@ const FeeItemPageViewEditAdd = () => {
 						name="paidAt"
 						className="form-control"
 						value={formData.paidAt}
-						disabled
-						readOnly
+						onChange={handleChange}
+						disabled={isPaidAtLocked}
+						readOnly={!canEditPaidAt || !isEditing}
 					/>
 				</div>
 
