@@ -1,12 +1,23 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { LoanType, LoanCountType } from "../../../types/DbTypes";
+import type { LoanType, LoanCountType, UserDtoType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../../types/MockData";
+
+import { getLoansWithCounts } from "../../../api/api";
 
 const LoansDashboard = () => {
-	const loansWithCount: LoanCountType[] = MockData.mockLoansCount;
+	const [loansWithCount, setLoansWithCount] = useState<LoanCountType[]>([]);
+
+	useEffect(() => {
+		getLoansWithCounts()
+			.then((data) => {
+				setLoansWithCount(data);
+				console.log("Fetched loans with count:", data);
+			})
+			.catch(console.error);
+	}, []);
+
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof LoanCountType;
 		direction: "asc" | "desc";
@@ -38,12 +49,12 @@ const LoansDashboard = () => {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((loan) => {
-				const fullName = `${loan.user.firstName} ${loan.user.lastName}`.toLowerCase();
+				const fullName = `${loan.userDto.firstName} ${loan.userDto.lastName}`.toLowerCase();
 
 				return (
-					String(loan.loanId).includes(lowerSearch) ||
+					String(loan.userDto.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
-					String(loan.loanId).includes(lowerSearch) ||
+					String(loan.userDto.id).includes(lowerSearch) ||
 					String(loan.countLoans).includes(lowerSearch)
 				);
 			});
@@ -55,15 +66,15 @@ const LoansDashboard = () => {
 				let bVal: string | number = "";
 
 				switch (sortConfig.key) {
-					case "userId":
-						aVal = a.user.userId;
-						bVal = b.user.userId;
+					case "id":
+						aVal = a.id;
+						bVal = b.id;
 						break;
-					case "user":
-						aVal = `${a.user.firstName} ${a.user.lastName}`;
-						bVal = `${b.user.firstName} ${b.user.lastName}`;
+					case "userDto":
+						aVal = a.userDto.id;
+						bVal = b.userDto.id;
 						break;
-					case "itemsCount":
+					case "countLoans":
 						aVal = a.countLoans;
 						bVal = b.countLoans;
 						break;
@@ -114,17 +125,17 @@ const LoansDashboard = () => {
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							# {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("userDto")}>
+							User Id{getSortIcon("userDto")}
 						</th>
-						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+						<th scope="col" onClick={() => requestSort("userDto")}>
+							User Name {getSortIcon("userDto")}
 						</th>
-						<th scope="col" onClick={() => requestSort("itemsCount")}>
-							Number of Items in Cart {getSortIcon("itemsCount")}
+						<th scope="col" onClick={() => requestSort("countLoans")}>
+							Number of Loans {getSortIcon("countLoans")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
@@ -133,18 +144,18 @@ const LoansDashboard = () => {
 					{filteredAndSortedLoans.map((loan, index) => (
 						<tr key={index + 1}>
 							<td>
-								{sortConfig?.key === "userId" && sortConfig?.direction === "desc"
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
 									? filteredAndSortedLoans.length - index
 									: index + 1}
 							</td>
-							<td>{loan.user.userId}</td>
+							<td>{loan.user.id}</td>
 							<td>{`${loan.user.firstName} ${loan.user.lastName}`}</td>
 							<td>{loan.countLoans}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
 									onClick={() =>
-										(window.location.href = `/userLoans/view/${loan.user.userId}`)
+										(window.location.href = `/userLoans/view/${loan.user.id}`)
 									}
 								>
 									View Details

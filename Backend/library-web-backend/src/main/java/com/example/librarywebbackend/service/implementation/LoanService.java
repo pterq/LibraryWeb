@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.UserDTO;
+import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
 import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Loan;
@@ -110,11 +112,29 @@ public class LoanService implements ILoanService {
                 .orElse(null);
     }
 
-
-
-
     @Override
     public void deleteLoan(Long id) {
         loanRepository.deleteById(id);
     }
+
+
+
+    @Override
+    public List<UserWithLoanCountDTO> getLoanCountsByUser() {
+        return loanRepository.countLoansByUserRaw()
+                .stream()
+                .map(row -> new UserWithLoanCountDTO(
+                        ((Number) row[0]).longValue(), // id
+                        new UserDTO(
+                                ((Number) row[1]).longValue(), // userId
+                                (String) row[2],               // firstName
+                                (String) row[3],               // lastName
+                                (String) row[4]                // email
+                        ),
+                        ((Number) row[5]).longValue()         // countLoans
+                ))
+                .toList();
+    }
+
+
 }

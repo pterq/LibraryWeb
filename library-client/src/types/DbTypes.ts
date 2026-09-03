@@ -111,10 +111,16 @@ export interface FeesWithCountsType {
 	countCancelled: number;
 }
 
+export interface UserDtoType {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+}
+
 export interface LoanCountType {
 	id: number;
-	loan: LoanType;
-	user: UserType;
+	userDto: UserDtoType;
 	countLoans: number;
 }
 

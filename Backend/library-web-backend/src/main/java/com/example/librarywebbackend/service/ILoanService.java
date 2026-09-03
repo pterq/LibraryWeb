@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 
@@ -20,4 +21,6 @@ public interface ILoanService {
     Loan returnBook(Long id);
 
     void deleteLoan(Long id);
+
+    List<UserWithLoanCountDTO> getLoanCountsByUser();
 }

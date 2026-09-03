@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 import com.example.librarywebbackend.service.ILoanService;
@@ -40,6 +41,11 @@ public class LoanController {
         return loan != null
                 ? ResponseEntity.ok(loan)
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/counts")
+    public List<UserWithLoanCountDTO> getLoanCounts() {
+        return loanService.getLoanCountsByUser();
     }
 
     @PostMapping("/borrow")
