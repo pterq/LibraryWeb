@@ -68,7 +68,7 @@ const AuthorPageViewEditAdd = () => {
 				const nextFormData = {
 					firstName: author.firstName ?? "",
 					lastName: author.lastName ?? "",
-					biography: author.bio ?? "",
+					biography: author.biography ?? "",
 				};
 
 				setFormData(nextFormData);

@@ -33,7 +33,8 @@ const mockAuthor: AuthorType = {
 	id: 1,
 	firstName: "Robert C.",
 	lastName: "Martin",
-	bio: "Robert Cecil Martin, colloquially known as 'Uncle Bob', is an American software engineer and author.",
+	biography:
+		"Robert Cecil Martin, colloquially known as 'Uncle Bob', is an American software engineer and author.",
 };
 
 const mockBookAuthors: AuthorsType = {

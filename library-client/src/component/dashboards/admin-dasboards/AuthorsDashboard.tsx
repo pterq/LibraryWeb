@@ -1,13 +1,22 @@
 import { useMemo, useState } from "react";
-import type { AuthorType } from "../../../types/DbTypes";
+import type { AuthorType, UserType } from "../../../types/DbTypes";
+import { useEffect } from "react";
 
-import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
+import { getAuthors } from "../../../api/api";
+
 const AuthorsDashboard = () => {
-	const authors: AuthorType[] = MockData.mockAuthors;
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "A_M" | "N_Z">("ALL");
+
+	const [authors, setAuthors] = useState<AuthorType[]>([]);
+
+	useEffect(() => {
+		getAuthors().then(setAuthors).catch(console.error);
+
+		console.log("Fetched authors:", authors);
+	}, []);
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof AuthorType;
@@ -39,7 +48,8 @@ const AuthorsDashboard = () => {
 			data = data.filter((author) => {
 				const fullName = `${author.firstName} ${author.lastName}`.toLowerCase();
 				return (
-					fullName.includes(searchTerm) || author.bio.toLowerCase().includes(searchTerm)
+					fullName.includes(searchTerm) ||
+					author.biography.toLowerCase().includes(searchTerm)
 				);
 			});
 		}
@@ -110,8 +120,8 @@ const AuthorsDashboard = () => {
 								</span>
 							</div>
 						</th>
-						<th scope="col" onClick={() => requestSort("bio")}>
-							Biography {getSortIcon("bio")}
+						<th scope="col" onClick={() => requestSort("biography")}>
+							Biography {getSortIcon("biography")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
@@ -123,7 +133,7 @@ const AuthorsDashboard = () => {
 							<td>{author.id}</td>
 							<td>{author.firstName}</td>
 							<td>{author.lastName}</td>
-							<td>{author.bio}</td>
+							<td>{author.biography}</td>
 
 							<td>
 								<button

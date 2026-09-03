@@ -4,7 +4,7 @@ export interface AuthorType {
 	id: number;
 	firstName: string;
 	lastName: string;
-	bio: string;
+	biography: string;
 }
 
 export interface AuthorsType {

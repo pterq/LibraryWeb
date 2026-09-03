@@ -15,9 +15,9 @@ import type {
 //===============================================================================
 //Author
 
-const getAuthors = async () => {
+export const getAuthors = async () => {
 	try {
-		const response = await axiosClient.get<AuthorType[]>("/author");
+		const response = await axiosClient.get<AuthorType[]>("/authors");
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch authors:", error);
@@ -25,9 +25,9 @@ const getAuthors = async () => {
 	}
 };
 
-const addAuthor = async (author: AuthorType) => {
+export const addAuthor = async (author: AuthorType) => {
 	try {
-		const response = await axiosClient.post<AuthorType>("/author", author);
+		const response = await axiosClient.post<AuthorType>("/authors", author);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add author:", error);
@@ -35,9 +35,9 @@ const addAuthor = async (author: AuthorType) => {
 	}
 };
 
-const updateAuthor = async (id: number, author: AuthorType) => {
+export const updateAuthor = async (id: number, author: AuthorType) => {
 	try {
-		const response = await axiosClient.put<AuthorType>(`/author/${id}`, author);
+		const response = await axiosClient.put<AuthorType>(`/authors/${id}`, author);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to update author with id ${id}:`, error);
@@ -45,9 +45,9 @@ const updateAuthor = async (id: number, author: AuthorType) => {
 	}
 };
 
-const deleteAuthor = async (id: number) => {
+export const deleteAuthor = async (id: number) => {
 	try {
-		const response = await axiosClient.delete(`/author/${id}`);
+		const response = await axiosClient.delete(`/authors/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to delete author with id ${id}:`, error);
@@ -55,9 +55,9 @@ const deleteAuthor = async (id: number) => {
 	}
 };
 
-const searchAuthors = async (query: string) => {
+export const searchAuthors = async (query: string) => {
 	try {
-		const response = await axiosClient.get<AuthorType[]>(`/author/search?query=${query}`);
+		const response = await axiosClient.get<AuthorType[]>(`/authors/search?query=${query}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to search authors with query "${query}":`, error);
@@ -68,7 +68,7 @@ const searchAuthors = async (query: string) => {
 //===============================================================================
 //Book
 
-const getBooks = async () => {
+export const getBooks = async () => {
 	try {
 		const response = await axiosClient.get<BookType[]>("/book");
 		return response.data;
@@ -78,7 +78,7 @@ const getBooks = async () => {
 	}
 };
 
-const addBook = async (book: BookType) => {
+export const addBook = async (book: BookType) => {
 	try {
 		const response = await axiosClient.post<BookType>("/book", book);
 		return response.data;
@@ -88,7 +88,7 @@ const addBook = async (book: BookType) => {
 	}
 };
 
-const getBookById = async (id: number) => {
+export const getBookById = async (id: number) => {
 	try {
 		const response = await axiosClient.get<BookType>(`/book/${id}`);
 		return response.data;
@@ -98,7 +98,7 @@ const getBookById = async (id: number) => {
 	}
 };
 
-const updateBookById = async (id: number, book: BookType) => {
+export const updateBookById = async (id: number, book: BookType) => {
 	try {
 		const response = await axiosClient.put<BookType>(`/book/${id}`, book);
 		return response.data;
@@ -108,7 +108,7 @@ const updateBookById = async (id: number, book: BookType) => {
 	}
 };
 
-const deleteBookById = async (id: number) => {
+export const deleteBookById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/book/${id}`);
 		return response.data;
@@ -121,7 +121,7 @@ const deleteBookById = async (id: number) => {
 //===============================================================================
 //BookCopy
 
-const getBookCopies = async () => {
+export const getBookCopies = async () => {
 	try {
 		const response = await axiosClient.get<BookPhysicalType[]>("/book-copy");
 		return response.data;
@@ -131,7 +131,7 @@ const getBookCopies = async () => {
 	}
 };
 
-const addBookCopy = async (bookCopy: BookPhysicalType) => {
+export const addBookCopy = async (bookCopy: BookPhysicalType) => {
 	try {
 		const response = await axiosClient.post<BookPhysicalType>("/book-copy", bookCopy);
 		return response.data;
@@ -141,7 +141,7 @@ const addBookCopy = async (bookCopy: BookPhysicalType) => {
 	}
 };
 
-const getBookCopyById = async (id: number) => {
+export const getBookCopyById = async (id: number) => {
 	try {
 		const response = await axiosClient.get<BookPhysicalType>(`/book-copy/${id}`);
 		return response.data;
@@ -151,7 +151,7 @@ const getBookCopyById = async (id: number) => {
 	}
 };
 
-const updateBookCopyById = async (id: number, bookCopy: BookPhysicalType) => {
+export const updateBookCopyById = async (id: number, bookCopy: BookPhysicalType) => {
 	try {
 		const response = await axiosClient.put<BookPhysicalType>(`/book-copy/${id}`, bookCopy);
 		return response.data;
@@ -161,7 +161,7 @@ const updateBookCopyById = async (id: number, bookCopy: BookPhysicalType) => {
 	}
 };
 
-const deleteBookCopyById = async (id: number) => {
+export const deleteBookCopyById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/book-copy/${id}`);
 		return response.data;
@@ -174,7 +174,7 @@ const deleteBookCopyById = async (id: number) => {
 //===============================================================================
 //Category
 
-const getCategories = async () => {
+export const getCategories = async () => {
 	try {
 		const response = await axiosClient.get<CategoryType[]>("/category");
 		return response.data;
@@ -184,7 +184,7 @@ const getCategories = async () => {
 	}
 };
 
-const getCategoryById = async (id: number) => {
+export const getCategoryById = async (id: number) => {
 	try {
 		const response = await axiosClient.get<CategoryType>(`/category/${id}`);
 		return response.data;
@@ -194,7 +194,7 @@ const getCategoryById = async (id: number) => {
 	}
 };
 
-const addCategory = async (category: CategoryType) => {
+export const addCategory = async (category: CategoryType) => {
 	try {
 		const response = await axiosClient.post<CategoryType>("/category", category);
 		return response.data;
@@ -204,7 +204,7 @@ const addCategory = async (category: CategoryType) => {
 	}
 };
 
-const updateCategoryById = async (id: number, category: CategoryType) => {
+export const updateCategoryById = async (id: number, category: CategoryType) => {
 	try {
 		const response = await axiosClient.put<CategoryType>(`/category/${id}`, category);
 		return response.data;
@@ -214,7 +214,7 @@ const updateCategoryById = async (id: number, category: CategoryType) => {
 	}
 };
 
-const deleteCategoryById = async (id: number) => {
+export const deleteCategoryById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/category/${id}`);
 		return response.data;
@@ -224,7 +224,7 @@ const deleteCategoryById = async (id: number) => {
 	}
 };
 
-const getCategoriesWithCounts = async () => {
+export const getCategoriesWithCounts = async () => {
 	try {
 		const response =
 			await axiosClient.get<{ categoryId: number; categoryName: string; count: number }[]>(
@@ -240,7 +240,7 @@ const getCategoriesWithCounts = async () => {
 //===============================================================================
 //Loan
 
-const getLoans = async () => {
+export const getLoans = async () => {
 	try {
 		const response = await axiosClient.get<LoanType[]>("/loan");
 		return response.data;
@@ -250,7 +250,7 @@ const getLoans = async () => {
 	}
 };
 
-const getLoansByLoanStatus = async (status: LoanStatusType) => {
+export const getLoansByLoanStatus = async (status: LoanStatusType) => {
 	try {
 		const response = await axiosClient.get<LoanType[]>(`/loan/status/${status}`);
 		return response.data;
@@ -260,7 +260,7 @@ const getLoansByLoanStatus = async (status: LoanStatusType) => {
 	}
 };
 
-const getLoansByUserId = async (userId: number) => {
+export const getLoansByUserId = async (userId: number) => {
 	try {
 		const response = await axiosClient.get<LoanType[]>(`/loan/user/${userId}`);
 		return response.data;
@@ -270,7 +270,7 @@ const getLoansByUserId = async (userId: number) => {
 	}
 };
 
-const addLoan = async (loan: LoanType) => {
+export const addLoan = async (loan: LoanType) => {
 	try {
 		const response = await axiosClient.post<LoanType>("/loan", loan);
 		return response.data;
@@ -280,7 +280,7 @@ const addLoan = async (loan: LoanType) => {
 	}
 };
 
-const updateLoanById = async (id: number, loan: LoanType) => {
+export const updateLoanById = async (id: number, loan: LoanType) => {
 	try {
 		const response = await axiosClient.put<LoanType>(`/loan/${id}`, loan);
 		return response.data;
@@ -290,7 +290,7 @@ const updateLoanById = async (id: number, loan: LoanType) => {
 	}
 };
 
-const deleteLoanById = async (id: number) => {
+export const deleteLoanById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/loan/${id}`);
 		return response.data;
@@ -300,10 +300,28 @@ const deleteLoanById = async (id: number) => {
 	}
 };
 
+export const getLoansWithCounts = async () => {
+	try {
+		const response = await axiosClient.get<
+			{
+				loanId: number;
+				user: UserType;
+				firstName: string;
+				lastName: string;
+				numberOfLoans: number;
+			}[]
+		>("/loan/counts");
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch loans with counts:", error);
+		throw error;
+	}
+};
+
 //===============================================================================
 //Reservation
 
-const getReservations = async () => {
+export const getReservations = async () => {
 	try {
 		const response = await axiosClient.get<ReservationType[]>("/reservation");
 		return response.data;
@@ -313,7 +331,7 @@ const getReservations = async () => {
 	}
 };
 
-const getReservationById = async (id: number) => {
+export const getReservationById = async (id: number) => {
 	try {
 		const response = await axiosClient.get<ReservationType>(`/reservation/${id}`);
 		return response.data;
@@ -323,7 +341,7 @@ const getReservationById = async (id: number) => {
 	}
 };
 
-const addReservation = async (reservation: ReservationType) => {
+export const addReservation = async (reservation: ReservationType) => {
 	try {
 		const response = await axiosClient.post<ReservationType>("/reservation", reservation);
 		return response.data;
@@ -333,7 +351,7 @@ const addReservation = async (reservation: ReservationType) => {
 	}
 };
 
-const updateReservationById = async (id: number, reservation: ReservationType) => {
+export const updateReservationById = async (id: number, reservation: ReservationType) => {
 	try {
 		const response = await axiosClient.put<ReservationType>(`/reservation/${id}`, reservation);
 		return response.data;
@@ -343,7 +361,7 @@ const updateReservationById = async (id: number, reservation: ReservationType) =
 	}
 };
 
-const deleteReservationById = async (id: number) => {
+export const deleteReservationById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/reservation/${id}`);
 		return response.data;
@@ -356,7 +374,7 @@ const deleteReservationById = async (id: number) => {
 //===============================================================================
 //Fee
 
-const getFees = async () => {
+export const getFees = async () => {
 	try {
 		const response = await axiosClient.get<FeeType[]>("/fee");
 		return response.data;
@@ -366,7 +384,7 @@ const getFees = async () => {
 	}
 };
 
-const getFeeByStatus = async (status: string) => {
+export const getFeeByStatus = async (status: string) => {
 	try {
 		const response = await axiosClient.get<FeeType[]>(`/fee/status/${status}`);
 		return response.data;
@@ -376,7 +394,7 @@ const getFeeByStatus = async (status: string) => {
 	}
 };
 
-const getFeeById = async (id: number) => {
+export const getFeeById = async (id: number) => {
 	try {
 		const response = await axiosClient.get<FeeType>(`/fee/${id}`);
 		return response.data;
@@ -386,7 +404,7 @@ const getFeeById = async (id: number) => {
 	}
 };
 
-const addFee = async (fee: FeeType) => {
+export const addFee = async (fee: FeeType) => {
 	try {
 		const response = await axiosClient.post<FeeType>("/fee", fee);
 		return response.data;
@@ -396,7 +414,7 @@ const addFee = async (fee: FeeType) => {
 	}
 };
 
-const updateFeeById = async (id: number, fee: FeeType) => {
+export const updateFeeById = async (id: number, fee: FeeType) => {
 	try {
 		const response = await axiosClient.put<FeeType>(`/fee/${id}`, fee);
 		return response.data;
@@ -406,7 +424,7 @@ const updateFeeById = async (id: number, fee: FeeType) => {
 	}
 };
 
-const deleteFeeById = async (id: number) => {
+export const deleteFeeById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/fee/${id}`);
 		return response.data;
@@ -416,7 +434,7 @@ const deleteFeeById = async (id: number) => {
 	}
 };
 
-const updateFeeStatusById = async (id: number, status: string) => {
+export const updateFeeStatusById = async (id: number, status: string) => {
 	try {
 		const response = await axiosClient.put<FeeType>(`/fee/${id}/status`, { status });
 		return response.data;
@@ -469,7 +487,7 @@ export const getUserById = async (id: number) => {
 	}
 };
 
-const addUser = async (user: BackendUserType) => {
+export const addUser = async (user: BackendUserType) => {
 	try {
 		const response = await axiosClient.post<BackendUserType>("/user", user);
 		return normalizeUser(response.data);
@@ -479,7 +497,7 @@ const addUser = async (user: BackendUserType) => {
 	}
 };
 
-const updateUser = async (id: number, user: BackendUserType) => {
+export const updateUser = async (id: number, user: BackendUserType) => {
 	try {
 		const response = await axiosClient.put<BackendUserType>(`/user/${id}`, user);
 		return normalizeUser(response.data);
@@ -489,7 +507,7 @@ const updateUser = async (id: number, user: BackendUserType) => {
 	}
 };
 
-const deleteUser = async (id: number) => {
+export const deleteUser = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`/user/${id}`);
 		return response.data;
@@ -499,7 +517,7 @@ const deleteUser = async (id: number) => {
 	}
 };
 
-const registerUser = async (user: BackendUserType) => {
+export const registerUser = async (user: BackendUserType) => {
 	try {
 		const response = await axiosClient.post<BackendUserType>("/user/register", user);
 		return normalizeUser(response.data);
@@ -509,7 +527,7 @@ const registerUser = async (user: BackendUserType) => {
 	}
 };
 
-const loginUser = async (user: BackendUserType) => {
+export const loginUser = async (user: BackendUserType) => {
 	try {
 		const response = await axiosClient.post<BackendUserType>("/user/login", user);
 		return normalizeUser(response.data);
@@ -519,7 +537,7 @@ const loginUser = async (user: BackendUserType) => {
 	}
 };
 
-const changeUserPassword = async (id: number, newPassword: string) => {
+export const changeUserPassword = async (id: number, newPassword: string) => {
 	try {
 		const response = await axiosClient.put<BackendUserType>(`/user/${id}/change-password`, {
 			newPassword,
@@ -536,6 +554,10 @@ const changeUserPassword = async (id: number, newPassword: string) => {
 const api = {
 	getAuthors,
 	addAuthor,
+	updateAuthor,
+	deleteAuthor,
+	searchAuthors,
+
 	getUsers,
 	getUserById,
 	addUser,
@@ -544,9 +566,7 @@ const api = {
 	registerUser,
 	loginUser,
 	changeUserPassword,
-	updateAuthor,
-	deleteAuthor,
-	searchAuthors,
+
 	getFees,
 	getFeeById,
 	addFee,
@@ -570,12 +590,14 @@ const api = {
 	deleteCategoryById,
 	getCategoryById,
 	getCategoriesCounts: getCategoriesWithCounts,
+
 	getLoans,
 	getLoansByLoanStatus,
 	addLoan,
 	getLoansByUserId,
 	deleteLoanById,
 	updateLoanById,
+	getLoansWithCounts,
 
 	getReservations,
 	addReservation,
