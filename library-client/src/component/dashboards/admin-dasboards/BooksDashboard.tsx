@@ -87,12 +87,20 @@ const BooksDashboard = () => {
 						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
 						break;
 					case "authors":
-						aVal = (a.authors?.authors ?? [])
-							.map((author) => `${author.firstName} ${author.lastName}`)
+						aVal = (a.authors ?? [])
+							.map((authorsType) =>
+								authorsType.authors
+									.map((author) => author.firstName + " " + author.lastName)
+									.join(", "),
+							)
 							.join(", ");
 
-						bVal = (b.authors?.authors ?? [])
-							.map((author) => `${author.firstName} ${author.lastName}`)
+						bVal = (b.authors ?? [])
+							.map((authorsType) =>
+								authorsType.authors
+									.map((author) => author.firstName + " " + author.lastName)
+									.join(", "),
+							)
 							.join(", ");
 						break;
 
@@ -199,8 +207,15 @@ const BooksDashboard = () => {
 							<td>{book.id}</td>
 							<td>{book.title}</td>
 							<td>
-								{(book.authors?.authors ?? [])
-									.map((author) => `${author.firstName} ${author.lastName}`)
+								{(book.authors ?? [])
+									.map((authorsType) =>
+										authorsType.authors
+											.map(
+												(author) =>
+													author.firstName + " " + author.lastName,
+											)
+											.join(", "),
+									)
 									.join(", ")}
 							</td>
 							<td>{book.isbn}</td>
@@ -211,8 +226,15 @@ const BooksDashboard = () => {
 									.join(", ")}
 							</td>
 							<td>
-								{(book.authors?.authors ?? [])
-									.map((author) => `${author.firstName} ${author.lastName}`)
+								{(book.authors ?? [])
+									.map((authorsType) =>
+										authorsType.authors
+											.map(
+												(author) =>
+													author.firstName + " " + author.lastName,
+											)
+											.join(", "),
+									)
 									.join(", ")}
 							</td>
 

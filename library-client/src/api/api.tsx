@@ -18,7 +18,7 @@ import type {
 
 //endpoints
 const BOOKS_ENDPOINT = "/books";
-const BOOK_COPY_ENDPOINT = "/book-copy";
+const BOOK_COPY_ENDPOINT = "/copies";
 const CATEGORIES_ENDPOINT = "/categories";
 const AUTHORS_ENDPOINT = "/authors";
 const USER_ENDPOINT = "/user";

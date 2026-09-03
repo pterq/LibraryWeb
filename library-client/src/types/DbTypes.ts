@@ -18,7 +18,7 @@ export interface BookType {
 	description: string;
 	isbn: string;
 	publishedYear: number;
-	authors: AuthorsType;
+	authors: AuthorsType[];
 	categories?: CategoryType[];
 	coverImageUrl?: string;
 }

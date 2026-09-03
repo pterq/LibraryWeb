@@ -1,22 +1,35 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { BookPhysicalType } from "../../../types/DbTypes";
 
 import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
+import { getBookCopies } from "../../../api/api";
+
 const PhysicalBooksDashboard = () => {
+	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalType[]>([]);
+
+	useEffect(() => {
+		getBookCopies()
+			.then((data) => {
+				setBooksPhysical(data);
+				console.log("Fetched books:", data);
+			})
+			.catch(console.error);
+	}, []);
+
 	const [search, setSearch] = useState("");
 	const [filterStatus, setFilterStatus] = useState<"ALL" | BookPhysicalType["status"]>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: string;
+		key: keyof BookPhysicalType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filterStatus !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: string) => {
+	const requestSort = (key: keyof BookPhysicalType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -26,18 +39,18 @@ const PhysicalBooksDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: string) => {
+	const getSortIcon = (key: keyof BookPhysicalType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const statusOptions = useMemo(
-		() => Array.from(new Set(MockData.mockBookPhysicals.map((copy) => copy.status))),
-		[],
+		() => Array.from(new Set(booksPhysical.map((copy) => copy.status))),
+		[booksPhysical],
 	);
 
 	const physicalBooks = useMemo(() => {
-		let data: BookPhysicalType[] = [...MockData.mockBookPhysicals];
+		let data: BookPhysicalType[] = [...booksPhysical];
 
 		if (search) {
 			const lowerSearch = search.toLowerCase();
@@ -58,17 +71,17 @@ const PhysicalBooksDashboard = () => {
 				let bVal: number | string;
 
 				switch (sortConfig.key) {
-					case "title":
+					case "id":
+						aVal = a.id;
+						bVal = b.id;
+						break;
+					case "inventoryCode":
+						aVal = a.inventoryCode;
+						bVal = b.inventoryCode;
+						break;
+					case "book":
 						aVal = a.book.title;
 						bVal = b.book.title;
-						break;
-					case "isbn":
-						aVal = a.book.isbn;
-						bVal = b.book.isbn;
-						break;
-					case "publishedYear":
-						aVal = a.book.publishedYear;
-						bVal = b.book.publishedYear;
 						break;
 					default:
 						aVal = a[sortConfig.key as keyof BookPhysicalType] as number | string;
@@ -86,7 +99,7 @@ const PhysicalBooksDashboard = () => {
 		}
 
 		return data;
-	}, [search, filterStatus, sortConfig]);
+	}, [booksPhysical, search, filterStatus, sortConfig]);
 
 	return (
 		<div className="container-fluid">
@@ -122,23 +135,22 @@ const PhysicalBooksDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
+						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							Physical Book ID {getSortIcon("id")}
-						</th>
-						<th scope="col" onClick={() => requestSort("isbn")}>
-							ISBN {getSortIcon("isbn")}
 						</th>
 						<th scope="col" onClick={() => requestSort("inventoryCode")}>
 							Inventory Code {getSortIcon("inventoryCode")}
 						</th>
-						<th scope="col" onClick={() => requestSort("title")}>
-							Title {getSortIcon("title")}
+						<th scope="col" onClick={() => requestSort("book")}>
+							Title {getSortIcon("book")}
+						</th>
+						<th scope="col" onClick={() => requestSort("book")}>
+							Authors {getSortIcon("book")}
 						</th>
 
-						<th scope="col" onClick={() => requestSort("publishedYear")}>
-							Published Year {getSortIcon("publishedYear")}
-						</th>
 						<th scope="col" style={{ width: "16%" }}>
 							<div className="d-flex align-items-center gap-2">
 								<span onClick={() => requestSort("status")}>
@@ -169,13 +181,27 @@ const PhysicalBooksDashboard = () => {
 				<tbody>
 					{physicalBooks.map((copy, index) => (
 						<tr key={copy.id}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? physicalBooks.length - index
+									: index + 1}
+							</td>
 							<td>{copy.book.id}</td>
-							<td>{copy.book.isbn}</td>
 							<td>{copy.inventoryCode}</td>
 							<td>{copy.book.title}</td>
+							<td>
+								{(copy.book.authors ?? [])
+									.map((authorsType) =>
+										authorsType.authors
+											.map(
+												(author) =>
+													author.firstName + " " + author.lastName,
+											)
+											.join(", "),
+									)
+									.join(", ")}
+							</td>
 
-							<td>{copy.book.publishedYear}</td>
 							<td>{copy.status}</td>
 							<td>
 								<button
