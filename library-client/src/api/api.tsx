@@ -224,10 +224,12 @@ const deleteCategoryById = async (id: number) => {
 	}
 };
 
-const getCategoriesCounts = async () => {
+const getCategoriesWithCounts = async () => {
 	try {
 		const response =
-			await axiosClient.get<{ categoryId: number; count: number }[]>("/category/counts");
+			await axiosClient.get<{ categoryId: number; categoryName: string; count: number }[]>(
+				"/category/counts",
+			);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch categories counts:", error);
@@ -567,7 +569,7 @@ const api = {
 	updateCategoryById,
 	deleteCategoryById,
 	getCategoryById,
-	getCategoriesCounts,
+	getCategoriesCounts: getCategoriesWithCounts,
 	getLoans,
 	getLoansByLoanStatus,
 	addLoan,

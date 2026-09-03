@@ -101,6 +101,12 @@ export interface CategoryCountType {
 	numberOfBooks: number;
 }
 
+export interface CategoriesWithCountsType {
+	categoryId: number;
+	categoryName: string;
+	count: number;
+}
+
 export interface FeeCountType {
 	id: number;
 	firstName: string;
