@@ -1,14 +1,18 @@
 import React, { createContext, useContext, useState } from "react";
+import type { UserRoleType } from "../types/DbTypes";
+
+type AuthUserDataField = "firstName" | "lastName" | "email";
 
 interface AuthContextType {
 	token: string | null;
-	role: string | null;
+	role: UserRoleType | null;
 	userId: number | null;
 	firstName: string | null;
 	lastName: string | null;
 	email: string | null;
 	login: (authData: AuthLoginData) => void;
 	logout: () => void;
+	updateUserData: (field: AuthUserDataField, value: string) => void;
 	setHasFees: (hasFees: boolean) => void;
 	hasFees: boolean;
 }
@@ -25,9 +29,19 @@ interface AuthLoginData {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const parseUserRole = (value: string | null): UserRoleType | null => {
+	if (value === "ADMIN" || value === "USER" || value === "LIBRARIAN") {
+		return value;
+	}
+
+	return null;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-	const [role, setRole] = useState<string | null>(localStorage.getItem("role"));
+	const [role, setRole] = useState<UserRoleType | null>(
+		parseUserRole(localStorage.getItem("role")),
+	);
 	const [userId, setUserId] = useState<number | null>(
 		localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId")!) : null,
 	);
@@ -41,6 +55,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	const updateHasFees = (nextValue: boolean) => {
 		localStorage.setItem("hasFees", nextValue.toString());
 		setHasFees(nextValue);
+	};
+
+	const updateUserData = (field: AuthUserDataField, value: string) => {
+		localStorage.setItem(field, value);
+
+		if (field === "firstName") {
+			setFirstName(value);
+			return;
+		}
+
+		if (field === "lastName") {
+			setLastName(value);
+			return;
+		}
+
+		setEmail(value);
 	};
 
 	const login = ({
@@ -66,16 +96,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 		localStorage.setItem("token", accessToken);
 		localStorage.setItem("userId", userId.toString());
-		localStorage.setItem("firstName", firstName);
-		localStorage.setItem("lastName", lastName);
-		localStorage.setItem("email", email);
-		localStorage.setItem("role", role);
+		updateUserData("firstName", firstName);
+		updateUserData("lastName", lastName);
+		updateUserData("email", email);
+		const nextRole = parseUserRole(role);
+		if (!nextRole) {
+			throw new Error(`Unsupported user role: ${role}`);
+		}
+		localStorage.setItem("role", nextRole);
 		setToken(accessToken);
-		setRole(role);
+		setRole(nextRole);
 		setUserId(userId);
-		setFirstName(firstName);
-		setLastName(lastName);
-		setEmail(email);
 		updateHasFees(nextHasFees);
 	};
 
@@ -108,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				hasFees,
 				login,
 				logout,
+				updateUserData,
 				setHasFees: updateHasFees,
 			}}
 		>
