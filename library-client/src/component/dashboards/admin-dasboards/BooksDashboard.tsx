@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { BookType, CategoryType, AuthorType } from "../../../types/DbTypes";
+import type { BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -10,9 +10,12 @@ const BooksDashboard = () => {
 	const [books, setBooks] = useState<BookType[]>([]);
 
 	useEffect(() => {
-		getBooks().then(setBooks).catch(console.error);
-
-		console.log("Fetched books:", books);
+		getBooks()
+			.then((data) => {
+				setBooks(data);
+				console.log("Fetched books:", data);
+			})
+			.catch(console.error);
 	}, []);
 
 	const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -25,13 +28,13 @@ const BooksDashboard = () => {
 	const [filterCategory, setFilterCategory] = useState<string>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: string;
+		key: keyof BookType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filterCategory !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: string) => {
+	const requestSort = (key: keyof BookType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -41,7 +44,7 @@ const BooksDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: string) => {
+	const getSortIcon = (key: keyof BookType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -71,6 +74,14 @@ const BooksDashboard = () => {
 				let bVal: number | string;
 
 				switch (sortConfig.key) {
+					case "id":
+						aVal = a.id;
+						bVal = b.id;
+						break;
+					case "title":
+						aVal = a.title;
+						bVal = b.title;
+						break;
 					case "categories":
 						aVal = (a.categories ?? []).map((category) => category.name).join(", ");
 						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
@@ -133,12 +144,17 @@ const BooksDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
+						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							Book ID {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("title")}>
 							Title {getSortIcon("title")}
+						</th>
+						<th scope="col" onClick={() => requestSort("authors")}>
+							Authors {getSortIcon("authors")}
 						</th>
 						<th scope="col" onClick={() => requestSort("isbn")}>
 							ISBN {getSortIcon("isbn")}
@@ -175,9 +191,18 @@ const BooksDashboard = () => {
 				<tbody>
 					{filteredBooks.map((book, index) => (
 						<tr key={book.id}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? filteredBooks.length - index
+									: index + 1}
+							</td>
 							<td>{book.id}</td>
 							<td>{book.title}</td>
+							<td>
+								{(book.authors?.authors ?? [])
+									.map((author) => `${author.firstName} ${author.lastName}`)
+									.join(", ")}
+							</td>
 							<td>{book.isbn}</td>
 							<td>{book.publishedYear}</td>
 							<td>

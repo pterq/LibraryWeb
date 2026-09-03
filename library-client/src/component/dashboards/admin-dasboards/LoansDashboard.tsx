@@ -8,7 +8,7 @@ import { MockData } from "../../../types/MockData";
 const LoansDashboard = () => {
 	const loansWithCount: LoanCountType[] = MockData.mockLoansCount;
 	const [sortConfig, setSortConfig] = useState<{
-		key: "index" | "userId" | "user" | "copyId" | "itemsCount";
+		key: keyof LoanCountType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
@@ -16,7 +16,7 @@ const LoansDashboard = () => {
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: "index" | "userId" | "user" | "copyId" | "itemsCount") => {
+	const requestSort = (key: keyof LoanCountType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -26,7 +26,7 @@ const LoansDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: "index" | "userId" | "user" | "copyId" | "itemsCount") => {
+	const getSortIcon = (key: keyof LoanCountType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -38,13 +38,13 @@ const LoansDashboard = () => {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((loan) => {
-				const fullName = `${loan.firstName} ${loan.lastName}`.toLowerCase();
+				const fullName = `${loan.user.firstName} ${loan.user.lastName}`.toLowerCase();
 
 				return (
 					String(loan.loanId).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(loan.loanId).includes(lowerSearch) ||
-					String(loan.numberOfLoans).includes(lowerSearch)
+					String(loan.countLoans).includes(lowerSearch)
 				);
 			});
 		}
@@ -55,21 +55,17 @@ const LoansDashboard = () => {
 				let bVal: string | number = "";
 
 				switch (sortConfig.key) {
-					case "index":
-						aVal = a.loanId;
-						bVal = b.loanId;
-						break;
 					case "userId":
 						aVal = a.user.userId;
 						bVal = b.user.userId;
 						break;
 					case "user":
-						aVal = `${a.firstName} ${a.lastName}`;
-						bVal = `${b.firstName} ${b.lastName}`;
+						aVal = `${a.user.firstName} ${a.user.lastName}`;
+						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
 					case "itemsCount":
-						aVal = a.numberOfLoans;
-						bVal = b.numberOfLoans;
+						aVal = a.countLoans;
+						bVal = b.countLoans;
 						break;
 				}
 
@@ -118,7 +114,9 @@ const LoansDashboard = () => {
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							# {getSortIcon("userId")}
+						</th>
 						<th scope="col" onClick={() => requestSort("userId")}>
 							User ID {getSortIcon("userId")}
 						</th>
@@ -134,10 +132,14 @@ const LoansDashboard = () => {
 				<tbody>
 					{filteredAndSortedLoans.map((loan, index) => (
 						<tr key={index + 1}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "userId" && sortConfig?.direction === "desc"
+									? filteredAndSortedLoans.length - index
+									: index + 1}
+							</td>
 							<td>{loan.user.userId}</td>
 							<td>{`${loan.user.firstName} ${loan.user.lastName}`}</td>
-							<td>{loan.numberOfLoans}</td>
+							<td>{loan.countLoans}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

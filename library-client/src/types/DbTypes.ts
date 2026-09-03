@@ -95,41 +95,32 @@ export interface ReservastionsType {
 
 //============================================
 
-export interface CategoryCountType {
+export interface CategoriesWithCountsType {
 	id: number;
 	name: string;
-	numberOfBooks: number;
+	countBooks: number;
 }
 
-export interface CategoriesWithCountsType {
-	categoryId: number;
-	categoryName: string;
-	count: number;
-}
-
-export interface FeeCountType {
+export interface FeesWithCountsType {
 	id: number;
-	firstName: string;
-	lastName: string;
-	numberOfFees: number;
-	numberOfFeesUnpaid: number;
-	numberOfFeesPaid: number;
-	numberOfFeesCancelled: number;
+	fee: FeeType;
 	user: UserType;
+	countFees: number;
+	countUnpaid: number;
+	countPaid: number;
+	countCancelled: number;
 }
 
 export interface LoanCountType {
-	loanId: number;
+	id: number;
+	loan: LoanType;
 	user: UserType;
-	firstName: string;
-	lastName: string;
-	numberOfLoans: number;
+	countLoans: number;
 }
 
 export interface ReservationCountType {
 	id: number;
-	firstName: string;
-	lastName: string;
-	numberOfReservations: number;
+	reservation: ReservationType;
+	countReservations: number;
 	user: UserType;
 }

@@ -1,38 +1,22 @@
 import { useMemo, useState } from "react";
 
-import type { FeeCountType } from "../../../types/DbTypes";
+import type { FeesWithCountsType, FeeType, UserType } from "../../../types/DbTypes";
 import { MockData } from "../../../types/MockData";
 
 import SearchBar from "../../common/SearchBar";
 
 const FeesDashboard = () => {
-	const feesWithCount: FeeCountType[] = MockData.mockFeesCount;
+	const feesWithCount: FeesWithCountsType[] = MockData.mockFeesCount;
 
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "numberOfFees"
-			| "numberOfFeesUnpaid"
-			| "numberOfFeesPaid"
-			| "numberOfFeesCancelled";
+		key: keyof FeesWithCountsType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "numberOfFees"
-			| "numberOfFeesUnpaid"
-			| "numberOfFeesPaid"
-			| "numberOfFeesCancelled",
-	) => {
+	const requestSort = (key: keyof FeesWithCountsType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -42,30 +26,21 @@ const FeesDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "numberOfFees"
-			| "numberOfFeesUnpaid"
-			| "numberOfFeesPaid"
-			| "numberOfFeesCancelled",
-	) => {
+	const getSortIcon = (key: keyof FeesWithCountsType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const filteredAndSortedFees = useMemo(() => {
-		let data: FeeCountType[] = [...feesWithCount];
+		let data: FeesWithCountsType[] = [...feesWithCount];
 
 		if (search.trim()) {
 			const searchTerm = search.toLowerCase();
 			data = data.filter((fee) => {
-				const fullName = `${fee.firstName} ${fee.lastName}`.toLowerCase();
+				const fullName = `${fee.user.firstName} ${fee.user.lastName}`.toLowerCase();
 				return (
-					fee.firstName.toLowerCase().includes(searchTerm) ||
-					fee.lastName.toLowerCase().includes(searchTerm) ||
+					fee.user.firstName.toLowerCase().includes(searchTerm) ||
+					fee.user.lastName.toLowerCase().includes(searchTerm) ||
 					fullName.includes(searchTerm) ||
 					String(fee.id).includes(searchTerm)
 				);
@@ -81,30 +56,31 @@ const FeesDashboard = () => {
 					case "id":
 						aVal = a.id;
 						bVal = b.id;
-						break;
-					case "userId":
-						aVal = a.id;
-						bVal = b.id;
+
 						break;
 					case "user":
-						aVal = `${a.firstName} ${a.lastName}`;
-						bVal = `${b.firstName} ${b.lastName}`;
+						aVal = a.user.userId;
+						bVal = b.user.userId;
 						break;
-					case "numberOfFees":
-						aVal = a.numberOfFees;
-						bVal = b.numberOfFees;
+					case "user":
+						aVal = `${a.user.firstName} ${a.user.lastName}`;
+						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
-					case "numberOfFeesUnpaid":
-						aVal = a.numberOfFeesUnpaid;
-						bVal = b.numberOfFeesUnpaid;
+					case "countFees":
+						aVal = a.countFees;
+						bVal = b.countFees;
 						break;
-					case "numberOfFeesPaid":
-						aVal = a.numberOfFeesPaid;
-						bVal = b.numberOfFeesPaid;
+					case "countUnpaid":
+						aVal = a.countUnpaid;
+						bVal = b.countUnpaid;
 						break;
-					case "numberOfFeesCancelled":
-						aVal = a.numberOfFeesCancelled;
-						bVal = b.numberOfFeesCancelled;
+					case "countPaid":
+						aVal = a.countPaid;
+						bVal = b.countPaid;
+						break;
+					case "countCancelled":
+						aVal = a.countCancelled;
+						bVal = b.countCancelled;
 						break;
 				}
 
@@ -153,24 +129,26 @@ const FeesDashboard = () => {
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
+						</th>
+						<th scope="col" onClick={() => requestSort("user")}>
+							User ID {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							User Name {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("numberOfFees")}>
-							Total Fees {getSortIcon("numberOfFees")}
+						<th scope="col" onClick={() => requestSort("countFees")}>
+							Total Fees {getSortIcon("countFees")}
 						</th>
-						<th scope="col" onClick={() => requestSort("numberOfFeesUnpaid")}>
-							Fees UNPAID {getSortIcon("numberOfFeesUnpaid")}
+						<th scope="col" onClick={() => requestSort("countUnpaid")}>
+							Fees UNPAID {getSortIcon("countUnpaid")}
 						</th>
-						<th scope="col" onClick={() => requestSort("numberOfFeesPaid")}>
-							Fees PAID {getSortIcon("numberOfFeesPaid")}
+						<th scope="col" onClick={() => requestSort("countPaid")}>
+							Fees PAID {getSortIcon("countPaid")}
 						</th>
-						<th scope="col" onClick={() => requestSort("numberOfFeesCancelled")}>
-							Fees CANCELLED {getSortIcon("numberOfFeesCancelled")}
+						<th scope="col" onClick={() => requestSort("countCancelled")}>
+							Fees CANCELLED {getSortIcon("countCancelled")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
@@ -178,13 +156,17 @@ const FeesDashboard = () => {
 				<tbody>
 					{filteredAndSortedFees.map((fee, index) => (
 						<tr key={fee.id}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? filteredAndSortedFees.length - index
+									: index + 1}
+							</td>
 							<td>{fee.id}</td>
-							<td>{`${fee.firstName} ${fee.lastName}`}</td>
-							<td>{fee.numberOfFees}</td>
-							<td>{fee.numberOfFeesUnpaid}</td>
-							<td>{fee.numberOfFeesPaid}</td>
-							<td>{fee.numberOfFeesCancelled}</td>
+							<td>{`${fee.user.firstName} ${fee.user.lastName}`}</td>
+							<td>{fee.countFees}</td>
+							<td>{fee.countUnpaid}</td>
+							<td>{fee.countPaid}</td>
+							<td>{fee.countCancelled}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

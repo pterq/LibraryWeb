@@ -9,16 +9,19 @@ const UsersDashboard = () => {
 	const [users, setUsers] = useState<UserType[]>([]);
 
 	useEffect(() => {
-		getUsers().then(setUsers).catch(console.error);
-
-		console.log("Fetched users:", users);
+		getUsers()
+			.then((data) => {
+				setUsers(data);
+				console.log("Fetched users:", data);
+			})
+			.catch(console.error);
 	}, []);
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | UserType["role"]>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: "userId" | "firstName" | "lastName" | "email";
+		key: keyof UserType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
@@ -26,7 +29,7 @@ const UsersDashboard = () => {
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: "userId" | "firstName" | "lastName" | "email" | "role") => {
+	const requestSort = (key: keyof UserType) => {
 		if (key === "role") return;
 
 		let direction: "asc" | "desc" = "asc";
@@ -38,7 +41,7 @@ const UsersDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: "userId" | "firstName" | "lastName" | "email" | "role") => {
+	const getSortIcon = (key: keyof UserType) => {
 		if (key === "role") return "";
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
@@ -104,7 +107,9 @@ const UsersDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("userId")}>
+							# {getSortIcon("userId")}
+						</th>
 
 						<th scope="col" onClick={() => requestSort("userId")}>
 							User ID {getSortIcon("userId")}
@@ -159,7 +164,11 @@ const UsersDashboard = () => {
 				<tbody>
 					{filteredAndSortedUsers.map((user, index) => (
 						<tr key={user.userId}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "userId" && sortConfig?.direction === "desc"
+									? filteredAndSortedUsers.length - index
+									: index + 1}
+							</td>
 							<td>{user.userId}</td>
 							<td>{user.firstName}</td>
 							<td>{user.lastName}</td>

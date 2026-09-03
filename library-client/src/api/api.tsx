@@ -10,7 +10,10 @@ import type {
 	ReservationType,
 	FeeType,
 	LoanStatusType,
-	CategoryCountType,
+	FeesWithCountsType,
+	LoanCountType,
+	ReservationCountType,
+	CategoriesWithCountsType,
 } from "../types/DbTypes";
 
 //endpoints
@@ -18,7 +21,7 @@ const BOOKS_ENDPOINT = "/books";
 const BOOK_COPY_ENDPOINT = "/book-copy";
 const CATEGORIES_ENDPOINT = "/categories";
 const AUTHORS_ENDPOINT = "/authors";
-const USER_ENDPOINT = "/users";
+const USER_ENDPOINT = "/user";
 const LOAN_ENDPOINT = "/loans";
 const FEE_ENDPOINT = "/fees";
 const RESERVATION_ENDPOINT = "/reservations";
@@ -245,7 +248,7 @@ export const deleteCategoryById = async (id: number) => {
 
 export const getCategoriesWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<CategoryCountType[]>(
+		const response = await axiosClient.get<CategoriesWithCountsType[]>(
 			`${CATEGORIES_ENDPOINT}/counts`,
 		);
 		return response.data;
@@ -613,7 +616,7 @@ const api = {
 	updateCategoryById,
 	deleteCategoryById,
 	getCategoryById,
-	getCategoriesCounts: getCategoriesWithCounts,
+	getCategoriesWithCounts,
 
 	getLoans,
 	getLoansByLoanStatus,

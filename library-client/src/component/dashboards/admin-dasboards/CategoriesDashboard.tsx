@@ -1,32 +1,32 @@
 import { useEffect, useMemo, useState } from "react";
-import type { CategoryCountType, CategoriesWithCountsResponse } from "../../../types/DbTypes";
+import type { CategoriesWithCountsType } from "../../../types/DbTypes";
 
-import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
 import { getCategories, getCategoriesWithCounts } from "../../../api/api";
 
 const CategoriesDashboard = () => {
-	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsResponse>({
-		categoriesWithCount: [],
-	});
+	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
 
 	useEffect(() => {
 		getCategoriesWithCounts()
-			.then((data) => setCategoriesWithCount(data))
+			.then((data) => {
+				setCategoriesWithCount(data);
+				console.log("Fetched categories with counts:", data);
+			})
 			.catch(console.error);
 	}, []);
 
 	const [search, setSearch] = useState("");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof CategoryCountType;
+		key: keyof CategoriesWithCountsType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof CategoryCountType) => {
+	const requestSort = (key: keyof CategoriesWithCountsType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -36,13 +36,13 @@ const CategoriesDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof CategoryCountType) => {
+	const getSortIcon = (key: keyof CategoriesWithCountsType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const filteredAndSortedCategories = useMemo(() => {
-		let data = [...(categoriesWithCount.categoriesWithCount ?? [])];
+		let data = [...categoriesWithCount];
 
 		if (search.trim()) {
 			const searchTerm = search.toLowerCase();
@@ -56,8 +56,26 @@ const CategoriesDashboard = () => {
 
 		if (sortConfig) {
 			data.sort((a, b) => {
-				const aVal = a[sortConfig.key];
-				const bVal = b[sortConfig.key];
+				let aVal: number | string;
+				let bVal: number | string;
+
+				switch (sortConfig.key) {
+					case "id":
+						aVal = a.id;
+						bVal = b.id;
+						break;
+					case "name":
+						aVal = a.name;
+						bVal = b.name;
+						break;
+					case "countBooks":
+						aVal = a.countBooks ?? 0;
+						bVal = b.countBooks ?? 0;
+						break;
+					default:
+						aVal = a[sortConfig.key];
+						bVal = b[sortConfig.key];
+				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
 					return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
@@ -105,31 +123,37 @@ const CategoriesDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
+						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							ID {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("name")}>
 							Name {getSortIcon("name")}
 						</th>
-						<th scope="col" onClick={() => requestSort("numberOfBooks")}>
-							Number of books {getSortIcon("numberOfBooks")}
+						<th scope="col" onClick={() => requestSort("countBooks")}>
+							Number of books {getSortIcon("countBooks")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					{filteredAndSortedCategories.map((category, index) => (
-						<tr key={category.id}>
-							<td>{index + 1}</td>
-							<td>{category.id}</td>
-							<td>{category.name}</td>
-							<td>{category.numberOfBooks}</td>
+					{filteredAndSortedCategories.map((categoryWithCount, index) => (
+						<tr key={categoryWithCount.id}>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? filteredAndSortedCategories.length - index
+									: index + 1}
+							</td>
+							<td>{categoryWithCount.id}</td>
+							<td>{categoryWithCount.name}</td>
+							<td>{categoryWithCount.countBooks ?? 0}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
 									onClick={() =>
-										(window.location.href = `/category/view/${category.id}`)
+										(window.location.href = `/category/view/${categoryWithCount.id}`)
 									}
 								>
 									View Details

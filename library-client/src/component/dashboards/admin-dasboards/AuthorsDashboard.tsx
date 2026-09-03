@@ -13,9 +13,12 @@ const AuthorsDashboard = () => {
 	const [authors, setAuthors] = useState<AuthorType[]>([]);
 
 	useEffect(() => {
-		getAuthors().then(setAuthors).catch(console.error);
-
-		console.log("Fetched authors:", authors);
+		getAuthors()
+			.then((data) => {
+				setAuthors(data);
+				console.log("Fetched authors:", data);
+			})
+			.catch(console.error);
 	}, []);
 
 	const [sortConfig, setSortConfig] = useState<{
@@ -106,7 +109,9 @@ const AuthorsDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
+						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							ID {getSortIcon("id")}
 						</th>
