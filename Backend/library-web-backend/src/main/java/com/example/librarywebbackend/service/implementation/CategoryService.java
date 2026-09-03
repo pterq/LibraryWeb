@@ -2,6 +2,7 @@ package com.example.librarywebbackend.service.implementation;
 
 
 import com.example.librarywebbackend.entity.Category;
+import com.example.librarywebbackend.dto.CategoryWithCountDTO;
 import com.example.librarywebbackend.repository.CategoryRepository;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class CategoryService implements ICategoryService {
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    @Override
+    public List<CategoryWithCountDTO> getCategoriesWithCount() {
+        return categoryRepository.findCategoriesWithCount();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.CategoryWithCountDTO;
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,11 @@ public class CategoryController {
     @GetMapping
     public List<Category> getAll() {
         return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/counts")
+    public List<CategoryWithCountDTO> getCategoriesWithCount() {
+        return categoryService.getCategoriesWithCount();
     }
 
     @GetMapping("/{id}")
@@ -61,4 +67,6 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

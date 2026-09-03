@@ -1,12 +1,22 @@
-import { useMemo, useState } from "react";
-import type { CategoryType, CategoryCountType } from "../../../types/DbTypes";
+import { useEffect, useMemo, useState } from "react";
+import type { CategoryCountType, CategoriesWithCountsResponse } from "../../../types/DbTypes";
 
 import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
+import { getCategories, getCategoriesWithCounts } from "../../../api/api";
+
 const CategoriesDashboard = () => {
-	const categories: CategoryType[] = MockData.mockCategories;
-	const categoriesWithCount: CategoryCountType[] = MockData.mockCategoriesCount;
+	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsResponse>({
+		categoriesWithCount: [],
+	});
+
+	useEffect(() => {
+		getCategoriesWithCounts()
+			.then((data) => setCategoriesWithCount(data))
+			.catch(console.error);
+	}, []);
+
 	const [search, setSearch] = useState("");
 
 	const [sortConfig, setSortConfig] = useState<{
@@ -32,7 +42,7 @@ const CategoriesDashboard = () => {
 	};
 
 	const filteredAndSortedCategories = useMemo(() => {
-		let data = [...categoriesWithCount];
+		let data = [...(categoriesWithCount.categoriesWithCount ?? [])];
 
 		if (search.trim()) {
 			const searchTerm = search.toLowerCase();

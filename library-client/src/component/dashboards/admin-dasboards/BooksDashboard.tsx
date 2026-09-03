@@ -1,11 +1,26 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { BookType } from "../../../types/DbTypes";
+import type { BookType, CategoryType, AuthorType } from "../../../types/DbTypes";
 
-import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
+import { getBooks, getCategories } from "../../../api/api";
+
 const BooksDashboard = () => {
+	const [books, setBooks] = useState<BookType[]>([]);
+
+	useEffect(() => {
+		getBooks().then(setBooks).catch(console.error);
+
+		console.log("Fetched books:", books);
+	}, []);
+
+	const [categories, setCategories] = useState<CategoryType[]>([]);
+
+	useEffect(() => {
+		getCategories().then(setCategories).catch(console.error);
+	}, []);
+
 	const [search, setSearch] = useState("");
 	const [filterCategory, setFilterCategory] = useState<string>("ALL");
 
@@ -32,13 +47,13 @@ const BooksDashboard = () => {
 	};
 
 	const availableCategories = useMemo(() => {
-		return [...new Set(MockData.mockCategories.flatMap((cat) => cat.name))].sort((a, b) =>
+		return [...new Set(categories.map((category) => category.name))].sort((a, b) =>
 			a.localeCompare(b),
 		);
-	}, []);
+	}, [categories]);
 
-	const books = useMemo(() => {
-		let data: BookType[] = [...MockData.mockBooks];
+	const filteredBooks = useMemo(() => {
+		let data: BookType[] = [...books];
 
 		if (search) {
 			data = data.filter((book) => book.title.toLowerCase().includes(search.toLowerCase()));
@@ -61,13 +76,15 @@ const BooksDashboard = () => {
 						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
 						break;
 					case "authors":
-						aVal = a.authors.authors
+						aVal = (a.authors?.authors ?? [])
 							.map((author) => `${author.firstName} ${author.lastName}`)
 							.join(", ");
-						bVal = b.authors.authors
+
+						bVal = (b.authors?.authors ?? [])
 							.map((author) => `${author.firstName} ${author.lastName}`)
 							.join(", ");
 						break;
+
 					default:
 						aVal = a[sortConfig.key as keyof BookType] as number | string;
 						bVal = b[sortConfig.key as keyof BookType] as number | string;
@@ -84,7 +101,7 @@ const BooksDashboard = () => {
 		}
 
 		return data;
-	}, [search, filterCategory, sortConfig]);
+	}, [books, search, filterCategory, sortConfig]);
 
 	return (
 		<div className="container-fluid">
@@ -156,7 +173,7 @@ const BooksDashboard = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{books.map((book, index) => (
+					{filteredBooks.map((book, index) => (
 						<tr key={book.id}>
 							<td>{index + 1}</td>
 							<td>{book.id}</td>
@@ -169,10 +186,11 @@ const BooksDashboard = () => {
 									.join(", ")}
 							</td>
 							<td>
-								{book.authors.authors
+								{(book.authors?.authors ?? [])
 									.map((author) => `${author.firstName} ${author.lastName}`)
 									.join(", ")}
 							</td>
+
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
