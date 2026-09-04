@@ -1,18 +1,11 @@
 import React from "react";
 
 const ReturnButton = () => {
-	/*
-	const handleBackClick = () => {
-		const shouldGoBack = window.confirm(
-			"Not saved changes will be lost. Do you want to continue?",
-		);
-		if (shouldGoBack) {
-			window.history.back();
-		}
-	};
-	*/
 	const handleBackClick = () => {
 		window.history.back();
+		setTimeout(() => {
+			window.location.reload();
+		}, 50);
 	};
 
 	return (

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CategoriesWithCountsType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import DeleteButton from "./DeleteButton";
+import DeleteButton from "../ViewEditAddPages/DeleteButton";
 
 import { getCategoriesWithCounts, deleteCategoryById } from "../../../api/api";
 
@@ -173,6 +173,7 @@ const CategoriesDashboard = () => {
 
 								<DeleteButton
 									id={categoryWithCount.id}
+									name={categoryWithCount.name}
 									entityName="category"
 									onDelete={handleDelete}
 								/>

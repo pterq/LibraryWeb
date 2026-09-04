@@ -3,11 +3,15 @@ import React, { useEffect, useState } from "react";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
 
-import { MockData } from "../../../../types/MockData";
+import DeleteButton from "../../ViewEditAddPages/DeleteButton";
+import {
+	deleteCategoryById,
+	getCategoryById,
+	updateCategoryById,
+	addCategory,
+} from "../../../../api/api";
 
-type CategoryFormData = {
-	name: string;
-};
+import type { CategoryFormData } from "../../../../types/DbTypes";
 
 const EMPTY_FORM: CategoryFormData = { name: "" };
 
@@ -23,9 +27,10 @@ const CategoryPageViewEditAdd = () => {
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState<string | null>(null);
 
 	// ============================
-	// LOAD CATEGORY FROM MOCKDATA
+	// LOAD CATEGORY
 	// ============================
 	useEffect(() => {
 		if (action !== "view") {
@@ -46,22 +51,21 @@ const CategoryPageViewEditAdd = () => {
 
 		let isActive = true;
 
-		const loadCategory = () => {
+		const loadCategory = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const category = MockData.mockCategories.find((c) => c.id === Number(linkId));
+				const category = await getCategoryById(linkId);
 
 				if (!isActive) return;
 
 				if (!category) {
-					setError("Category not found in MockData.");
+					setError("Category not found.");
 					return;
 				}
 
 				const loaded = { name: category.name };
-
 				setFormData(loaded);
 				setOriginalFormData(loaded);
 			} catch {
@@ -87,11 +91,51 @@ const CategoryPageViewEditAdd = () => {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleSubmit = (event: React.FormEvent) => {
+	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		if (isReadOnly) return;
 
-		console.log("Form submit payload:", formData);
+		setError(null);
+		setSuccess(null);
+
+		// ADD MODE → CREATE
+		if (action === "add") {
+			try {
+				setIsLoading(true);
+
+				await addCategory(formData);
+
+				setSuccess("Category created successfully.");
+				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
+			} catch {
+				setError("Failed to create category.");
+			} finally {
+				setIsLoading(false);
+			}
+
+			return;
+		}
+
+		// VIEW/EDIT MODE → UPDATE
+		if (!linkId) {
+			setError("Cannot update category: missing id.");
+			return;
+		}
+
+		try {
+			setIsLoading(true);
+
+			await updateCategoryById(Number(linkId), formData);
+
+			setOriginalFormData(formData);
+			setIsEditing(false);
+			setSuccess("Category updated successfully.");
+		} catch {
+			setError("Failed to update category.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleCancelEdit = () => {
@@ -99,6 +143,7 @@ const CategoryPageViewEditAdd = () => {
 			setFormData(originalFormData);
 			setIsEditing(false);
 			setError(null);
+			setSuccess(null);
 			return;
 		}
 
@@ -106,6 +151,7 @@ const CategoryPageViewEditAdd = () => {
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
+		setSuccess(null);
 		window.history.back();
 	};
 
@@ -113,25 +159,20 @@ const CategoryPageViewEditAdd = () => {
 		if (action === "view") {
 			setFormData(originalFormData);
 			setError(null);
+			setSuccess(null);
 			return;
 		}
 
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
+		setSuccess(null);
 	};
 
-	const handleDelete = () => {
-		if (action !== "view" || !linkId) {
-			setError("Cannot delete item: invalid item id.");
-			return;
-		}
-
-		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
-		if (!shouldDelete) return;
-
-		console.log("Mock delete item with id:", linkId);
-		setError("Mock delete executed. Connect API call here.");
+	const handleDelete = async () => {
+		if (!linkId) return;
+		await deleteCategoryById(Number(linkId));
+		window.history.back();
 	};
 
 	// ============================
@@ -147,6 +188,7 @@ const CategoryPageViewEditAdd = () => {
 
 			{isLoading && <p>Loading category data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
+			{success && <p className="text-success mb-3">{success}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<div className="mb-3">
@@ -180,14 +222,12 @@ const CategoryPageViewEditAdd = () => {
 
 			<div className="d-flex flex-wrap gap-2 mt-3">
 				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
+					<DeleteButton
+						id={linkId ?? ""}
+						name={formData.name}
+						entityName="category"
+						onDelete={handleDelete}
+					/>
 				)}
 
 				{action === "view" && !isEditing && (

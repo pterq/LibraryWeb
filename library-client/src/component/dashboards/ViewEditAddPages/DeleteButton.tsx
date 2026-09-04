@@ -2,6 +2,7 @@ import { useState } from "react";
 
 type DeleteButtonProps = {
 	id: number | string;
+	name: string;
 	entityName: string;
 	onDelete: (id: number | string) => Promise<void> | void;
 	className?: string;
@@ -13,6 +14,7 @@ type DeleteButtonProps = {
 
 const DeleteButton = ({
 	id,
+	name,
 	entityName,
 	onDelete,
 	className = "btn btn-sm btn-danger",
@@ -24,7 +26,8 @@ const DeleteButton = ({
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleClick = async () => {
-		const message = confirmMessage ?? `Are you sure you want to delete ${entityName}: ${id}?`;
+		const message =
+			confirmMessage ?? `Are you sure you want to delete ${entityName}: ${name} (ID: ${id})?`;
 
 		if (!window.confirm(message)) return;
 

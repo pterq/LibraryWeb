@@ -37,6 +37,10 @@ export interface CategoryType {
 	name: string;
 }
 
+export interface CategoryFormData {
+	name: string;
+}
+
 export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
 
 export interface LoanType {
