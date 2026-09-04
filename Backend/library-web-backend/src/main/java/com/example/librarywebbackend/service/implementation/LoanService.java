@@ -131,7 +131,10 @@ public class LoanService implements ILoanService {
                                 (String) row[3],               // lastName
                                 (String) row[4]                // email
                         ),
-                        ((Number) row[5]).longValue()         // countLoans
+                        ((Number) row[5]).longValue(),        // countLoans
+                        ((Number) row[6]).longValue(),        // countBorrowed (ACTIVE)
+                        ((Number) row[7]).longValue(),        // countReturned
+                        ((Number) row[8]).longValue()         // countOverdue
                 ))
                 .toList();
     }

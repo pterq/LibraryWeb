@@ -122,6 +122,9 @@ export interface LoanCountType {
 	id: number;
 	userDto: UserDtoType;
 	countLoans: number;
+	countBorrowed: number;
+	countReturned: number;
+	countOverdue: number;
 }
 
 export interface ReservationCountType {

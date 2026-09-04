@@ -135,8 +135,18 @@ const LoansDashboard = () => {
 							User Name {getSortIcon("userDto")}
 						</th>
 						<th scope="col" onClick={() => requestSort("countLoans")}>
-							Number of Loans {getSortIcon("countLoans")}
+							Total Loans {getSortIcon("countLoans")}
 						</th>
+						<th scope="col" onClick={() => requestSort("countLoans")}>
+							Borrowed {getSortIcon("countLoans")}
+						</th>
+						<th scope="col" onClick={() => requestSort("countLoans")}>
+							Returned {getSortIcon("countLoans")}
+						</th>
+						<th scope="col" onClick={() => requestSort("countLoans")}>
+							Overdue {getSortIcon("countLoans")}
+						</th>
+
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
@@ -151,6 +161,9 @@ const LoansDashboard = () => {
 							<td>{loan.user.id}</td>
 							<td>{`${loan.user.firstName} ${loan.user.lastName}`}</td>
 							<td>{loan.countLoans}</td>
+							<td>{loan.countBorrowed}</td>
+							<td>{loan.countReturned}</td>
+							<td>{loan.countOverdue}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

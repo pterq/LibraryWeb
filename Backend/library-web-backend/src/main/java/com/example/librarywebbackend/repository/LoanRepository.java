@@ -22,7 +22,10 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
         u.firstName as firstName,
         u.lastName as lastName,
         u.email as email,
-        count(l) as countLoans
+        count(l) as countLoans,
+        sum(case when l.status = com.example.librarywebbackend.entity.LoanStatus.ACTIVE then 1 else 0 end) as countBorrowed,
+        sum(case when l.status = com.example.librarywebbackend.entity.LoanStatus.RETURNED then 1 else 0 end) as countReturned,
+        sum(case when l.status = com.example.librarywebbackend.entity.LoanStatus.OVERDUE then 1 else 0 end) as countOverdue
     from Loan l
     join l.user u
     group by u.id, u.firstName, u.lastName, u.email
