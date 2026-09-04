@@ -3,8 +3,9 @@ import type { AuthorType, UserType } from "../../../types/DbTypes";
 import { useEffect } from "react";
 
 import SearchBar from "../../common/SearchBar";
+import DeleteButton from "../ViewEditAddPages/DeleteButton";
 
-import { getAuthors } from "../../../api/api";
+import { getAuthors, deleteAuthorById, updateAuthorById, addAuthorById } from "../../../api/api";
 
 const AuthorsDashboard = () => {
 	const [search, setSearch] = useState("");
@@ -75,6 +76,14 @@ const AuthorsDashboard = () => {
 		return data;
 	}, [authors, filter, search, sortConfig]);
 
+	const handleDelete = (id: number) => {
+		deleteAuthorById(id)
+			.then(() => {
+				setAuthors((prev) => prev.filter((author) => author.id !== id));
+			})
+			.catch(console.error);
+	};
+
 	return (
 		<div className="container-fluid">
 			<h1>Authors Dashboard</h1>
@@ -128,7 +137,9 @@ const AuthorsDashboard = () => {
 						<th scope="col" onClick={() => requestSort("biography")}>
 							Biography {getSortIcon("biography")}
 						</th>
-						<th scope="col">Actions</th>
+						<th scope="col" style={{ width: "160px" }}>
+							Actions
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -144,15 +155,21 @@ const AuthorsDashboard = () => {
 							<td>{author.lastName}</td>
 							<td>{author.biography?.substring(0, 100) || "-"}</td>
 
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
 										(window.location.href = `/author/view/${author.id}`)
 									}
 								>
 									View Details
 								</button>
+								<DeleteButton
+									id={author.id}
+									name={`${author.firstName} ${author.lastName}`}
+									entityName="author"
+									onDelete={() => handleDelete(author.id)}
+								/>
 							</td>
 						</tr>
 					))}

@@ -39,7 +39,7 @@ export const getAuthors = async () => {
 	}
 };
 
-export const addAuthor = async (author: AuthorType) => {
+export const addAuthorById = async () => {
 	try {
 		const response = await axiosClient.post<AuthorType>(AUTHORS_ENDPOINT, author);
 		return response.data;
@@ -49,7 +49,17 @@ export const addAuthor = async (author: AuthorType) => {
 	}
 };
 
-export const updateAuthor = async (id: number, author: AuthorType) => {
+export const getAuthorById = async (id: number) => {
+	try {
+		const response = await axiosClient.get<AuthorType>(`${AUTHORS_ENDPOINT}/${id}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to fetch author with id ${id}:`, error);
+		throw error;
+	}
+};
+
+export const updateAuthorById = async (id: number, author: AuthorType) => {
 	try {
 		const response = await axiosClient.put<AuthorType>(`${AUTHORS_ENDPOINT}/${id}`, author);
 		return response.data;
@@ -59,7 +69,7 @@ export const updateAuthor = async (id: number, author: AuthorType) => {
 	}
 };
 
-export const deleteAuthor = async (id: number) => {
+export const deleteAuthorById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`${AUTHORS_ENDPOINT}/${id}`);
 		return response.data;
@@ -634,10 +644,11 @@ export const changeUserPassword = async (id: number, newPassword: string) => {
 
 const api = {
 	getAuthors,
-	addAuthor,
-	updateAuthor,
-	deleteAuthor,
+	addAuthorById,
+	updateAuthorById,
+	deleteAuthorById,
 	searchAuthors,
+	getAuthorById,
 
 	getUsers,
 	getUserById,

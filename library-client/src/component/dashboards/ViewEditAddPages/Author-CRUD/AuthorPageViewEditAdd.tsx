@@ -3,7 +3,15 @@ import React, { useEffect, useState } from "react";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
 
-import { MockData } from "../../../../types/MockData";
+import DeleteButton from "../../ViewEditAddPages/DeleteButton";
+import type {} from "../../../../types/DbTypes";
+
+import {
+	getAuthorById,
+	deleteAuthorById,
+	updateAuthorById,
+	addAuthorById,
+} from "../../../../api/api";
 
 type AuthorFormData = {
 	firstName: string;
@@ -26,14 +34,21 @@ const AuthorPageViewEditAdd = () => {
 	const isExistingAuthorAction = action === "view";
 
 	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState<string | null>(null);
 
+	// =============================================================
+	// LOAD AUTHOR FROM API
+	// =============================================================
 	useEffect(() => {
 		if (!isExistingAuthorAction) {
 			setFormData(EMPTY_FORM);
 			setOriginalFormData(EMPTY_FORM);
 			setError(null);
+			setSuccess(null);
 			setIsEditing(true);
 			return;
 		}
@@ -48,19 +63,17 @@ const AuthorPageViewEditAdd = () => {
 
 		let isActive = true;
 
-		const loadAuthor = () => {
+		const loadAuthor = async () => {
 			setIsLoading(true);
 			setError(null);
+			setSuccess(null);
 
 			try {
-				const author = MockData.mockAuthors.find((a) => a.id === Number(linkId));
-
-				if (!isActive) {
-					return;
-				}
+				const author = await getAuthorById(Number(linkId));
+				if (!isActive) return;
 
 				if (!author) {
-					setError("Author not found in MockData.");
+					setError("Author not found.");
 					setFormData(EMPTY_FORM);
 					return;
 				}
@@ -74,16 +87,11 @@ const AuthorPageViewEditAdd = () => {
 				setFormData(nextFormData);
 				setOriginalFormData(nextFormData);
 			} catch {
-				if (!isActive) {
-					return;
-				}
-
+				if (!isActive) return;
 				setError("Failed to load author data.");
 				setFormData(EMPTY_FORM);
 			} finally {
-				if (isActive) {
-					setIsLoading(false);
-				}
+				if (isActive) setIsLoading(false);
 			}
 		};
 
@@ -94,71 +102,135 @@ const AuthorPageViewEditAdd = () => {
 		};
 	}, [action, linkId, isExistingAuthorAction]);
 
+	// =============================================================
+	// PAGE TITLE
+	// =============================================================
 	const pageTitle =
 		action === "view" ? (isEditing ? "Edit Author" : "View Author") : "Add Author";
 
+	// =============================================================
+	// FORM CHANGE HANDLER
+	// =============================================================
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const handleSubmit = (event: React.FormEvent) => {
+	// =============================================================
+	// SUBMIT HANDLER (ADD / UPDATE)
+	// =============================================================
+	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+		if (isReadOnly) return;
 
-		if (isReadOnly) {
+		setError(null);
+		setSuccess(null);
+
+		// ADD MODE → CREATE
+		if (action === "add") {
+			try {
+				setIsLoading(true);
+
+				await addAuthorById(formData);
+
+				setSuccess("Author created successfully.");
+				setFormData(EMPTY_FORM);
+				setOriginalFormData(EMPTY_FORM);
+			} catch {
+				setError("Failed to create author.");
+			} finally {
+				setIsLoading(false);
+			}
+
 			return;
 		}
 
-		console.log("Form submit payload:", formData);
+		// VIEW/EDIT MODE → UPDATE
+		if (!linkId) {
+			setError("Cannot update author: missing id.");
+			return;
+		}
+
+		try {
+			setIsLoading(true);
+
+			await updateAuthorById(Number(linkId), formData);
+
+			setOriginalFormData(formData);
+			setIsEditing(false);
+			setSuccess("Author updated successfully.");
+		} catch {
+			setError("Failed to update author.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	// =============================================================
+	// CANCEL EDIT
+	// =============================================================
 	const handleCancelEdit = () => {
+		setError(null);
+		setSuccess(null);
+
 		if (action === "view") {
 			setFormData(originalFormData);
 			setIsEditing(false);
-			setError(null);
 			return;
 		}
 
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
-		setError(null);
 		window.history.back();
 	};
 
+	// =============================================================
+	// CLEAR FORM (ADD MODE)
+	// =============================================================
 	const handleClearAddForm = () => {
 		setFormData(EMPTY_FORM);
 		setOriginalFormData(EMPTY_FORM);
 		setError(null);
+		setSuccess(null);
 	};
 
-	//=============================================================
-
-	const handleDelete = () => {
+	// =============================================================
+	// DELETE AUTHOR
+	// =============================================================
+	const handleDelete = async () => {
 		if (action !== "view" || !linkId) {
-			setError("Cannot delete item: invalid item id.");
+			setError("Cannot delete author: invalid id.");
 			return;
 		}
 
-		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
-		if (!shouldDelete) {
-			return;
-		}
+		const shouldDelete = window.confirm("Are you sure you want to delete this author?");
+		if (!shouldDelete) return;
 
-		// Mock delete action - replace with API call when backend endpoint is ready.
-		console.log("Mock delete item with id:", linkId);
-		setError("Mock delete executed. Connect API call here.");
+		setIsLoading(true);
+		setError(null);
+		setSuccess(null);
+
+		try {
+			await deleteAuthorById(Number(linkId));
+			setSuccess("Author deleted successfully.");
+			window.history.back();
+		} catch {
+			setError("Failed to delete author.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	//=============================================================
-
+	// =============================================================
+	// RENDER
+	// =============================================================
 	return (
 		<div className="container py-3">
 			<ReturnButton />
 
 			{isLoading && <p>Loading author data...</p>}
 			{error && <p className="text-danger mb-3">{error}</p>}
+			{success && <p className="text-success mb-3">{success}</p>}
 
 			<form onSubmit={handleSubmit} className="mt-3">
 				<h2>{pageTitle}</h2>
@@ -215,29 +287,31 @@ const AuthorPageViewEditAdd = () => {
 						<button type="submit" className="btn btn-primary" disabled={isLoading}>
 							{action === "view" ? "Save Changes" : "Create Author"}
 						</button>
-						<button
-							type="button"
-							className="btn btn-secondary"
-							onClick={handleClearAddForm}
-							disabled={isLoading}
-						>
-							Clear Form
-						</button>
+
+						{action === "add" && (
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={handleClearAddForm}
+								disabled={isLoading}
+							>
+								Clear Form
+							</button>
+						)}
 					</div>
 				)}
 			</form>
 
 			<div className="d-flex flex-wrap gap-2 mt-3">
 				{action === "view" && (
-					<button
-						type="button"
-						className="btn btn-danger"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
-						Delete
-					</button>
+					<DeleteButton
+						id={Number(linkId)}
+						name={`${formData.firstName} ${formData.lastName}`}
+						entityName="author"
+						onDelete={() => handleDelete()}
+					/>
 				)}
+
 				{action === "view" && !isEditing && (
 					<button
 						type="button"
@@ -247,6 +321,7 @@ const AuthorPageViewEditAdd = () => {
 						Edit
 					</button>
 				)}
+
 				{action === "view" && isEditing && (
 					<button type="button" className="btn btn-warning" onClick={handleCancelEdit}>
 						Cancel
