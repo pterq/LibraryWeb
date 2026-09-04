@@ -126,8 +126,12 @@ const CategoriesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
-							ID {getSortIcon("id")}
+						<th
+							scope="col"
+							onClick={() => requestSort("id")}
+							style={{ maxWidth: "50px" }}
+						>
+							Category ID {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("name")}>
 							Name {getSortIcon("name")}

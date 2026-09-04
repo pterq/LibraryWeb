@@ -124,6 +124,7 @@ const PhysicalBooksDashboard = () => {
 					onClick={() => {
 						setSearch("");
 						setSortConfig(null);
+						setFilterStatus("ALL");
 					}}
 				>
 					Clear filters
@@ -137,17 +138,11 @@ const PhysicalBooksDashboard = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
-							Physical Book ID {getSortIcon("id")}
-						</th>
 						<th scope="col" onClick={() => requestSort("inventoryCode")}>
-							Inventory Code {getSortIcon("inventoryCode")}
+							(ID) Inventory Code {getSortIcon("inventoryCode")}
 						</th>
 						<th scope="col" onClick={() => requestSort("book")}>
-							Title {getSortIcon("book")}
-						</th>
-						<th scope="col" onClick={() => requestSort("book")}>
-							Authors {getSortIcon("book")}
+							(ID) Title (Authors) {getSortIcon("book")}
 						</th>
 
 						<th scope="col" style={{ width: "16%" }}>
@@ -185,20 +180,16 @@ const PhysicalBooksDashboard = () => {
 									? physicalBooks.length - index
 									: index + 1}
 							</td>
-							<td>{copy.book.id}</td>
-							<td>{copy.inventoryCode}</td>
-							<td>{copy.book.title}</td>
 							<td>
-								{(copy.book.authors ?? [])
-									.map((authorsType) =>
-										authorsType.authors
-											.map(
-												(author) =>
-													author.firstName + " " + author.lastName,
-											)
-											.join(", "),
-									)
-									.join(", ")}
+								({copy.id}) {copy.inventoryCode}
+							</td>
+							<td>
+								({copy.book.id}) {copy.book.title}
+								{" ("}
+								{(copy.book.bookAuthors ?? [])
+									.map((author) => `${author.firstName} ${author.lastName}`)
+									.join(", ") || "-"}
+								)
 							</td>
 
 							<td>{copy.status}</td>

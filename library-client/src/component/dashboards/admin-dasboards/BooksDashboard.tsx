@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { BookType, CategoryType } from "../../../types/DbTypes";
+import type { AuthorType, BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -25,14 +25,14 @@ const BooksDashboard = () => {
 	}, []);
 
 	const [search, setSearch] = useState("");
-	const [filterCategory, setFilterCategory] = useState<string>("ALL");
+	const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof BookType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
-	const isFiltered = search !== "" || filterCategory !== "ALL" || sortConfig !== null;
+	const isFiltered = search !== "" || filterStatus !== "ALL" || sortConfig !== null;
 
 	const requestSort = (key: keyof BookType) => {
 		let direction: "asc" | "desc" = "asc";
@@ -62,10 +62,14 @@ const BooksDashboard = () => {
 			data = data.filter((book) => book.title.toLowerCase().includes(search.toLowerCase()));
 		}
 
-		if (filterCategory !== "ALL") {
-			data = data.filter((book) =>
-				(book.categories ?? []).some((category) => category.name === filterCategory),
-			);
+		if (filterStatus !== "ALL") {
+			if (filterStatus === "NONE") {
+				data = data.filter((book) => !book.categories || book.categories.length === 0);
+			} else {
+				data = data.filter((book) =>
+					(book.categories ?? []).some((category) => category.name === filterStatus),
+				);
+			}
 		}
 
 		if (sortConfig) {
@@ -86,20 +90,16 @@ const BooksDashboard = () => {
 						aVal = (a.categories ?? []).map((category) => category.name).join(", ");
 						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
 						break;
-					case "authors":
-						aVal = (a.authors ?? [])
-							.map((authorsType) =>
-								authorsType.authors
-									.map((author) => author.firstName + " " + author.lastName)
-									.join(", "),
+					case "bookAuthors":
+						aVal = (a.bookAuthors ?? [])
+							.map(
+								(authorsType) => authorsType.firstName + " " + authorsType.lastName,
 							)
 							.join(", ");
 
-						bVal = (b.authors ?? [])
-							.map((authorsType) =>
-								authorsType.authors
-									.map((author) => author.firstName + " " + author.lastName)
-									.join(", "),
+						bVal = (b.bookAuthors ?? [])
+							.map(
+								(authorsType) => authorsType.firstName + " " + authorsType.lastName,
 							)
 							.join(", ");
 						break;
@@ -120,7 +120,7 @@ const BooksDashboard = () => {
 		}
 
 		return data;
-	}, [books, search, filterCategory, sortConfig]);
+	}, [books, search, filterStatus, sortConfig]);
 
 	return (
 		<div className="container-fluid">
@@ -142,6 +142,7 @@ const BooksDashboard = () => {
 					onClick={() => {
 						setSearch("");
 						setSortConfig(null);
+						setFilterStatus("ALL");
 					}}
 				>
 					Clear filters
@@ -155,14 +156,11 @@ const BooksDashboard = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
-							Book ID {getSortIcon("id")}
-						</th>
 						<th scope="col" onClick={() => requestSort("title")}>
-							Title {getSortIcon("title")}
+							(ID) Title {getSortIcon("title")}
 						</th>
-						<th scope="col" onClick={() => requestSort("authors")}>
-							Authors {getSortIcon("authors")}
+						<th scope="col" onClick={() => requestSort("bookAuthors")}>
+							Authors {getSortIcon("bookAuthors")}
 						</th>
 						<th scope="col" onClick={() => requestSort("isbn")}>
 							ISBN {getSortIcon("isbn")}
@@ -178,10 +176,11 @@ const BooksDashboard = () => {
 								<select
 									className="form-select form-select-sm py-0"
 									style={{ width: "auto" }}
-									value={filterCategory}
-									onChange={(e) => setFilterCategory(e.target.value)}
+									value={filterStatus}
+									onChange={(e) => setFilterStatus(e.target.value)}
 								>
 									<option value="ALL">All</option>
+									<option value="NONE">-</option>
 									{availableCategories.map((category) => (
 										<option key={category} value={category}>
 											{category}
@@ -190,8 +189,8 @@ const BooksDashboard = () => {
 								</select>
 							</div>
 						</th>
-						<th scope="col" onClick={() => requestSort("authors")}>
-							Authors {getSortIcon("authors")}
+						<th scope="col" onClick={() => requestSort("bookAuthors")}>
+							Authors {getSortIcon("bookAuthors")}
 						</th>
 						<th scope="col">Actions</th>
 					</tr>
@@ -204,38 +203,20 @@ const BooksDashboard = () => {
 									? filteredBooks.length - index
 									: index + 1}
 							</td>
-							<td>{book.id}</td>
-							<td>{book.title}</td>
 							<td>
-								{(book.authors ?? [])
-									.map((authorsType) =>
-										authorsType.authors
-											.map(
-												(author) =>
-													author.firstName + " " + author.lastName,
-											)
-											.join(", "),
-									)
-									.join(", ")}
+								({book.id}) {book.title}
+							</td>
+							<td>
+								{(book.bookAuthors ?? [])
+									.map((author) => `${author.firstName} ${author.lastName}`)
+									.join(", ") || "-"}
 							</td>
 							<td>{book.isbn}</td>
 							<td>{book.publishedYear}</td>
 							<td>
 								{(book.categories ?? [])
 									.map((category) => category.name)
-									.join(", ")}
-							</td>
-							<td>
-								{(book.authors ?? [])
-									.map((authorsType) =>
-										authorsType.authors
-											.map(
-												(author) =>
-													author.firstName + " " + author.lastName,
-											)
-											.join(", "),
-									)
-									.join(", ")}
+									.join(", ") || "-"}
 							</td>
 
 							<td>

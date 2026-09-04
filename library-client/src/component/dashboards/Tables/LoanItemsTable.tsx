@@ -150,6 +150,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					onClick={() => {
 						setSearch("");
 						setSortConfig(null);
+						setFilter("ALL");
 					}}
 				>
 					Clear filters
@@ -166,11 +167,8 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							Loan ID {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
-						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User {getSortIcon("user")}
+							(ID) User {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("book")}>
 							Book {getSortIcon("book")}
@@ -219,9 +217,8 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 									: index + 1}
 							</td>
 							<td>{loan.id}</td>
-							<td>{loan.user.id}</td>
 							<td>
-								{loan.user.firstName} {loan.user.lastName}
+								({loan.user.id}) {loan.user.firstName} {loan.user.lastName}
 							</td>
 							<td>{loan.copy.book.title}</td>
 							<td>{loan.copy.inventoryCode}</td>

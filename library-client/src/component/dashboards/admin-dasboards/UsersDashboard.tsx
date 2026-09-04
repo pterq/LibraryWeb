@@ -97,6 +97,7 @@ const UsersDashboard = () => {
 					onClick={() => {
 						setSearch("");
 						setSortConfig(null);
+						setFilter("ALL");
 					}}
 				>
 					Clear filters

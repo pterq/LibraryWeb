@@ -139,12 +139,11 @@ const ShoppinCartsDashboard = () => {
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>
-						<th scope="col">#</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("user")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+							(ID) User{getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("itemsCount")}>
 							Number of Items in Cart {getSortIcon("itemsCount")}
@@ -155,10 +154,14 @@ const ShoppinCartsDashboard = () => {
 				<tbody>
 					{filteredAndSortedShoppingCarts.map((shoppingCart, index) => (
 						<tr key={shoppingCart.id}>
-							<td>{index + 1}</td>
-							<td>{shoppingCart.user.id}</td>
 							<td>
-								{shoppingCart.user.firstName} {shoppingCart.user.lastName}
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? filteredAndSortedShoppingCarts.length - index
+									: index + 1}
+							</td>
+							<td>
+								(ID: {shoppingCart.user.id}) {shoppingCart.user.firstName}{" "}
+								{shoppingCart.user.lastName}
 							</td>
 							<td>{getItemsCount(shoppingCart)}</td>
 							<td>

@@ -129,22 +129,19 @@ const LoansDashboard = () => {
 							# {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User Id{getSortIcon("user")}
-						</th>
-						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+							(ID) User {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("countLoans")}>
 							Total Loans {getSortIcon("countLoans")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countLoans")}>
-							Borrowed {getSortIcon("countLoans")}
+						<th scope="col" onClick={() => requestSort("countBorrowed")}>
+							Borrowed {getSortIcon("countBorrowed")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countLoans")}>
-							Returned {getSortIcon("countLoans")}
+						<th scope="col" onClick={() => requestSort("countReturned")}>
+							Returned {getSortIcon("countReturned")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countLoans")}>
-							Overdue {getSortIcon("countLoans")}
+						<th scope="col" onClick={() => requestSort("countOverdue")}>
+							Overdue {getSortIcon("countOverdue")}
 						</th>
 
 						<th scope="col">Actions</th>
@@ -158,8 +155,7 @@ const LoansDashboard = () => {
 									? filteredAndSortedLoans.length - index
 									: index + 1}
 							</td>
-							<td>{loan.user.id}</td>
-							<td>{`${loan.user.firstName} ${loan.user.lastName}`}</td>
+							<td>{`(${loan.user.id}) ${loan.user.firstName} ${loan.user.lastName}`}</td>
 							<td>{loan.countLoans}</td>
 							<td>{loan.countBorrowed}</td>
 							<td>{loan.countReturned}</td>

@@ -155,16 +155,13 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							Fee ID {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User ID {getSortIcon("user")}
-						</th>
-						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+							(ID) User {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("amount")}>
 							Amount {getSortIcon("amount")}
 						</th>
 						<th scope="col" onClick={() => requestSort("loan")}>
-							Loan ID {getSortIcon("loan")}
+							(Loan ID) Inventory Code (Book Title) {getSortIcon("loan")}
 						</th>
 						<th scope="col" onClick={() => requestSort("createdAt")}>
 							Created At {getSortIcon("createdAt")}
@@ -198,12 +195,18 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
-							<td>{fee.user.id}</td>
-							<td>
-								{fee.user.firstName} {fee.user.lastName}
-							</td>
+							<td>{`(${fee.user.id}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
 							<td>{fee.amount.toFixed(2)} zł</td>
-							<td>{fee.loan.id}</td>
+							<td>
+								{`(${fee.loan.id}) ${fee.loan.copy.inventoryCode} (${fee.loan.copy.book.title} (${
+									fee.loan.copy.book.bookAuthors?.length
+										? fee.loan.copy.book.bookAuthors
+												.map((a) => `${a.firstName} ${a.lastName}`)
+												.join(", ")
+										: "-"
+								}))`}
+							</td>
+
 							<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
 							<td>{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}</td>
 							<td>{fee.status}</td>

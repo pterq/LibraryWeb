@@ -70,7 +70,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 
 				const fullName =
 					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
-				const authors = bookCopy.book.authors
+				const authors = (bookCopy.book.bookAuthors ?? [])
 					.map((author) => `${author.firstName} ${author.lastName}`)
 					.join(", ")
 					.toLowerCase();
@@ -116,13 +116,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					case "bookPhysical":
 						aVal =
 							getReservationCopy(a)
-								?.book.authors.map(
+								?.book.bookAuthors?.map(
 									(author) => `${author.firstName} ${author.lastName}`,
 								)
 								.join(", ") ?? "";
 						bVal =
 							getReservationCopy(b)
-								?.book.authors.map(
+								?.book.bookAuthors?.map(
 									(author) => `${author.firstName} ${author.lastName}`,
 								)
 								.join(", ") ?? "";
@@ -189,26 +189,18 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
+						{/*<th scope="col" onClick={() => requestSort("id")}>
 							Reservation ID {getSortIcon("id")}
-						</th>
+						</th>*/}
+
 						<th scope="col" onClick={() => requestSort("user")}>
-							User ID {getSortIcon("user")}
+							(ID) User {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+						<th scope="col" onClick={() => requestSort("bookPhysical")}>
+							(ID) Book Title {getSortIcon("bookPhysical")}
 						</th>
 						<th scope="col" onClick={() => requestSort("copy")}>
-							Copy ID {getSortIcon("copy")}
-						</th>
-						<th scope="col" onClick={() => requestSort("bookPhysical")}>
-							Book Title {getSortIcon("bookPhysical")}
-						</th>
-						<th scope="col" onClick={() => requestSort("bookPhysical")}>
-							Book Author {getSortIcon("bookPhysical")}
-						</th>
-						<th scope="col" onClick={() => requestSort("bookPhysical")}>
-							Inventory Code {getSortIcon("bookPhysical")}
+							(ID) Inventory Code {getSortIcon("copy")}
 						</th>
 						<th scope="col" onClick={() => requestSort("reservedAt")}>
 							Reserved At {getSortIcon("reservedAt")}
@@ -222,24 +214,25 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				<tbody>
 					{shoppingCarts.map((cartItem, index) => (
 						<tr key={cartItem.id}>
-							<td>{index + 1}</td>
-							<td>{cartItem.id}</td>
-							<td>{cartItem.user.id}</td>
 							<td>
-								{cartItem.user.firstName} {cartItem.user.lastName}
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? shoppingCarts.length - index
+									: index + 1}
 							</td>
-							<td>{getReservationCopy(cartItem)?.id ?? "-"}</td>
-							<td>{getReservationCopy(cartItem)?.book.title ?? "-"}</td>
+							{/*<td>{cartItem.id}</td>*/}
 							<td>
-								{getReservationCopy(cartItem)
-									?.book?.authors?.map(
-										(author: AuthorType) =>
-											`${author.firstName} ${author.lastName}`,
-									)
-									.join(", ") ?? "-"}
+								({cartItem.user.id}) {cartItem.user.firstName}{" "}
+								{cartItem.user.lastName}
+							</td>
+							<td>
+								({getReservationCopy(cartItem)?.id ?? "-"}){" "}
+								{getReservationCopy(cartItem)?.book.title ?? "-"}
 							</td>
 
-							<td>{getReservationCopy(cartItem)?.inventoryCode ?? "-"}</td>
+							<td>
+								({getReservationCopy(cartItem)?.id ?? "-"}){" "}
+								{getReservationCopy(cartItem)?.inventoryCode ?? "-"}
+							</td>
 							<td>{formatReservationDate(cartItem.reservedAt)}</td>
 							<td>{formatReservationDate(cartItem.expiresAt)}</td>
 

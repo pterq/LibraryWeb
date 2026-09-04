@@ -113,12 +113,12 @@ const AuthorsDashboard = () => {
 							# {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
-							ID {getSortIcon("id")}
+							Author ID {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("firstName")}>
 							First Name {getSortIcon("firstName")}
 						</th>
-						<th scope="col" style={{ minWidth: "190px" }}>
+						<th scope="col" style={{ maxWidth: "190px" }}>
 							<div className="d-flex align-items-center gap-2">
 								<span onClick={() => requestSort("lastName")}>
 									Last Name {getSortIcon("lastName")}
@@ -134,11 +134,15 @@ const AuthorsDashboard = () => {
 				<tbody>
 					{filteredAndSortedAuthors.map((author, index) => (
 						<tr key={author.id}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? filteredAndSortedAuthors.length - index
+									: index + 1}
+							</td>
 							<td>{author.id}</td>
 							<td>{author.firstName}</td>
 							<td>{author.lastName}</td>
-							<td>{author.biography}</td>
+							<td>{author.biography?.substring(0, 100) || "-"}</td>
 
 							<td>
 								<button

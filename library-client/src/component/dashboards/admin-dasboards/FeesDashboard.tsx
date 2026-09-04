@@ -115,7 +115,7 @@ const FeesDashboard = () => {
 			<SearchBar
 				search={search}
 				setSearch={setSearch}
-				placeholder="Search fee by user name or ID"
+				placeholder="Search fee by user name"
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
@@ -144,10 +144,7 @@ const FeesDashboard = () => {
 							# {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
-							User ID {getSortIcon("user")}
-						</th>
-						<th scope="col" onClick={() => requestSort("user")}>
-							User Name {getSortIcon("user")}
+							(ID) User {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("countFees")}>
 							Total Fees {getSortIcon("countFees")}
@@ -172,8 +169,7 @@ const FeesDashboard = () => {
 									? filteredAndSortedFees.length - index
 									: index + 1}
 							</td>
-							<td>{fee.id}</td>
-							<td>{`${fee.user.firstName} ${fee.user.lastName}`}</td>
+							<td>{`(${fee.user.id}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
 							<td>{fee.countFees}</td>
 							<td>{fee.countUnpaid}</td>
 							<td>{fee.countPaid}</td>
