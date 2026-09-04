@@ -11,6 +11,8 @@ const CartPanel = () => {
 	const [reservations, setReservations] = useState<ReservationType[] | null>(null);
 
 	useEffect(() => {
+		if (userId == null) return;
+
 		getReservationByUserId(userId)
 			.then((data) => {
 				setReservations(data);

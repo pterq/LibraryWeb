@@ -14,7 +14,7 @@ interface AuthContextType {
 	logout: () => void;
 	updateUserData: (field: AuthUserDataField, value: string) => void;
 	setHasFees: (hasFees: boolean) => void;
-	hasFees: boolean;
+	hasFees: boolean | null;
 }
 
 interface AuthLoginData {
@@ -24,7 +24,7 @@ interface AuthLoginData {
 	lastName: string;
 	email: string;
 	role: string;
-	hasFees?: boolean;
+	hasFees?: boolean | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -48,12 +48,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	const [firstName, setFirstName] = useState<string | null>(localStorage.getItem("firstName"));
 	const [lastName, setLastName] = useState<string | null>(localStorage.getItem("lastName"));
 	const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
-	const [hasFees, setHasFees] = useState<boolean>(
-		localStorage.getItem("hasFees") === "false" ? false : true,
+	const [hasFees, setHasFees] = useState<boolean | null>(
+		localStorage.getItem("hasFees") === "false"
+			? false
+			: localStorage.getItem("hasFees") === "true"
+				? true
+				: null,
 	);
 
-	const updateHasFees = (nextValue: boolean) => {
-		localStorage.setItem("hasFees", nextValue.toString());
+	const updateHasFees = (nextValue: boolean | null) => {
+		if (nextValue === null) {
+			localStorage.removeItem("hasFees");
+		} else {
+			localStorage.setItem("hasFees", nextValue.toString());
+		}
 		setHasFees(nextValue);
 	};
 
@@ -124,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setFirstName(null);
 		setLastName(null);
 		setEmail(null);
-		updateHasFees(false);
+		updateHasFees(null);
 	};
 
 	return (

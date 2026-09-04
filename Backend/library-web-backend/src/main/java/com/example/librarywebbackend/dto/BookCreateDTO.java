@@ -15,6 +15,8 @@ public class BookCreateDTO {
 
     private String description;
 
+    private String imageUrl;
+
     @NotBlank
     private String isbn;
 

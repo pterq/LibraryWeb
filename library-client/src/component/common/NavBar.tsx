@@ -31,7 +31,7 @@ const NavBar = () => {
 		window.location.replace("/");
 	};
 
-	// 🔥 Zamykaj dropdown po kliknięciu poza nim
+	//closed dropdown if clicking outside of it
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (

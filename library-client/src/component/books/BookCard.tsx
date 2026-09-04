@@ -2,16 +2,20 @@ import { useParams } from "react-router-dom";
 import { MockData } from "../../types/MockData";
 import ImageFrame from "../common/ImageFrame";
 import { useAuth } from "../../context/AuthContext";
+import { getBookById } from "../../api/api";
 
 const BookCard = () => {
 	const { id } = useParams<{ id?: string }>();
-	const { role } = useAuth();
+	const { role, userId } = useAuth();
 
 	const handleAddToCart = () => {
 		console.log("Dodano do koszyka bookId:", book?.id);
-		// tutaj logika dodawania do koszyka
 
-		// backend musi sprawdzić czy jest dostępna kopia książki, jeśli nie to zwrócić błąd i wyświetlić komunikat użytkownikowi
+		//sprawdź czy istnieje userId, jeśli nie to przekierowanie na stronę logowania
+		if (!userId) {
+			window.location.href = "/login";
+			return;
+		}
 	};
 
 	if (!id) {
@@ -44,7 +48,7 @@ const BookCard = () => {
 					</p>
 					<p>
 						<strong>Authors:</strong>{" "}
-						{book.authors.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
+						{book.bookAuthors?.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
 					</p>
 					<p>
 						<strong>Published Year:</strong> {book.publishedYear}
@@ -55,7 +59,7 @@ const BookCard = () => {
 				</div>
 			</div>
 
-			{role === "USER" && (
+			{role !== "LIBRARIAN" && role !== "ADMIN" && (
 				<button
 					className="btn btn-secondary position-absolute bottom-0 end-0 m-3"
 					onClick={handleAddToCart}

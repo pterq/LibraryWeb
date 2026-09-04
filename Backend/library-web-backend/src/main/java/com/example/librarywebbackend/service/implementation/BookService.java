@@ -55,6 +55,7 @@ public class BookService implements IBookService {
         Book book = new Book();
         book.setTitle(dto.getTitle());
         book.setDescription(dto.getDescription());
+        book.setImageUrl(dto.getImageUrl());
         book.setIsbn(dto.getIsbn());
         book.setPublishedYear(dto.getPublishedYear());
         book.setCategory(category);
@@ -99,6 +100,7 @@ public class BookService implements IBookService {
                     // aktualizacja pól książki
                     book.setTitle(dto.getTitle());
                     book.setDescription(dto.getDescription());
+                    book.setImageUrl(dto.getImageUrl());
                     book.setIsbn(dto.getIsbn());
                     book.setPublishedYear(dto.getPublishedYear());
                     book.setCategory(category);

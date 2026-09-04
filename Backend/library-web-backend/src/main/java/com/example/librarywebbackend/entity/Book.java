@@ -21,7 +21,12 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(length = 1024)
+    private String imageUrl;
+
 
     @Column(unique = true)
     private String isbn;

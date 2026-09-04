@@ -15,7 +15,14 @@ interface BookSearchProps {
 	onSelect: (book: BookResult) => void;
 }
 
-const BookSearch: React.FC<BookSearchProps> = ({ onSelect }) => {
+const normalizePublishedYear = (publishedDate?: string) => {
+	if (!publishedDate) return "";
+
+	const match = publishedDate.match(/^\d{4}/);
+	return match ? match[0] : "";
+};
+
+const BookSearchGoogle: React.FC<BookSearchProps> = ({ onSelect }) => {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<BookResult[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -84,7 +91,7 @@ const BookSearch: React.FC<BookSearchProps> = ({ onSelect }) => {
 					isbn,
 					authors: info.authors ?? [],
 					description: info.description ?? "",
-					publishedYear: info.publishedDate ?? "",
+					publishedYear: normalizePublishedYear(info.publishedDate),
 					categories,
 					genre,
 				};
@@ -166,11 +173,9 @@ const BookSearch: React.FC<BookSearchProps> = ({ onSelect }) => {
 								<b>Year:</b> {book.publishedYear || "—"}
 							</p>
 
-							{book.genre.length > 0 && (
-								<p className="mb-1">
-									<b>Genre:</b> {book.genre.join(", ")}
-								</p>
-							)}
+							<p className="mb-1">
+								<b>Genre:</b> {book.genre.length > 0 ? book.genre.join(", ") : "—"}
+							</p>
 						</div>
 					</button>
 				))}
@@ -179,4 +184,4 @@ const BookSearch: React.FC<BookSearchProps> = ({ onSelect }) => {
 	);
 };
 
-export default BookSearch;
+export default BookSearchGoogle;

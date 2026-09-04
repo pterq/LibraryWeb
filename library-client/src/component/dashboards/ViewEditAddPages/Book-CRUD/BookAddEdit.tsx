@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
-import type { AuthorType } from "../../../../types/DbTypes";
+import type { AuthorType, CategoryType } from "../../../../types/DbTypes";
 import type { PageAction } from "../../../../context/DataFromLink";
-import { MockData } from "../../../../types/MockData";
-
-type BookCreatePayload = {
-	title: string;
-	description: string;
-	isbn: string;
-	publishedYear: number | null;
-	categoryId: number | null;
-	authorIds: number[];
-};
+import { addBook, getCategories, type BookCreatePayload } from "../../../../api/api";
+import { Navigate, useNavigate } from "react-router";
 
 export type BookFormData = {
 	title: string;
@@ -65,6 +57,17 @@ type AddBookProps = {
 	setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+const normalizePublishedYearValue = (value: string | number | null | undefined) => {
+	if (value == null || value === "") return null;
+
+	const asString = String(value);
+	const match = asString.match(/^\d{4}/);
+	if (!match) return null;
+
+	const year = Number(match[0]);
+	return Number.isFinite(year) ? year : null;
+};
+
 const BookAddEdit = ({
 	action,
 	linkId,
@@ -83,13 +86,12 @@ const BookAddEdit = ({
 	setShowLoading,
 }: AddBookProps) => {
 	const isExistingBookAction = action === "view";
-	const mockBook =
-		linkId != null
-			? MockData.mockBooks.find((book) => Number(book.id) === Number(linkId))
-			: undefined;
+	const navigate = useNavigate();
 
 	const [authorOptions, setAuthorOptions] = useState<AuthorType[]>([]);
+	const [categoryOptions, setCategoryOptions] = useState<CategoryType[]>([]);
 	const [selectedAuthorIds, setSelectedAuthorIds] = useState<string[]>(["NO_AUTHOR_ID"]);
+	const [selectedCategoryId, setSelectedCategoryId] = useState<string>("NO_CATEGORY_ID");
 	const [isAuthorLoading, setIsAuthorLoading] = useState(false);
 	const [showAddAuthorModal, setShowAddAuthorModal] = useState(false);
 	const [newAuthor, setNewAuthor] = useState({ firstName: "", lastName: "", bio: "" });
@@ -114,16 +116,28 @@ const BookAddEdit = ({
 					return;
 				}
 
-				setAuthorOptions(MockData.mockAuthors);
+				setAuthorOptions([]);
 			} catch {
 				if (!isActive) return;
-				setAuthorOptions(MockData.mockAuthors);
+				setAuthorOptions([]);
 			} finally {
 				if (isActive) setIsAuthorLoading(false);
 			}
 		};
 
+		const loadCategories = async () => {
+			try {
+				const data = await getCategories();
+				if (!isActive) return;
+				setCategoryOptions(Array.isArray(data) ? data : []);
+			} catch {
+				if (!isActive) return;
+				setCategoryOptions([]);
+			}
+		};
+
 		void loadAuthors();
+		void loadCategories();
 
 		return () => {
 			isActive = false;
@@ -136,7 +150,9 @@ const BookAddEdit = ({
 		isbn?: string;
 		publishedYear?: number | string | null;
 		authors?: { authors?: AuthorType[] } | AuthorType[] | null;
-		categories?: { name?: string }[] | null;
+		category?: { id?: number; name?: string } | null;
+		categories?: { id?: number; name?: string }[] | null;
+		imageUrl?: string | null;
 		coverImageUrl?: string | null;
 		coverUrl?: string | null;
 	};
@@ -149,6 +165,7 @@ const BookAddEdit = ({
 			setError(null);
 			setIsEditing(true);
 			setSelectedAuthorIds(["NO_AUTHOR_ID"]);
+			setSelectedCategoryId("NO_CATEGORY_ID");
 			setShowLoading(false);
 			return;
 		}
@@ -160,6 +177,7 @@ const BookAddEdit = ({
 			setFormData(EMPTY_BOOK_FORM);
 			setOriginalFormData(EMPTY_BOOK_FORM);
 			setSelectedAuthorIds(["NO_AUTHOR_ID"]);
+			setSelectedCategoryId("NO_CATEGORY_ID");
 			setShowLoading(false);
 			return;
 		}
@@ -190,7 +208,7 @@ const BookAddEdit = ({
 						book.categories?.map((category) => category.name ?? "").filter(Boolean) ??
 						[],
 					genre: [],
-					coverImageUrl: book.coverImageUrl ?? book.coverUrl ?? "",
+					coverImageUrl: book.imageUrl ?? book.coverImageUrl ?? book.coverUrl ?? "",
 				};
 
 				setFormData(loadedData);
@@ -200,40 +218,17 @@ const BookAddEdit = ({
 						? loadedData.authors.map((author) => String(author.id))
 						: ["NO_AUTHOR_ID"],
 				);
+				setSelectedCategoryId(
+					book.category?.id != null ? String(book.category.id) : "NO_CATEGORY_ID",
+				);
 			} catch {
 				if (!isActive) return;
-
-				if (mockBook) {
-					const fallbackData: BookFormData = {
-						title: mockBook.title ?? "",
-						description: mockBook.description ?? "",
-						isbn: mockBook.isbn ?? "",
-						publishedYear:
-							mockBook.publishedYear != null ? String(mockBook.publishedYear) : "",
-						authors: mockBook.authors?.authors ?? [],
-						categories:
-							mockBook.categories
-								?.map((category) => category.name ?? "")
-								.filter(Boolean) ?? [],
-						genre: [],
-						coverImageUrl: mockBook.coverImageUrl ?? "",
-					};
-
-					setFormData(fallbackData);
-					setOriginalFormData(fallbackData);
-					setSelectedAuthorIds(
-						fallbackData.authors.length > 0
-							? fallbackData.authors.map((author) => String(author.id))
-							: ["NO_AUTHOR_ID"],
-					);
-					setError("Loaded book from mock data.");
-					return;
-				}
 
 				setError("Failed to load book data.");
 				setFormData(EMPTY_BOOK_FORM);
 				setOriginalFormData(EMPTY_BOOK_FORM);
 				setSelectedAuthorIds(["NO_AUTHOR_ID"]);
+				setSelectedCategoryId("NO_CATEGORY_ID");
 			} finally {
 				if (isActive) setShowLoading(false);
 			}
@@ -247,7 +242,7 @@ const BookAddEdit = ({
 	}, [
 		isExistingBookAction,
 		linkId,
-		mockBook,
+
 		setAutofillSelection,
 		setError,
 		setFormData,
@@ -288,6 +283,10 @@ const BookAddEdit = ({
 			next[index] = value;
 			return next;
 		});
+	};
+
+	const handleCategorySelectChange = (value: string) => {
+		setSelectedCategoryId(value);
 	};
 
 	const handleAddNextAuthorDropdown = () => {
@@ -344,22 +343,30 @@ const BookAddEdit = ({
 		event.preventDefault();
 		if (isReadOnly) return;
 
+		const normalizedCoverImageUrl = formData.coverImageUrl?.trim() ?? "";
+
 		const payload: BookCreatePayload = {
 			title: formData.title,
 			description: formData.description,
+			imageUrl: normalizedCoverImageUrl.length > 0 ? normalizedCoverImageUrl : null,
 			isbn: formData.isbn,
-			publishedYear: formData.publishedYear ? Number(formData.publishedYear) : null,
-			categoryId: null,
-			authorIds: formData.authors.map((author) => author.id),
+			publishedYear: normalizePublishedYearValue(formData.publishedYear),
+			categoryId: selectedCategoryId === "NO_CATEGORY_ID" ? null : Number(selectedCategoryId),
+			authorIds: selectedAuthorIds
+				.filter((authorId) => authorId !== "NO_AUTHOR_ID")
+				.map((authorId) => Number(authorId))
+				.filter((authorId, index, array) => array.indexOf(authorId) === index),
 		};
 
 		try {
 			if (action === "add") {
-				await axiosClient.post("/books", payload);
-			} else {
-				await axiosClient.put(`/books/${linkId}`, payload);
+				await addBook(payload);
+
+				console.log("Book added!");
+
+				handleClearAddForm();
+				navigate("/admin-panel", { replace: true });
 			}
-			alert("Saved!");
 		} catch {
 			alert("Failed to save");
 		}
@@ -372,6 +379,15 @@ const BookAddEdit = ({
 				originalFormData.authors.length > 0
 					? originalFormData.authors.map((author) => String(author.id))
 					: ["NO_AUTHOR_ID"],
+			);
+			setSelectedCategoryId(
+				originalFormData.categories.length > 0
+					? String(
+							categoryOptions.find(
+								(category) => category.name === originalFormData.categories[0],
+							)?.id ?? "NO_CATEGORY_ID",
+						)
+					: "NO_CATEGORY_ID",
 			);
 			setIsEditing(false);
 			setError(null);
@@ -388,6 +404,7 @@ const BookAddEdit = ({
 		setAutofillSelection(DEFAULT_AUTOFILL_SELECTION);
 		setError(null);
 		setSelectedAuthorIds(["NO_AUTHOR_ID"]);
+		setSelectedCategoryId("NO_CATEGORY_ID");
 	};
 
 	const handleDelete = async () => {
@@ -406,6 +423,8 @@ const BookAddEdit = ({
 			alert("Failed to delete");
 		}
 	};
+
+	const hasCoverImage = Boolean(formData.coverImageUrl?.trim());
 
 	return (
 		<div className="col-12 col-lg-5">
@@ -476,14 +495,20 @@ const BookAddEdit = ({
 					<div className="d-flex align-items-center gap-3">
 						<div className="flex-grow-1">
 							<label className="form-label">Cover Image URL : </label>
-							<input
-								type="text"
-								name="coverImageUrl"
-								className="form-control"
-								value={formData.coverImageUrl}
-								onChange={handleChange}
-								disabled={isReadOnly}
-							/>
+							{!isEditing ? (
+								<div className="form-control-plaintext">
+									{hasCoverImage ? formData.coverImageUrl : "No cover image URL"}
+								</div>
+							) : (
+								<input
+									type="text"
+									name="coverImageUrl"
+									className="form-control"
+									value={formData.coverImageUrl}
+									onChange={handleChange}
+									disabled={isReadOnly}
+								/>
+							)}
 						</div>
 						<div className="form-check mt-4 pt-2">
 							<input
@@ -500,14 +525,42 @@ const BookAddEdit = ({
 					</div>
 				</div>
 
-				{formData.coverImageUrl && (
+				{hasCoverImage && (
 					<img
 						src={formData.coverImageUrl}
 						alt="Cover"
 						style={{ width: "150px", height: "220px", objectFit: "cover" }}
 						className="mb-3"
+						onError={(event) => {
+							event.currentTarget.style.display = "none";
+						}}
 					/>
 				)}
+
+				<div className="mb-3">
+					<label className="form-label">Category : </label>
+					{!isEditing ? (
+						<div className="form-control-plaintext">
+							{formData.categories.length > 0
+								? formData.categories.join(", ")
+								: "No category"}
+						</div>
+					) : (
+						<select
+							className="form-select"
+							value={selectedCategoryId}
+							onChange={(event) => handleCategorySelectChange(event.target.value)}
+							disabled={isReadOnly}
+						>
+							<option value="NO_CATEGORY_ID">Select category</option>
+							{categoryOptions.map((category) => (
+								<option key={category.id} value={String(category.id)}>
+									{category.name}
+								</option>
+							))}
+						</select>
+					)}
+				</div>
 
 				<div className="mb-3">
 					<label className="form-label">Authors : </label>

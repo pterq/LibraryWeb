@@ -1,20 +1,26 @@
 import { Link } from "react-router-dom";
 
-import type { BookType } from "../../types/DbTypes";
+import type { BookType, ReservationsType } from "../../types/DbTypes";
 import { useAuth } from "../../context/AuthContext";
+
+import { addReservation } from "../../api/api";
 
 interface BookTileProps {
 	book: BookType;
 }
 
 const BookTile: React.FC<BookTileProps> = ({ book }) => {
-	const { role } = useAuth();
+	const { role, userId } = useAuth();
 
-	const handleAddToCart = (book: BookType) => {
+	const handleAddToCart = () => {
 		console.log("Dodano do koszyka bookId:", book?.id);
-		// tutaj logika dodawania do koszyka
 
-		//backend musi sprawdzić czy jest dostępna kopia książki, jeśli nie to zwrócić błąd i wyświetlić komunikat użytkownikowi
+		if (!userId) {
+			window.location.href = "/login";
+			return;
+		} else {
+			//addReservation();
+		}
 	};
 
 	return (
@@ -44,11 +50,10 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 						<Link to={`/book/${book.id}`} className="btn btn-primary flex-shrink-0">
 							Details
 						</Link>
-
-						{role === "USER" && (
+						{role !== "LIBRARIAN" && role !== "ADMIN" && (
 							<button
 								className="btn btn-secondary flex-shrink-0 flex-grow-0"
-								onClick={() => handleAddToCart(book)}
+								onClick={() => handleAddToCart()}
 							>
 								<i className="bi bi-cart"></i>
 							</button>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import ReturnButton from "../../../common/ReturnButton";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
-import BookSearch from "./BookSearch";
+import BookSearchGoogle from "./BookSearchGoogle";
 import BookAddEdit, {
 	DEFAULT_AUTOFILL_SELECTION,
 	EMPTY_BOOK_FORM,
@@ -10,7 +10,7 @@ import BookAddEdit, {
 	type BookFormData,
 } from "./BookAddEdit";
 
-const BookPageViewEditAdd = () => {
+const BookPage = () => {
 	const action: PageAction = actionFromLink;
 	const linkId = idFromLink;
 
@@ -54,7 +54,7 @@ const BookPageViewEditAdd = () => {
 				<div className="col-12 col-lg-5">
 					<div className="mt-0 pt-0">
 						<h2 className="mb-3">Search & Autofill</h2>
-						<BookSearch
+						<BookSearchGoogle
 							onSelect={(book) => {
 								setFormData((prev) => ({
 									...prev,
@@ -83,4 +83,4 @@ const BookPageViewEditAdd = () => {
 	);
 };
 
-export default BookPageViewEditAdd;
+export default BookPage;

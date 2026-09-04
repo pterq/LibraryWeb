@@ -11,7 +11,6 @@ import type {
 	FeeType,
 	LoanStatusType,
 	FeesWithCountsType,
-	LoanCountType,
 	ReservationCountType,
 	CategoriesWithCountsType,
 } from "../types/DbTypes";
@@ -84,6 +83,16 @@ export const searchAuthors = async (query: string) => {
 //===============================================================================
 //Book
 
+export type BookCreatePayload = {
+	title: string;
+	description: string;
+	imageUrl: string | null;
+	isbn: string;
+	publishedYear: number | null;
+	categoryId: number | null;
+	authorIds: number[];
+};
+
 export const getBooks = async () => {
 	try {
 		const response = await axiosClient.get<BookType[]>(BOOKS_ENDPOINT);
@@ -94,7 +103,7 @@ export const getBooks = async () => {
 	}
 };
 
-export const addBook = async (book: BookType) => {
+export const addBook = async (book: BookCreatePayload) => {
 	try {
 		const response = await axiosClient.post<BookType>(BOOKS_ENDPOINT, book);
 		return response.data;

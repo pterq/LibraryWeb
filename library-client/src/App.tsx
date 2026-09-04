@@ -21,7 +21,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/common/ProtectedRoute";
 import UserBookCard from "./component/books/UserBookCard";
 import BookCard from "./component/books/BookCard";
-import BookPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Book-CRUD/BookPageViewEditAdd";
+import BookPage from "./component/dashboards/ViewEditAddPages/Book-CRUD/BookPage";
 import AuthorPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Author-CRUD/AuthorPageViewEditAdd";
 import BookCopyPageViewEditAdd from "./component/dashboards/ViewEditAddPages/BookCopy-CRUD/BookCopyPageViewEditAdd";
 import CategoryPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Category-CRUD/CategoryPageViewEditAdd";
@@ -104,7 +104,7 @@ function App() {
 									path="/book/add"
 									element={
 										<ProtectedRoute>
-											<BookPageViewEditAdd />
+											<BookPage />
 										</ProtectedRoute>
 									}
 								/>
@@ -112,7 +112,7 @@ function App() {
 									path="/book/view/:id"
 									element={
 										<ProtectedRoute>
-											<BookPageViewEditAdd />
+											<BookPage />
 										</ProtectedRoute>
 									}
 								/>

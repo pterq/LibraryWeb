@@ -6,7 +6,7 @@ interface SearchBarProps {
 
 const SearchBar = ({ search, setSearch, placeholder }: SearchBarProps) => {
 	return (
-		<div className="container-fluid d-flex flex-column justify-content-center align-items-center min-vh-50 border">
+		<div className="container d-flex flex-column justify-content-center align-items-center min-vh-50 border">
 			<form className="d-flex col-sm-10 m-4" role="search">
 				<input
 					className="form-control me-2 shadow"

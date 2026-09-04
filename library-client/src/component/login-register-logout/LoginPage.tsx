@@ -54,14 +54,19 @@ const LoginPage: React.FC = () => {
 				email: response.data.email,
 				role: response.data.role,
 			});
-			setMessage("Logowanie zakończone sukcesem!");
+			setMessage("Logged in successfully");
 
 			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
 			console.error("Axios error:", err);
 
-			setMessage("Niepoprawny email lub hasło.");
+			if (!err.response) {
+				setMessage("Server not responding — check your connection.");
+				return;
+			}
+
+			setMessage("Wrong email or password.");
 		}
 	};
 

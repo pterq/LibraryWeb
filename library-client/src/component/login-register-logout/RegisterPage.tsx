@@ -59,25 +59,19 @@ const RegisterPage: React.FC = () => {
 				email: response.data.email,
 				role: response.data.role,
 			});
-			setMessage("Rejestracja zakończona sukcesem!");
-			navigate("/my-books", { replace: true });
+			setMessage("Registered successfully");
+
+			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
-
 			console.error("Axios error:", err);
 
-			const status = err.response?.status;
-			const backendMessage = (err.response?.data as any)?.message || null;
-
-			if (status) {
-				setMessage(
-					backendMessage
-						? `Błąd (${status}): ${backendMessage}`
-						: `Wystąpił błąd podczas rejestracji. Kod błędu: ${status}`,
-				);
-			} else {
-				setMessage("Wystąpił błąd podczas rejestracji.");
+			if (!err.response) {
+				setMessage("Server not responding — check your connection.");
+				return;
 			}
+
+			setMessage("Wrong email or password.");
 		}
 	};
 

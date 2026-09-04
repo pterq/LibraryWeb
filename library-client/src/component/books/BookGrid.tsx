@@ -4,7 +4,6 @@ import PageNav from "../dashboards/page/PageNav";
 
 import type { BookType } from "../../types/DbTypes";
 
-import { MockData } from "../../types/MockData";
 import { getBooks } from "../../api/api";
 import TableAlert from "../common/TableAlert";
 
@@ -24,8 +23,6 @@ const BookGrid: React.FC<BookGridProps> = ({ search }) => {
 			.catch(console.error);
 	}, []);
 
-	// Mock data for books
-	// const books: BookType[] = MockData.mockBooks;
 	const normalizedSearch = search.trim().toLowerCase();
 	const filteredBooks = books.filter((book) =>
 		book.title.toLowerCase().includes(normalizedSearch),
