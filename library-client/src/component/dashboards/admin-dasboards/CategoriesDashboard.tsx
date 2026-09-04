@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { CategoriesWithCountsType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
+import DeleteButton from "./DeleteButton";
 
-import { getCategories, getCategoriesWithCounts } from "../../../api/api";
+import { getCategoriesWithCounts, deleteCategoryById } from "../../../api/api";
 
 const CategoriesDashboard = () => {
 	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
@@ -39,6 +40,11 @@ const CategoriesDashboard = () => {
 	const getSortIcon = (key: keyof CategoriesWithCountsType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
+	};
+
+	const handleDelete = async (id: number | string) => {
+		await deleteCategoryById(Number(id));
+		setCategoriesWithCount((prev) => prev.filter((cat) => cat.id !== Number(id)));
 	};
 
 	const filteredAndSortedCategories = useMemo(() => {
@@ -139,7 +145,9 @@ const CategoriesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("countBooks")}>
 							Number of books {getSortIcon("countBooks")}
 						</th>
-						<th scope="col">Actions</th>
+						<th scope="col" style={{ width: "160px" }}>
+							Actions
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -153,15 +161,21 @@ const CategoriesDashboard = () => {
 							<td>{categoryWithCount.id}</td>
 							<td>{categoryWithCount.name}</td>
 							<td>{categoryWithCount.countBooks ?? 0}</td>
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
 										(window.location.href = `/category/view/${categoryWithCount.id}`)
 									}
 								>
 									View Details
 								</button>
+
+								<DeleteButton
+									id={categoryWithCount.id}
+									entityName="category"
+									onDelete={handleDelete}
+								/>
 							</td>
 						</tr>
 					))}
