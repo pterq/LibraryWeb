@@ -12,6 +12,8 @@ public interface IFeeService {
 
     List<Fee> getFeesByStatus(FeeStatus status);
 
+    List<Fee> getFeesByUserId(Long userId);
+
     Fee getFeeById(Long id);
 
     Fee createFee(Fee fee);

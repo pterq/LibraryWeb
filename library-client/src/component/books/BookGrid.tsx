@@ -5,14 +5,27 @@ import PageNav from "../dashboards/page/PageNav";
 import type { BookType } from "../../types/DbTypes";
 
 import { MockData } from "../../types/MockData";
+import { getBooks } from "../../api/api";
+import TableAlert from "../common/TableAlert";
 
 interface BookGridProps {
 	search: string;
 }
 
 const BookGrid: React.FC<BookGridProps> = ({ search }) => {
+	const [books, setBooks] = useState<BookType[]>([]);
+
+	useEffect(() => {
+		getBooks()
+			.then((data) => {
+				setBooks(data);
+				console.log("Fetched books:", data);
+			})
+			.catch(console.error);
+	}, []);
+
 	// Mock data for books
-	const books: BookType[] = MockData.mockBooks;
+	// const books: BookType[] = MockData.mockBooks;
 	const normalizedSearch = search.trim().toLowerCase();
 	const filteredBooks = books.filter((book) =>
 		book.title.toLowerCase().includes(normalizedSearch),
@@ -51,6 +64,7 @@ const BookGrid: React.FC<BookGridProps> = ({ search }) => {
 			{filteredBooks.length > 0 && (
 				<PageNav page={page} totalPages={totalPages} onPageChange={setPage} />
 			)}
+			<TableAlert count={pageBooks.length} message="No books found." />
 		</div>
 	);
 };

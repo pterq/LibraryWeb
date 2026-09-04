@@ -29,6 +29,11 @@ public class FeeController {
         return feeService.getFeeCountsByUser();
     }
 
+    @GetMapping("/userFees/{userId}")
+    public List<Fee> getFeesByUserId(@PathVariable Long userId) {
+        return feeService.getFeesByUserId(userId);
+    }
+
     @GetMapping("/status/{status}")
     public List<Fee> getByStatus(@PathVariable FeeStatus status) {
         return feeService.getFeesByStatus(status);

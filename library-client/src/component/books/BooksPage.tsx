@@ -7,7 +7,7 @@ const BooksPage = () => {
 
 	return (
 		<div>
-			<h2 className="d-flex justify-content-center mb-3">Books search and add to cart</h2>
+			<h2 className="d-flex justify-content-center mb-3">Search Books</h2>
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Book by title" />
 

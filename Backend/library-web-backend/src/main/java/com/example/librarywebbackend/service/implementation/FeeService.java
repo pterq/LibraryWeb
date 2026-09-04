@@ -32,6 +32,11 @@ public class FeeService implements IFeeService {
     }
 
     @Override
+    public List<Fee> getFeesByUserId(Long userId) {
+        return feeRepository.findByUserId(userId);
+    }
+
+    @Override
     public Fee getFeeById(Long id) {
         return feeRepository.findById(id)
                 .orElse(null);

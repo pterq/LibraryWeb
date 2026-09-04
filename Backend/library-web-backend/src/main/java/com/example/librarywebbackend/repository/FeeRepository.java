@@ -4,11 +4,15 @@ import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface FeeRepository extends JpaRepository<Fee, Long> {
     List<Fee> findByStatus(FeeStatus status);
+
+    @Query("select f from Fee f where f.user.id = :userId")
+    List<Fee> findByUserId(@Param("userId") Long userId);
 
     @Query("""
     select

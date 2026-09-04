@@ -1,27 +1,43 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import SearchBar from "../common/SearchBar";
 
-import type { LoanType } from "../../types/DbTypes";
+import type { LoanType, AuthorType } from "../../types/DbTypes";
 
 import { Link } from "react-router-dom";
 
-import { MockData } from "../../types/MockData";
+import { getLoansByUserId } from "../../api/api";
+import TableAlert from "../common/TableAlert";
+
+type LoanExtended = LoanType & {
+	authors: AuthorType[];
+};
 
 const UserBooksPage = () => {
 	const { userId } = useAuth();
+
+	const [loans, setLoans] = useState<LoanType[]>([]);
+
+	useEffect(() => {
+		getLoansByUserId(userId)
+			.then((data) => {
+				setLoans(data);
+				console.log("Fetched loans:", data);
+			})
+			.catch(console.error);
+	}, []);
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "BORROWED" | "RETURNED" | "OVERDUE">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: string;
+		key: keyof LoanExtended;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: string) => {
+	const requestSort = (key: keyof LoanExtended) => {
 		if (key === "status") return;
 
 		let direction: "asc" | "desc" = "asc";
@@ -33,7 +49,7 @@ const UserBooksPage = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: string) => {
+	const getSortIcon = (key: keyof LoanExtended) => {
 		if (key === "status") return "";
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
@@ -41,12 +57,12 @@ const UserBooksPage = () => {
 	//const [loans, setLoans] = useState([]);
 
 	//use mock data for now
-	const loans: LoanType[] = useMemo(() => {
+	const processedLoans: LoanType[] = useMemo(() => {
 		if (userId === null) {
 			return [];
 		}
 
-		let data = MockData.mockLoans.filter((loan) => loan.user.id === userId);
+		let data = [...loans];
 
 		if (filter !== "ALL") {
 			data = data.filter((loan) => loan.status === filter);
@@ -58,17 +74,13 @@ const UserBooksPage = () => {
 				let bVal: string | number;
 
 				switch (sortConfig.key) {
-					case "title":
+					case "copy":
+						aVal = a.copy.inventoryCode;
+						bVal = b.copy.inventoryCode;
+						break;
+					case "authors":
 						aVal = a.copy.book.title;
 						bVal = b.copy.book.title;
-						break;
-					case "author":
-						aVal = a.copy.book.authors.authors
-							.map((x) => `${x.firstName} ${x.lastName}`)
-							.join(", ");
-						bVal = b.copy.book.authors.authors
-							.map((x) => `${x.firstName} ${x.lastName}`)
-							.join(", ");
 						break;
 					case "loanDate":
 						aVal = new Date(a.loanDate).getTime();
@@ -98,7 +110,7 @@ const UserBooksPage = () => {
 
 	return (
 		<div className="container-fluid">
-			<h2>User's Books</h2>
+			<h2 className="d-flex justify-content-center mb-3">Your Books</h2>
 
 			{userId === null && (
 				<div className="alert alert-info py-2 mb-3">No user id available.</div>
@@ -126,11 +138,11 @@ const UserBooksPage = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("title")}>
-							Book Title {getSortIcon("title")}
+						<th scope="col" onClick={() => requestSort("copy")}>
+							Book Title {getSortIcon("copy")}
 						</th>
-						<th scope="col" onClick={() => requestSort("author")}>
-							Author {getSortIcon("author")}
+						<th scope="col" onClick={() => requestSort("authors")}>
+							Author {getSortIcon("authors")}
 						</th>
 						<th scope="col" onClick={() => requestSort("loanDate")}>
 							Loan Date {getSortIcon("loanDate")}
@@ -166,19 +178,21 @@ const UserBooksPage = () => {
 					</tr>
 				</thead>
 				<tbody className="text-center">
-					{loans
+					{processedLoans
 						.filter((lo) =>
 							lo.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 						)
 						.map((loan, index) => (
 							<tr key={loan.id}>
-								<th scope="row" key={index}>
-									{index + 1}
-								</th>
+								<td>
+									{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+										? processedLoans.length - index
+										: index + 1}
+								</td>
 
 								<td>{loan.copy.book.title}</td>
 								<td>
-									{loan.copy.book.authors.authors
+									{(loan.copy.book.bookAuthors ?? [])
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>
@@ -193,6 +207,7 @@ const UserBooksPage = () => {
 						))}
 				</tbody>
 			</table>
+			<TableAlert count={processedLoans.length} message="No loans found." />
 		</div>
 	);
 };

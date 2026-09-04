@@ -1,16 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { FeeType } from "../../types/DbTypes";
+import type { AuthorType, FeeType } from "../../types/DbTypes";
 import SearchBar from "../common/SearchBar";
-import { MockData } from "../../types/MockData";
+import TableAlert from "../common/TableAlert";
 import { useAuth } from "../../context/AuthContext";
+import { getFeesByUserId } from "../../api/api";
+
+type FeeExtendedType = FeeType & {
+	authors: AuthorType[];
+	title: string;
+};
 
 const MyFeesPage = () => {
-	const { hasFees: userHasFees, userId: authUserId, setHasFees } = useAuth();
+	const { hasFees: userHasFees, setHasFees } = useAuth();
 	const [showOutstandingAlert, setShowOutstandingAlert] = useState(userHasFees);
 
-	const userId = authUserId;
+	const { userId } = useAuth();
+
+	const [fees, setFees] = useState<FeeType[]>([]);
+
+	useEffect(() => {
+		getFeesByUserId(userId)
+			.then((data) => {
+				setFees(data);
+				console.log("Fetched fees:", data);
+			})
+			.catch(console.error);
+	}, []);
 
 	useEffect(() => {
 		if (!userHasFees) return;
@@ -33,13 +50,13 @@ const MyFeesPage = () => {
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: string;
+		key: keyof FeeExtendedType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: string) => {
+	const requestSort = (key: keyof FeeExtendedType) => {
 		if (key === "status") return; // Fee Status NIE SORTUJE
 
 		let direction: "asc" | "desc" = "asc";
@@ -51,18 +68,18 @@ const MyFeesPage = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: string) => {
+	const getSortIcon = (key: keyof FeeExtendedType) => {
 		if (key === "status") return ""; // brak sortowania
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const fees = useMemo(() => {
+	const processedFees = useMemo(() => {
 		if (userId === null) {
 			return [];
 		}
 
-		let data = [...MockData.mockFees];
+		let data = [...fees];
 
 		data = data.filter((fee) => fee.user.id === userId);
 
@@ -80,12 +97,12 @@ const MyFeesPage = () => {
 						aVal = a.loan.copy.book.title;
 						bVal = b.loan.copy.book.title;
 						break;
-					case "author":
-						aVal = a.loan.copy.book.authors.authors
-							.map((x) => `${x.firstName} ${x.lastName}`)
+					case "authors":
+						aVal = a.loan.copy.book.bookAuthors
+							?.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
-						bVal = b.loan.copy.book.authors.authors
-							.map((x) => `${x.firstName} ${x.lastName}`)
+						bVal = b.loan.copy.book.bookAuthors
+							?.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
 						break;
 					case "createdAt":
@@ -108,11 +125,11 @@ const MyFeesPage = () => {
 		}
 
 		return data;
-	}, [filter, sortConfig, userId]);
+	}, [filter, sortConfig, userId, fees]);
 
 	return (
 		<div className="container-fluid">
-			<h2>My Fees</h2>
+			<h2 className="d-flex justify-content-center mb-3">Your Fees</h2>
 			{userId === null && (
 				<div className="alert alert-info py-2 mb-3">No user id available.</div>
 			)}
@@ -146,8 +163,8 @@ const MyFeesPage = () => {
 							Book Title {getSortIcon("title")}
 						</th>
 
-						<th onClick={() => requestSort("author")}>
-							Author {getSortIcon("author")}
+						<th onClick={() => requestSort("authors")}>
+							Author {getSortIcon("authors")}
 						</th>
 
 						<th onClick={() => requestSort("createdAt")}>
@@ -181,7 +198,7 @@ const MyFeesPage = () => {
 				</thead>
 
 				<tbody>
-					{fees
+					{processedFees
 						.filter((fee) =>
 							fee.loan.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 						)
@@ -190,8 +207,8 @@ const MyFeesPage = () => {
 								<td>{index + 1}</td>
 								<td>{fee.loan.copy.book.title}</td>
 								<td>
-									{fee.loan.copy.book.authors.authors
-										.map((a) => `${a.firstName} ${a.lastName}`)
+									{fee.loan.copy.book.bookAuthors
+										?.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
@@ -204,6 +221,7 @@ const MyFeesPage = () => {
 						))}
 				</tbody>
 			</table>
+			<TableAlert count={processedFees.length} message="No fees found." />
 		</div>
 	);
 };

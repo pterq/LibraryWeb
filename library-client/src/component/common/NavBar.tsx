@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Offcanvas } from "bootstrap";
 import { useAuth } from "../../context/AuthContext";
@@ -7,14 +7,13 @@ import CartPanel from "../shoppingCart/CartPanel";
 const NavBar = () => {
 	const { token, role, logout, hasFees } = useAuth();
 	const cartOffcanvasRef = useRef<HTMLDivElement | null>(null);
+	const dropdownRef = useRef<HTMLLIElement | null>(null);
+
 	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
 	const openCartOffcanvas = (event: React.MouseEvent<HTMLAnchorElement>) => {
 		event.preventDefault();
-
-		if (!cartOffcanvasRef.current) {
-			return;
-		}
+		if (!cartOffcanvasRef.current) return;
 
 		const offcanvas = Offcanvas.getOrCreateInstance(cartOffcanvasRef.current);
 		offcanvas.show();
@@ -31,6 +30,22 @@ const NavBar = () => {
 		closeProfileDropdown();
 		window.location.replace("/");
 	};
+
+	// 🔥 Zamykaj dropdown po kliknięciu poza nim
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				profileDropdownOpen &&
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setProfileDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener("click", handleClickOutside);
+		return () => document.removeEventListener("click", handleClickOutside);
+	}, [profileDropdownOpen]);
 
 	return (
 		<div>
@@ -67,8 +82,6 @@ const NavBar = () => {
 						</ul>
 
 						<ul className="navbar-nav ms-auto mb-2 mb-lg-0 ">
-							{/* Logged in */}
-
 							{token && (
 								<>
 									{role === "ADMIN" && (
@@ -102,15 +115,8 @@ const NavBar = () => {
 												<Link className="nav-link active" to={"/my-fees"}>
 													My Fees
 													{hasFees && (
-														<span
-															className="badge rounded-pill bg-danger ms-2 align-middle"
-															aria-label="Outstanding fees"
-														>
+														<span className="badge rounded-pill bg-danger ms-2 align-middle">
 															1
-															<span className="visually-hidden">
-																{" "}
-																outstanding fee
-															</span>
 														</span>
 													)}
 												</Link>
@@ -130,8 +136,11 @@ const NavBar = () => {
 										</>
 									)}
 
-									{/* Dropdown profile zostaje bez zmian */}
-									<li className="nav-item dropdown d-flex align-items-center">
+									{/* 🔥 Dropdown z refem */}
+									<li
+										className="nav-item dropdown d-flex align-items-center"
+										ref={dropdownRef}
+									>
 										<button
 											type="button"
 											className="nav-link dropdown-toggle border-0 bg-transparent text-white"
@@ -142,7 +151,9 @@ const NavBar = () => {
 											Profile
 										</button>
 										<ul
-											className={`dropdown-menu dropdown-menu-end ${profileDropdownOpen ? "show" : ""}`}
+											className={`dropdown-menu dropdown-menu-end ${
+												profileDropdownOpen ? "show" : ""
+											}`}
 											style={{
 												display: profileDropdownOpen ? "block" : "none",
 												position: "absolute",
@@ -176,7 +187,6 @@ const NavBar = () => {
 								</>
 							)}
 
-							{/* Not logged in */}
 							{!token && (
 								<>
 									<li className="nav-item">
@@ -206,9 +216,9 @@ const NavBar = () => {
 				ref={cartOffcanvasRef}
 			>
 				<div className="offcanvas-header">
-					<h5 className="offcanvas-title" id="globalCartOffcanvasLabel">
-						Shopping Cart
-					</h5>
+					<h4 className="offcanvas-title" id="globalCartOffcanvasLabel">
+						Your Shopping Cart
+					</h4>
 					<button
 						type="button"
 						className="btn-close"
@@ -218,6 +228,10 @@ const NavBar = () => {
 				</div>
 				<div className="offcanvas-body">
 					<CartPanel />
+				</div>
+				{/* at the bottom of the cart panel */}
+				<div className="d-flex justify-content-center m-3">
+					<div className="d-flex justify-content-center">Get your books in library</div>
 				</div>
 			</div>
 		</div>

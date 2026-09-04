@@ -281,9 +281,9 @@ export const getLoansByLoanStatus = async (status: LoanStatusType) => {
 	}
 };
 
-export const getLoansByUserId = async (userId: number) => {
+export const getLoansByUserId = async (userId: number | null) => {
 	try {
-		const response = await axiosClient.get<LoanType[]>(`${LOAN_ENDPOINT}/user/${userId}`);
+		const response = await axiosClient.get<LoanType[]>(`${LOAN_ENDPOINT}/userBooks/${userId}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch loans for user with id ${userId}:`, error);
@@ -407,6 +407,18 @@ export const getReservationsWithCounts = async () => {
 	}
 };
 
+export const getReservationByUserId = async (userId: number | null) => {
+	try {
+		const response = await axiosClient.get<ReservationType[]>(
+			`${RESERVATION_ENDPOINT}/user/${userId}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to fetch reservations for user with id ${userId}:`, error);
+		throw error;
+	}
+};
+
 //===============================================================================
 //Fee
 
@@ -486,6 +498,16 @@ export const getFeesWithCounts = async () => {
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch fees with counts:", error);
+		throw error;
+	}
+};
+
+export const getFeesByUserId = async (userId: number | null) => {
+	try {
+		const response = await axiosClient.get<FeeType[]>(`${FEE_ENDPOINT}/user/${userId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to fetch fees for user with id ${userId}:`, error);
 		throw error;
 	}
 };

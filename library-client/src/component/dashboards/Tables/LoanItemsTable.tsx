@@ -25,13 +25,13 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const [filter, setFilter] = useState<"ALL" | LoanType["status"]>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: string;
+		key: keyof LoanType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: string) => {
+	const requestSort = (key: keyof LoanType) => {
 		if (key === "status") return;
 
 		let direction: "asc" | "desc" = "asc";
@@ -43,7 +43,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: string) => {
+	const getSortIcon = (key: keyof LoanType) => {
 		if (key === "status") return "";
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
@@ -75,26 +75,18 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			data.sort((a, b) => {
 				let aVal: string | number = "";
 				let bVal: string | number = "";
+				a.copy;
 
 				switch (sortConfig.key) {
-					case "index":
 					case "id":
 						aVal = a.id;
 						bVal = b.id;
-						break;
-					case "userId":
-						aVal = a.user.id;
-						bVal = b.user.id;
 						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
-					case "book":
-						aVal = a.copy.book.title;
-						bVal = b.copy.book.title;
-						break;
-					case "inventoryCode":
+					case "copy":
 						aVal = a.copy.inventoryCode;
 						bVal = b.copy.inventoryCode;
 						break;
@@ -161,8 +153,8 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("index")}>
-							# {getSortIcon("index")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
 						</th>
 						<th scope="col" onClick={() => requestSort("id")}>
 							Loan ID {getSortIcon("id")}
@@ -170,11 +162,8 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("user")}>
 							(ID) User {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("book")}>
-							Book {getSortIcon("book")}
-						</th>
-						<th scope="col" onClick={() => requestSort("inventoryCode")}>
-							Inventory Code {getSortIcon("inventoryCode")}
+						<th scope="col" onClick={() => requestSort("copy")}>
+							(Inventory Code) Book {getSortIcon("copy")}
 						</th>
 						<th scope="col" onClick={() => requestSort("loanDate")}>
 							Loan Date {getSortIcon("loanDate")}
@@ -220,8 +209,9 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							<td>
 								({loan.user.id}) {loan.user.firstName} {loan.user.lastName}
 							</td>
-							<td>{loan.copy.book.title}</td>
-							<td>{loan.copy.inventoryCode}</td>
+							<td>
+								({loan.copy.inventoryCode}) {loan.copy.book.title}
+							</td>
 							<td>{new Date(loan.loanDate).toLocaleDateString()}</td>
 							<td>{new Date(loan.dueDate).toLocaleDateString()}</td>
 							<td>{new Date(loan.returnDate).toLocaleDateString()}</td>
