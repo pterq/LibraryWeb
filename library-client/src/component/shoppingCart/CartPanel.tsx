@@ -10,7 +10,7 @@ const CartPanel = () => {
 
 	// przykładowe dane – w prawdziwej aplikacji pobierzesz z API
 	const items: ReservationType[] = MockData.mockReservations.reservations.filter(
-		(item) => item.user.userId === userId,
+		(item) => item.user.id === userId,
 	);
 
 	return (

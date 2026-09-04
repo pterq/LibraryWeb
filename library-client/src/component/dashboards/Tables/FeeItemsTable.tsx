@@ -41,7 +41,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		let data = [...MockData.mockFees];
 
 		if (selectedUserId !== null) {
-			data = data.filter((fee) => fee.user.userId === selectedUserId);
+			data = data.filter((fee) => fee.user.id === selectedUserId);
 		}
 
 		if (filter !== "ALL") {
@@ -91,8 +91,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = b.paidAt ? new Date(b.paidAt).getTime() : -Infinity;
 						break;
 					case "userId":
-						aVal = a.user.userId;
-						bVal = b.user.userId;
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 				}
 
@@ -191,7 +191,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
-							<td>{fee.user.userId}</td>
+							<td>{fee.user.id}</td>
 							<td>
 								{fee.user.firstName} {fee.user.lastName}
 							</td>

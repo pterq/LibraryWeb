@@ -20,7 +20,7 @@ import type {
 } from "./DbTypes";
 
 const mockUser: UserType = {
-	userId: 1,
+	id: 1,
 	firstName: "Jan",
 	lastName: "Kowalski",
 	email: "jan.kowalski@example.com",
@@ -78,7 +78,7 @@ const mockCategories: CategoryType[] = [
 
 const mockLoan: LoanType = {
 	id: 1,
-	bookPhysical: mockBookPhysical,
+	copy: mockBookPhysical,
 	loanDate: new Date("2026-08-30T04:42:43.95786"),
 	returnDate: new Date("2026-08-30T05:27:36.492792"),
 	dueDate: new Date("2026-09-13T10:00:00"),

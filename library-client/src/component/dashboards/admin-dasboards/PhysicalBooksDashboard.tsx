@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { BookPhysicalType } from "../../../types/DbTypes";
 
-import { MockData } from "../../../types/MockData";
 import SearchBar from "../../common/SearchBar";
 
 import { getBookCopies } from "../../../api/api";

@@ -1,14 +1,26 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { LoanType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import { MockData } from "../../../types/MockData";
 
+import { getLoans } from "../../../api/api";
+
 const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
+	const [loans, setLoans] = useState<LoanType[]>([]);
+
+	useEffect(() => {
+		getLoans()
+			.then((data) => {
+				setLoans(data);
+				console.log("Fetched loans:", data);
+			})
+			.catch(console.error);
+	}, []);
+
 	const selectedUserId = userId ?? null;
 
-	const loans: LoanType[] = MockData.mockLoans;
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | LoanType["status"]>("ALL");
 
@@ -50,12 +62,12 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
-			data = data.filter((element) => element.user.userId === selectedUserId);
+			data = data.filter((element) => element.user.id === selectedUserId);
 		}
 
 		if (search) {
 			data = data.filter((loan) =>
-				loan.bookPhysical.book.title.toLowerCase().includes(search.toLowerCase()),
+				loan.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 			);
 		}
 
@@ -71,20 +83,20 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = b.id;
 						break;
 					case "userId":
-						aVal = a.user.userId;
-						bVal = b.user.userId;
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
 					case "book":
-						aVal = a.bookPhysical.book.title;
-						bVal = b.bookPhysical.book.title;
+						aVal = a.copy.book.title;
+						bVal = b.copy.book.title;
 						break;
 					case "inventoryCode":
-						aVal = a.bookPhysical.inventoryCode;
-						bVal = b.bookPhysical.inventoryCode;
+						aVal = a.copy.inventoryCode;
+						bVal = b.copy.inventoryCode;
 						break;
 					case "loanDate":
 						aVal = new Date(a.loanDate).getTime();
@@ -201,14 +213,18 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				<tbody>
 					{processedLoans.map((loan, index) => (
 						<tr key={loan.id}>
-							<td>{index + 1}</td>
+							<td>
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									? processedLoans.length - index
+									: index + 1}
+							</td>
 							<td>{loan.id}</td>
-							<td>{loan.user.userId}</td>
+							<td>{loan.user.id}</td>
 							<td>
 								{loan.user.firstName} {loan.user.lastName}
 							</td>
-							<td>{loan.bookPhysical.book.title}</td>
-							<td>{loan.bookPhysical.inventoryCode}</td>
+							<td>{loan.copy.book.title}</td>
+							<td>{loan.copy.inventoryCode}</td>
 							<td>{new Date(loan.loanDate).toLocaleDateString()}</td>
 							<td>{new Date(loan.dueDate).toLocaleDateString()}</td>
 							<td>{new Date(loan.returnDate).toLocaleDateString()}</td>

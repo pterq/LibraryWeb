@@ -482,7 +482,7 @@ type BackendUserType = {
 };
 
 const normalizeUser = (user: BackendUserType): UserType => ({
-	userId: user.id,
+	id: user.id,
 	firstName: user.firstName,
 	lastName: user.lastName,
 	email: user.email,

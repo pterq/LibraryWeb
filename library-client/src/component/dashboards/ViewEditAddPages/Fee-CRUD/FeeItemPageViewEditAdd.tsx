@@ -64,18 +64,18 @@ const normalizeFeeStatus = (status?: string | null): FeeStatus => {
 
 const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">): string => {
 	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
-	return `${fullName || "Unknown user"} (ID: ${user.userId})`;
+	return `${fullName || "Unknown user"} (ID: ${user.id})`;
 };
 
 const getLoanLabel = (loan: LoanType): string => {
 	const userName = `${loan.user.firstName} ${loan.user.lastName}`.trim();
-	const bookTitle = loan.bookPhysical?.book?.title ?? "Unknown book";
+	const bookTitle = loan.copy?.book?.title ?? "Unknown book";
 	return `Loan #${loan.id} - ${userName || "Unknown user"} - ${bookTitle}`;
 };
 
 const loadUsersFromMockData = (): UserOption[] =>
 	MockData.mockUsers.map((user) => ({
-		id: Number(user.userId),
+		id: Number(user.id),
 		label: getUserLabel(user),
 	}));
 
@@ -142,9 +142,9 @@ const FeeItemPageViewEditAdd = () => {
 
 				setUserOptions(
 					users.map((user) => ({
-						id: Number(user.userId ?? 0),
+						id: Number(user.id ?? 0),
 						label: getUserLabel({
-							userId: Number(user.userId ?? 0),
+							id: Number(user.id ?? 0),
 							firstName: user.firstName ?? "",
 							lastName: user.lastName ?? "",
 						}),
@@ -233,7 +233,7 @@ const FeeItemPageViewEditAdd = () => {
 
 				if (mockFee) {
 					const fallbackData: FeeItemFormData = {
-						userId: String(mockFee.user.userId),
+						userId: String(mockFee.user.id),
 						loanId: String(mockFee.loan.id),
 						amount: String(mockFee.amount),
 						createdAt: formatDateTimeLocal(mockFee.createdAt),

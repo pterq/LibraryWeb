@@ -107,12 +107,12 @@ const UsersDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							# {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							# {getSortIcon("id")}
 						</th>
 
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("id")}>
+							User ID {getSortIcon("id")}
 						</th>
 
 						<th scope="col" onClick={() => requestSort("firstName")}>
@@ -163,13 +163,13 @@ const UsersDashboard = () => {
 
 				<tbody>
 					{filteredAndSortedUsers.map((user, index) => (
-						<tr key={user.userId}>
+						<tr key={user.id}>
 							<td>
-								{sortConfig?.key === "userId" && sortConfig?.direction === "desc"
+								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
 									? filteredAndSortedUsers.length - index
 									: index + 1}
 							</td>
-							<td>{user.userId}</td>
+							<td>{user.id}</td>
 							<td>{user.firstName}</td>
 							<td>{user.lastName}</td>
 
@@ -191,9 +191,7 @@ const UsersDashboard = () => {
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
-									onClick={() =>
-										(window.location.href = `/user/view/${user.userId}`)
-									}
+									onClick={() => (window.location.href = `/user/view/${user.id}`)}
 								>
 									View Details
 								</button>

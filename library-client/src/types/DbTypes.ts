@@ -41,7 +41,7 @@ export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
 
 export interface LoanType {
 	id: number;
-	bookPhysical: BookPhysicalType;
+	copy: BookPhysicalType;
 	loanDate: Date;
 	returnDate: Date;
 	dueDate: Date;
@@ -51,7 +51,7 @@ export interface LoanType {
 
 export interface UserType {
 	//token: string;
-	userId: number;
+	id: number;
 	firstName: string;
 	lastName: string;
 	email: string;

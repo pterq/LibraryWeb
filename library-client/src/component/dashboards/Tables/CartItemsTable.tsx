@@ -67,7 +67,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		let data: ReservationType[] = [...MockData.mockReservations.reservations];
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
-			data = data.filter((reservation) => reservation.user.userId === selectedUserId);
+			data = data.filter((reservation) => reservation.user.id === selectedUserId);
 		}
 
 		if (search) {
@@ -84,7 +84,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				return (
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
-					String(shoppingCart.user.userId).includes(lowerSearch) ||
+					String(shoppingCart.user.id).includes(lowerSearch) ||
 					String(shoppingCart.copyId).includes(lowerSearch) ||
 					shoppingCart.bookPhysical.book.title.toLowerCase().includes(lowerSearch) ||
 					authors.includes(lowerSearch) ||
@@ -220,7 +220,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<tr key={shoppingCartItem.id}>
 							<td>{index + 1}</td>
 							<td>{shoppingCartItem.id}</td>
-							<td>{shoppingCartItem.user.userId}</td>
+							<td>{shoppingCartItem.user.id}</td>
 							<td>
 								{shoppingCartItem.user.firstName} {shoppingCartItem.user.lastName}
 							</td>

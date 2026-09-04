@@ -46,7 +46,7 @@ const UserBooksPage = () => {
 			return [];
 		}
 
-		let data = MockData.mockLoans.filter((loan) => loan.user.userId === userId);
+		let data = MockData.mockLoans.filter((loan) => loan.user.id === userId);
 
 		if (filter !== "ALL") {
 			data = data.filter((loan) => loan.status === filter);
@@ -59,14 +59,14 @@ const UserBooksPage = () => {
 
 				switch (sortConfig.key) {
 					case "title":
-						aVal = a.bookPhysical.book.title;
-						bVal = b.bookPhysical.book.title;
+						aVal = a.copy.book.title;
+						bVal = b.copy.book.title;
 						break;
 					case "author":
-						aVal = a.bookPhysical.book.authors.authors
+						aVal = a.copy.book.authors.authors
 							.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
-						bVal = b.bookPhysical.book.authors.authors
+						bVal = b.copy.book.authors.authors
 							.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
 						break;
@@ -168,7 +168,7 @@ const UserBooksPage = () => {
 				<tbody className="text-center">
 					{loans
 						.filter((lo) =>
-							lo.bookPhysical.book.title.toLowerCase().includes(search.toLowerCase()),
+							lo.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 						)
 						.map((loan, index) => (
 							<tr key={loan.id}>
@@ -176,9 +176,9 @@ const UserBooksPage = () => {
 									{index + 1}
 								</th>
 
-								<td>{loan.bookPhysical.book.title}</td>
+								<td>{loan.copy.book.title}</td>
 								<td>
-									{loan.bookPhysical.book.authors.authors
+									{loan.copy.book.authors.authors
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>

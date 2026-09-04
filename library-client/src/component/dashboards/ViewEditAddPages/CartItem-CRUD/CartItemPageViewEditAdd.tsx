@@ -59,7 +59,7 @@ const extractArrayFromResponse = <T,>(payload: unknown): T[] => {
 
 const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">): string => {
 	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
-	return `${fullName || "Unknown user"} (ID: ${user.userId})`;
+	return `${fullName || "Unknown user"} (ID: ${user.id})`;
 };
 
 const getCopyLabel = (copy: Pick<BookPhysicalType, "id" | "inventoryCode" | "status" | "book">) => {
@@ -70,7 +70,7 @@ const getCopyLabel = (copy: Pick<BookPhysicalType, "id" | "inventoryCode" | "sta
 
 const loadUsersFromMockData = (): UserOption[] =>
 	MockData.mockUsers.map((user) => ({
-		id: Number(user.userId),
+		id: Number(user.id),
 		label: getUserLabel(user),
 	}));
 
@@ -123,9 +123,9 @@ const CartItemPageViewEditAdd = () => {
 
 				setUserOptions(
 					users.map((user) => ({
-						id: Number(user.userId ?? 0),
+						id: Number(user.id ?? 0),
 						label: getUserLabel({
-							userId: Number(user.userId ?? 0),
+							id: Number(user.id ?? 0),
 							firstName: user.firstName ?? "",
 							lastName: user.lastName ?? "",
 						}),
@@ -227,7 +227,7 @@ const CartItemPageViewEditAdd = () => {
 
 				if (mockReservation) {
 					const fallbackData: CartItemFormData = {
-						userId: String(mockReservation.user.userId),
+						userId: String(mockReservation.user.id),
 						copyId: String(mockReservation.copyId),
 						reservedAt: formatDateTimeLocal(mockReservation.reservedAt),
 						expiresAt: formatDateTimeLocal(mockReservation.expiresAt),

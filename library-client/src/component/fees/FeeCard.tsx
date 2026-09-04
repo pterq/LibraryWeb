@@ -23,10 +23,10 @@ const FeeCard = () => {
 
 			<h2>Fee info and payment</h2>
 			{/*<p>Fee ID: {fee.id}</p> */}
-			<p>Book Title: {fee.loan.bookPhysical.book.title}</p>
+			<p>Book Title: {fee.loan.copy.book.title}</p>
 			<p>
 				Author:{" "}
-				{fee.loan.bookPhysical.book.authors.authors
+				{fee.loan.copy.book.authors.authors
 					.map((a) => `${a.firstName} ${a.lastName}`)
 					.join(", ")}
 			</p>

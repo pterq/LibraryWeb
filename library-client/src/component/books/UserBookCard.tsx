@@ -25,18 +25,18 @@ const UserBookCard = () => {
 			<div className="row mt-4 g-4 align-items-start">
 				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
 					<ImageFrame
-						imageUrl={loan.bookPhysical.book.coverImageUrl ?? null}
-						alt={loan.bookPhysical.book.title}
+						imageUrl={loan.copy.book.coverImageUrl ?? null}
+						alt={loan.copy.book.title}
 					/>
 				</div>
 
 				<div className="col-12 col-md-8 col-lg-9">
 					<p>
-						<strong>Book Title:</strong> {loan.bookPhysical.book.title}
+						<strong>Book Title:</strong> {loan.copy.book.title}
 					</p>
 					<p>
 						<strong>Authors:</strong>{" "}
-						{loan.bookPhysical.book.authors.authors
+						{loan.copy.book.authors.authors
 							.map(
 								(a: { firstName: string; lastName: string }) =>
 									`${a.firstName} ${a.lastName}`,

@@ -59,8 +59,8 @@ const FeesDashboard = () => {
 
 						break;
 					case "user":
-						aVal = a.user.userId;
-						bVal = b.user.userId;
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;

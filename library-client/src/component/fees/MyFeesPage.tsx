@@ -64,7 +64,7 @@ const MyFeesPage = () => {
 
 		let data = [...MockData.mockFees];
 
-		data = data.filter((fee) => fee.user.userId === userId);
+		data = data.filter((fee) => fee.user.id === userId);
 
 		if (filter !== "ALL") {
 			data = data.filter((fee) => fee.status === filter);
@@ -77,14 +77,14 @@ const MyFeesPage = () => {
 
 				switch (sortConfig.key) {
 					case "title":
-						aVal = a.loan.bookPhysical.book.title;
-						bVal = b.loan.bookPhysical.book.title;
+						aVal = a.loan.copy.book.title;
+						bVal = b.loan.copy.book.title;
 						break;
 					case "author":
-						aVal = a.loan.bookPhysical.book.authors.authors
+						aVal = a.loan.copy.book.authors.authors
 							.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
-						bVal = b.loan.bookPhysical.book.authors.authors
+						bVal = b.loan.copy.book.authors.authors
 							.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
 						break;
@@ -183,16 +183,14 @@ const MyFeesPage = () => {
 				<tbody>
 					{fees
 						.filter((fee) =>
-							fee.loan.bookPhysical.book.title
-								.toLowerCase()
-								.includes(search.toLowerCase()),
+							fee.loan.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 						)
 						.map((fee, index) => (
 							<tr key={fee.id}>
 								<td>{index + 1}</td>
-								<td>{fee.loan.bookPhysical.book.title}</td>
+								<td>{fee.loan.copy.book.title}</td>
 								<td>
-									{fee.loan.bookPhysical.book.authors.authors
+									{fee.loan.copy.book.authors.authors
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>

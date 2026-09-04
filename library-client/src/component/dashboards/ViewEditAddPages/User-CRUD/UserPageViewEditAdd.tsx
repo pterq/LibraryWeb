@@ -40,7 +40,7 @@ const UserPageViewEditAdd = () => {
 
 	const mockUser =
 		linkId != null
-			? MockData.mockUsers.find((user) => Number(user.userId) === Number(linkId))
+			? MockData.mockUsers.find((user) => Number(user.id) === Number(linkId))
 			: undefined;
 
 	//=============================================================
