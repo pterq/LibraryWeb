@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
 
 public interface LoanRepository extends JpaRepository<Loan, Long> {
     List<Loan> findByStatus(LoanStatus status);

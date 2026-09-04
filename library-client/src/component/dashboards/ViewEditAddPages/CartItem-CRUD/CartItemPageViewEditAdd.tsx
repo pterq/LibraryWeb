@@ -228,7 +228,7 @@ const CartItemPageViewEditAdd = () => {
 				if (mockReservation) {
 					const fallbackData: CartItemFormData = {
 						userId: String(mockReservation.user.id),
-						copyId: String(mockReservation.copyId),
+						copyId: String(mockReservation.copy),
 						reservedAt: formatDateTimeLocal(mockReservation.reservedAt),
 						expiresAt: formatDateTimeLocal(mockReservation.expiresAt),
 					};

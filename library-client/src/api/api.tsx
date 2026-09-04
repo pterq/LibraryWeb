@@ -468,6 +468,16 @@ export const updateFeeStatusById = async (id: number, status: string) => {
 	}
 };
 
+export const getFeesWithCounts = async () => {
+	try {
+		const response = await axiosClient.get<FeesWithCountsType[]>(`${FEE_ENDPOINT}/counts`);
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch fees with counts:", error);
+		throw error;
+	}
+};
+
 //===============================================================================
 //User
 

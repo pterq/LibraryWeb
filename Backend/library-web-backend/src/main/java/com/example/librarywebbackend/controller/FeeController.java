@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.FeeWithCountDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.service.IFeeService;
@@ -21,6 +22,11 @@ public class FeeController {
     @GetMapping
     public List<Fee> getAll() {
         return feeService.getAllFees();
+    }
+
+    @GetMapping("/counts")
+    public List<FeeWithCountDTO> getFeeCounts() {
+        return feeService.getFeeCountsByUser();
     }
 
     @GetMapping("/status/{status}")

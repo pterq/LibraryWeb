@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.dto.UserDTO;
-import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
+import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Loan;
@@ -120,10 +120,10 @@ public class LoanService implements ILoanService {
 
 
     @Override
-    public List<UserWithLoanCountDTO> getLoanCountsByUser() {
+    public List<LoanWithCountDTO> getLoanCountsByUser() {
         return loanRepository.countLoansByUserRaw()
                 .stream()
-                .map(row -> new UserWithLoanCountDTO(
+                .map(row -> new LoanWithCountDTO(
                         ((Number) row[0]).longValue(), // id
                         new UserDTO(
                                 ((Number) row[1]).longValue(), // userId

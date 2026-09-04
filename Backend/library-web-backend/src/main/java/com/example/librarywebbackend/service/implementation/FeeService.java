@@ -1,6 +1,8 @@
 package com.example.librarywebbackend.service.implementation;
 
 
+import com.example.librarywebbackend.dto.FeeWithCountDTO;
+import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.repository.FeeRepository;
@@ -67,5 +69,25 @@ public class FeeService implements IFeeService {
     @Override
     public void deleteFee(Long id) {
         feeRepository.deleteById(id);
+    }
+
+    @Override
+    public List<FeeWithCountDTO> getFeeCountsByUser() {
+        return feeRepository.countFeesByUserRaw()
+                .stream()
+                .map(row -> new FeeWithCountDTO(
+                        ((Number) row[0]).longValue(),
+                        new UserDTO(
+                                ((Number) row[1]).longValue(),
+                                (String) row[2],
+                                (String) row[3],
+                                (String) row[4]
+                        ),
+                        ((Number) row[5]).longValue(),
+                        ((Number) row[6]).longValue(),
+                        ((Number) row[7]).longValue(),
+                        ((Number) row[8]).longValue()
+                ))
+                .toList();
     }
 }

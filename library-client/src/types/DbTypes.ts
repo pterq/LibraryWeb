@@ -18,7 +18,7 @@ export interface BookType {
 	description: string;
 	isbn: string;
 	publishedYear: number;
-	authors: AuthorsType[];
+	authors: AuthorType[];
 	categories?: CategoryType[];
 	coverImageUrl?: string;
 }
@@ -83,7 +83,7 @@ export type FeeType = {
 export interface ReservationType {
 	id: number;
 	user: UserType;
-	copyId: number;
+	copy: BookPhysicalType;
 	reservedAt: Date;
 	expiresAt: Date;
 	bookPhysical: BookPhysicalType;
@@ -120,7 +120,7 @@ export interface UserDtoType {
 
 export interface LoanCountType {
 	id: number;
-	userDto: UserDtoType;
+	user: UserDtoType;
 	countLoans: number;
 	countBorrowed: number;
 	countReturned: number;

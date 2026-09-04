@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.UserWithLoanCountDTO;
+import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
 import com.example.librarywebbackend.service.ILoanService;
@@ -44,7 +44,7 @@ public class LoanController {
     }
 
     @GetMapping("/counts")
-    public List<UserWithLoanCountDTO> getLoanCounts() {
+    public List<LoanWithCountDTO> getLoanCounts() {
         return loanService.getLoanCountsByUser();
     }
 

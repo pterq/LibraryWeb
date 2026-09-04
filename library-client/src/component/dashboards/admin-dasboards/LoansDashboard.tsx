@@ -49,12 +49,12 @@ const LoansDashboard = () => {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((loan) => {
-				const fullName = `${loan.userDto.firstName} ${loan.userDto.lastName}`.toLowerCase();
+				const fullName = `${loan.user.firstName} ${loan.user.lastName}`.toLowerCase();
 
 				return (
-					String(loan.userDto.id).includes(lowerSearch) ||
+					String(loan.user.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
-					String(loan.userDto.id).includes(lowerSearch) ||
+					String(loan.user.id).includes(lowerSearch) ||
 					String(loan.countLoans).includes(lowerSearch)
 				);
 			});
@@ -70,9 +70,9 @@ const LoansDashboard = () => {
 						aVal = a.id;
 						bVal = b.id;
 						break;
-					case "userDto":
-						aVal = a.userDto.id;
-						bVal = b.userDto.id;
+					case "user":
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 					case "countLoans":
 						aVal = a.countLoans;
@@ -128,11 +128,11 @@ const LoansDashboard = () => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							# {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userDto")}>
-							User Id{getSortIcon("userDto")}
+						<th scope="col" onClick={() => requestSort("user")}>
+							User Id{getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userDto")}>
-							User Name {getSortIcon("userDto")}
+						<th scope="col" onClick={() => requestSort("user")}>
+							User Name {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("countLoans")}>
 							Total Loans {getSortIcon("countLoans")}

@@ -26,9 +26,7 @@ const FeeCard = () => {
 			<p>Book Title: {fee.loan.copy.book.title}</p>
 			<p>
 				Author:{" "}
-				{fee.loan.copy.book.authors.authors
-					.map((a) => `${a.firstName} ${a.lastName}`)
-					.join(", ")}
+				{fee.loan.copy.book.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
 			</p>
 
 			<p>Amount: {fee.amount.toFixed(2)} zł</p>

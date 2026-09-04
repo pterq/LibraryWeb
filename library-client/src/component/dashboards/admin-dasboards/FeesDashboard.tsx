@@ -1,12 +1,23 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { FeesWithCountsType, FeeType, UserType } from "../../../types/DbTypes";
-import { MockData } from "../../../types/MockData";
 
 import SearchBar from "../../common/SearchBar";
 
+import { getFeesWithCounts } from "../../../api/api";
+
 const FeesDashboard = () => {
-	const feesWithCount: FeesWithCountsType[] = MockData.mockFeesCount;
+	const [feesWithCount, setFeesWithCount] = useState<FeesWithCountsType[]>([]);
+
+	useEffect(() => {
+		getFeesWithCounts()
+			.then((data) => {
+				setFeesWithCount(data);
+				console.log("Fetched fees with count:", data);
+			})
+			.catch(console.error);
+	}, []);
+	// const feesWithCount: FeesWithCountsType[] = MockData.mockFeesCount;
 
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{

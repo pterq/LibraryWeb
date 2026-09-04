@@ -1,43 +1,43 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { AuthorType, ReservationType } from "../../../types/DbTypes";
+import type {
+	AuthorType,
+	ReservationType,
+	BookType,
+	BookPhysicalType,
+} from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../../types/MockData";
+import { getReservations } from "../../../api/api";
+
+const getReservationCopy = (reservation: ReservationType) =>
+	reservation.bookPhysical ?? reservation.copy;
+
+const formatReservationDate = (value: Date | string) => new Date(value).toLocaleString();
 
 const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
+	const [reservations, setReservations] = useState<ReservationType[] | null>(null);
+
+	useEffect(() => {
+		getReservations()
+			.then((data) => {
+				setReservations(data);
+				console.log("Fetched reservations:", data);
+			})
+			.catch(console.error);
+	}, []);
 
 	//=====================================================
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt";
+		key: keyof ReservationType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt",
-	) => {
+	const requestSort = (key: keyof ReservationType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -47,24 +47,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (
-		key:
-			| "id"
-			| "userId"
-			| "user"
-			| "copyId"
-			| "bookTitle"
-			| "author"
-			| "inventoryCode"
-			| "reservedAt"
-			| "expiresAt",
-	) => {
+	const getSortIcon = (key: keyof ReservationType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const shoppingCarts = useMemo(() => {
-		let data: ReservationType[] = [...MockData.mockReservations.reservations];
+		let data: ReservationType[] = [...(reservations ?? [])];
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
 			data = data.filter((reservation) => reservation.user.id === selectedUserId);
@@ -74,9 +63,14 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((shoppingCart) => {
+				const bookCopy = getReservationCopy(shoppingCart);
+				if (!bookCopy) {
+					return false;
+				}
+
 				const fullName =
 					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
-				const authors = shoppingCart.bookPhysical.book.authors.authors
+				const authors = bookCopy.book.authors
 					.map((author) => `${author.firstName} ${author.lastName}`)
 					.join(", ")
 					.toLowerCase();
@@ -85,10 +79,10 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(shoppingCart.user.id).includes(lowerSearch) ||
-					String(shoppingCart.copyId).includes(lowerSearch) ||
-					shoppingCart.bookPhysical.book.title.toLowerCase().includes(lowerSearch) ||
+					String(bookCopy.id).includes(lowerSearch) ||
+					bookCopy.book.title.toLowerCase().includes(lowerSearch) ||
 					authors.includes(lowerSearch) ||
-					shoppingCart.bookPhysical.inventoryCode.toLowerCase().includes(lowerSearch)
+					bookCopy.inventoryCode.toLowerCase().includes(lowerSearch)
 				);
 			});
 		}
@@ -107,25 +101,35 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
-					case "copyId":
-						aVal = a.copyId;
-						bVal = b.copyId;
+					case "copy":
+					case "bookPhysical": {
+						const aCopy = getReservationCopy(a);
+						const bCopy = getReservationCopy(b);
+						aVal = aCopy?.id ?? "";
+						bVal = bCopy?.id ?? "";
 						break;
-					case "bookTitle":
-						aVal = a.bookPhysical.book.title;
-						bVal = b.bookPhysical.book.title;
+					}
+					case "bookPhysical":
+						aVal = getReservationCopy(a)?.book.title ?? "";
+						bVal = getReservationCopy(b)?.book.title ?? "";
 						break;
-					case "author":
-						aVal = a.bookPhysical.book.authors.authors
-							.map((author) => `${author.firstName} ${author.lastName}`)
-							.join(", ");
-						bVal = b.bookPhysical.book.authors.authors
-							.map((author) => `${author.firstName} ${author.lastName}`)
-							.join(", ");
+					case "bookPhysical":
+						aVal =
+							getReservationCopy(a)
+								?.book.authors.map(
+									(author) => `${author.firstName} ${author.lastName}`,
+								)
+								.join(", ") ?? "";
+						bVal =
+							getReservationCopy(b)
+								?.book.authors.map(
+									(author) => `${author.firstName} ${author.lastName}`,
+								)
+								.join(", ") ?? "";
 						break;
-					case "inventoryCode":
-						aVal = a.bookPhysical.inventoryCode;
-						bVal = b.bookPhysical.inventoryCode;
+					case "bookPhysical":
+						aVal = getReservationCopy(a)?.inventoryCode ?? "";
+						bVal = getReservationCopy(b)?.inventoryCode ?? "";
 						break;
 					case "reservedAt":
 						aVal = new Date(a.reservedAt).getTime();
@@ -148,7 +152,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		return data;
-	}, [search, sortConfig, selectedUserId]);
+	}, [reservations, search, sortConfig, selectedUserId]);
 
 	return (
 		<>
@@ -188,23 +192,23 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							Reservation ID {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("user")}>
+							User ID {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							User Name {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("copyId")}>
-							Copy ID {getSortIcon("copyId")}
+						<th scope="col" onClick={() => requestSort("copy")}>
+							Copy ID {getSortIcon("copy")}
 						</th>
-						<th scope="col" onClick={() => requestSort("bookTitle")}>
-							Book Title {getSortIcon("bookTitle")}
+						<th scope="col" onClick={() => requestSort("bookPhysical")}>
+							Book Title {getSortIcon("bookPhysical")}
 						</th>
-						<th scope="col" onClick={() => requestSort("author")}>
-							Book Author {getSortIcon("author")}
+						<th scope="col" onClick={() => requestSort("bookPhysical")}>
+							Book Author {getSortIcon("bookPhysical")}
 						</th>
-						<th scope="col" onClick={() => requestSort("inventoryCode")}>
-							Inventory Code {getSortIcon("inventoryCode")}
+						<th scope="col" onClick={() => requestSort("bookPhysical")}>
+							Inventory Code {getSortIcon("bookPhysical")}
 						</th>
 						<th scope="col" onClick={() => requestSort("reservedAt")}>
 							Reserved At {getSortIcon("reservedAt")}
@@ -216,33 +220,34 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{shoppingCarts.map((shoppingCartItem, index) => (
-						<tr key={shoppingCartItem.id}>
+					{shoppingCarts.map((cartItem, index) => (
+						<tr key={cartItem.id}>
 							<td>{index + 1}</td>
-							<td>{shoppingCartItem.id}</td>
-							<td>{shoppingCartItem.user.id}</td>
+							<td>{cartItem.id}</td>
+							<td>{cartItem.user.id}</td>
 							<td>
-								{shoppingCartItem.user.firstName} {shoppingCartItem.user.lastName}
+								{cartItem.user.firstName} {cartItem.user.lastName}
 							</td>
-							<td>{shoppingCartItem.bookPhysical.id}</td>
-							<td>{shoppingCartItem.bookPhysical.book.title}</td>
+							<td>{getReservationCopy(cartItem)?.id ?? "-"}</td>
+							<td>{getReservationCopy(cartItem)?.book.title ?? "-"}</td>
 							<td>
-								{shoppingCartItem.bookPhysical.book.authors.authors
-									.map(
+								{getReservationCopy(cartItem)
+									?.book?.authors?.map(
 										(author: AuthorType) =>
 											`${author.firstName} ${author.lastName}`,
 									)
-									.join(", ")}
+									.join(", ") ?? "-"}
 							</td>
-							<td>{shoppingCartItem.bookPhysical.inventoryCode}</td>
-							<td>{shoppingCartItem.reservedAt.toLocaleString()}</td>
-							<td>{shoppingCartItem.expiresAt.toLocaleString()}</td>
+
+							<td>{getReservationCopy(cartItem)?.inventoryCode ?? "-"}</td>
+							<td>{formatReservationDate(cartItem.reservedAt)}</td>
+							<td>{formatReservationDate(cartItem.expiresAt)}</td>
 
 							<td>
 								<button
 									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
-										(window.location.href = `/shoppingCartItem/view/${shoppingCartItem.id}`)
+										(window.location.href = `/shoppingCartItem/view/${cartItem.id}`)
 									}
 								>
 									View Details

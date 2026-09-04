@@ -99,7 +99,7 @@ const mockFee: FeeType = {
 const mockReservation: ReservationType = {
 	id: 1,
 	user: mockUser,
-	copyId: mockBookPhysical.id,
+	copy: mockBookPhysical.id,
 	reservedAt: new Date("2026-08-30T04:42:43.95786"),
 	expiresAt: new Date("2026-09-13T10:00:00"),
 	bookPhysical: mockBookPhysical,

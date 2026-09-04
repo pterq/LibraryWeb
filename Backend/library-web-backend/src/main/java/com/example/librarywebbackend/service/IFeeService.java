@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.FeeWithCountDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 
@@ -20,4 +21,6 @@ public interface IFeeService {
     Fee updateStatus(Long id, FeeStatus status);
 
     void deleteFee(Long id);
+
+    List<FeeWithCountDTO> getFeeCountsByUser();
 }

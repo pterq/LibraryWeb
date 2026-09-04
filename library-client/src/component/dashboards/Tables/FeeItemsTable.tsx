@@ -1,26 +1,35 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { FeeType, FeeStatusType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../../types/MockData";
+import { getFees } from "../../../api/api";
 
 const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
+
+	const [fees, setFees] = useState<FeeType[]>([]);
+
+	useEffect(() => {
+		getFees()
+			.then((data) => {
+				setFees(data);
+				console.log("Fetched fees:", data);
+			})
+			.catch(console.error);
+	}, []);
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId";
+		key: keyof FeeType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (
-		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId",
-	) => {
+	const requestSort = (key: keyof FeeType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -30,15 +39,13 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (
-		key: "id" | "user" | "amount" | "loanId" | "createdAt" | "paidAt" | "userId",
-	) => {
+	const getSortIcon = (key: keyof FeeType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const filteredFees: FeeType[] = useMemo(() => {
-		let data = [...MockData.mockFees];
+		let data = [...fees];
 
 		if (selectedUserId !== null) {
 			data = data.filter((fee) => fee.user.id === selectedUserId);
@@ -78,7 +85,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						aVal = a.amount;
 						bVal = b.amount;
 						break;
-					case "loanId":
+					case "loan":
 						aVal = a.loan.id;
 						bVal = b.loan.id;
 						break;
@@ -90,7 +97,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						aVal = a.paidAt ? new Date(a.paidAt).getTime() : -Infinity;
 						bVal = b.paidAt ? new Date(b.paidAt).getTime() : -Infinity;
 						break;
-					case "userId":
+					case "user":
 						aVal = a.user.id;
 						bVal = b.user.id;
 						break;
@@ -107,7 +114,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		return data;
-	}, [search, filter, sortConfig, selectedUserId]);
+	}, [fees, search, filter, sortConfig, selectedUserId]);
 
 	return (
 		<>
@@ -147,8 +154,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("id")}>
 							Fee ID {getSortIcon("id")}
 						</th>
-						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+						<th scope="col" onClick={() => requestSort("user")}>
+							User ID {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							User Name {getSortIcon("user")}
@@ -156,8 +163,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("amount")}>
 							Amount {getSortIcon("amount")}
 						</th>
-						<th scope="col" onClick={() => requestSort("loanId")}>
-							Loan ID {getSortIcon("loanId")}
+						<th scope="col" onClick={() => requestSort("loan")}>
+							Loan ID {getSortIcon("loan")}
 						</th>
 						<th scope="col" onClick={() => requestSort("createdAt")}>
 							Created At {getSortIcon("createdAt")}
