@@ -2,8 +2,10 @@ package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.dto.LoginRequestDTO;
 import com.example.librarywebbackend.dto.LoginResponseDTO;
+import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.entity.UserRole;
+import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,11 @@ class LoginServiceTest {
     @Test
     void loginReturnsJwtToken() {
         UserRepository userRepository = Mockito.mock(UserRepository.class);
+        FeeRepository feeRepository = Mockito.mock(FeeRepository.class);
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         JwtService jwtService = Mockito.mock(JwtService.class);
 
-        LoginService loginService = new LoginService(userRepository, passwordEncoder, jwtService);
+        LoginService loginService = new LoginService(userRepository, feeRepository, passwordEncoder, jwtService);
 
         LoginRequestDTO request = new LoginRequestDTO();
         request.setEmail("jan@example.com");
@@ -39,12 +42,14 @@ class LoginServiceTest {
 
         when(userRepository.findByEmail(request.getEmail())).thenReturn(java.util.Optional.of(user));
         when(passwordEncoder.matches(request.getPassword(), user.getPasswordHash())).thenReturn(true);
+        when(feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING)).thenReturn(true);
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
 
         LoginResponseDTO response = loginService.login(request);
 
         assertNotNull(response);
         assertEquals(1L, response.getUserId());
+        assertEquals(true, response.isHasFee());
         assertEquals("jwt-token", response.getAccessToken());
         assertEquals("Bearer", response.getTokenType());
     }

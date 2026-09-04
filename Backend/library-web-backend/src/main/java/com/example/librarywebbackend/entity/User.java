@@ -41,4 +41,8 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Transient
+    private boolean hasFee;
+
 }

@@ -19,6 +19,7 @@ const UsersDashboard = () => {
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | UserType["role"]>("ALL");
+	const [feeFilter, setFeeFilter] = useState<"ALL" | "YES" | "NO">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof UserType;
@@ -27,7 +28,8 @@ const UsersDashboard = () => {
 
 	const roleOptions = useMemo(() => Array.from(new Set(users.map((user) => user.role))), [users]);
 
-	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
+	const isFiltered =
+		search !== "" || filter !== "ALL" || sortConfig !== null || feeFilter !== "ALL";
 
 	const requestSort = (key: keyof UserType) => {
 		if (key === "role") return;
@@ -54,6 +56,12 @@ const UsersDashboard = () => {
 			data = data.filter((user) => user.role === filter);
 		}
 
+		if (feeFilter !== "ALL") {
+			data = data.filter((user) =>
+				feeFilter === "YES" ? user.hasFee === true : user.hasFee === false,
+			);
+		}
+
 		if (search.trim() !== "") {
 			const normalizedSearch = search.toLowerCase();
 			data = data.filter(
@@ -76,7 +84,7 @@ const UsersDashboard = () => {
 		}
 
 		return data;
-	}, [users, filter, search, sortConfig]);
+	}, [users, filter, search, sortConfig, feeFilter]);
 
 	return (
 		<div className="container-fluid">
@@ -98,6 +106,7 @@ const UsersDashboard = () => {
 						setSearch("");
 						setSortConfig(null);
 						setFilter("ALL");
+						setFeeFilter("ALL");
 					}}
 				>
 					Clear filters
@@ -157,6 +166,24 @@ const UsersDashboard = () => {
 								</select>
 							</div>
 						</th>
+						<th scope="col">
+							<div className="d-flex align-items-center gap-2">
+								<span>Has Unpaid Fees</span>
+
+								<select
+									className="form-select form-select-sm py-0"
+									style={{ width: "auto" }}
+									value={feeFilter}
+									onChange={(e) =>
+										setFeeFilter(e.target.value as "ALL" | "YES" | "NO")
+									}
+								>
+									<option value="ALL">All</option>
+									<option value="YES">Yes</option>
+									<option value="NO">No</option>
+								</select>
+							</div>
+						</th>
 
 						<th scope="col">Actions</th>
 					</tr>
@@ -174,7 +201,6 @@ const UsersDashboard = () => {
 							<td>{user.firstName}</td>
 							<td>{user.lastName}</td>
 
-							{/* 🔥 WĄSKA KOMÓRKA EMAIL */}
 							<td
 								className="text-nowrap"
 								style={{
@@ -188,7 +214,7 @@ const UsersDashboard = () => {
 
 							<td className="text-nowrap">{user.phone}</td>
 							<td className="text-nowrap">{user.role}</td>
-
+							<td>{user.hasFee ? "Yes" : "No"}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

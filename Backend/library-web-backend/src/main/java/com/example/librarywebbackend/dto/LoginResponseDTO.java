@@ -14,6 +14,7 @@ public class LoginResponseDTO {
     private String email;
     private String phone;
     private UserRole role;
+    private boolean hasFee;
     private String accessToken;
     private String tokenType;
 }

@@ -11,6 +11,13 @@ import java.util.List;
 public interface FeeRepository extends JpaRepository<Fee, Long> {
     List<Fee> findByStatus(FeeStatus status);
 
+    @Query("""
+    select case when count(f) > 0 then true else false end
+    from Fee f
+    where f.user.id = :userId and f.status = :status
+""")
+    boolean existsByUserIdAndStatus(Long userId, FeeStatus status);
+
     @Query("select f from Fee f where f.user.id = :userId")
     List<Fee> findByUserId(@Param("userId") Long userId);
 

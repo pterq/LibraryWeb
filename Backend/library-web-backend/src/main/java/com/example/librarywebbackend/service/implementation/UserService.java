@@ -1,6 +1,8 @@
 package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.entity.User;
+import com.example.librarywebbackend.entity.FeeStatus;
+import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.IUserService;
 import org.springframework.stereotype.Service;
@@ -11,25 +13,30 @@ import java.util.List;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+    private final FeeRepository feeRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FeeRepository feeRepository) {
         this.userRepository = userRepository;
+        this.feeRepository = feeRepository;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .map(this::withFeeFlag)
+                .toList();
     }
 
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
+                .map(this::withFeeFlag)
                 .orElse(null);
     }
 
     @Override
     public User createUser(User user) {
-        return userRepository.save(user);
+        return withFeeFlag(userRepository.save(user));
     }
 
     @Override
@@ -41,7 +48,7 @@ public class UserService implements IUserService {
                     user.setEmail(updated.getEmail());
                     user.setPhone(updated.getPhone());
                     user.setRole(updated.getRole());
-                    return userRepository.save(user);
+                    return withFeeFlag(userRepository.save(user));
                 })
                 .orElse(null);
     }
@@ -51,5 +58,9 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
     }
 
+    private User withFeeFlag(User user) {
+        user.setHasFee(feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING));
+        return user;
+    }
 
 }

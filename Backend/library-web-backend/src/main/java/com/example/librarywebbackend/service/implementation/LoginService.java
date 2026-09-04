@@ -2,7 +2,9 @@ package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.dto.LoginRequestDTO;
 import com.example.librarywebbackend.dto.LoginResponseDTO;
+import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.User;
+import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
 import com.example.librarywebbackend.service.ILoginService;
@@ -15,11 +17,13 @@ import org.springframework.web.server.ResponseStatusException;
 public class LoginService implements ILoginService {
 
     private final UserRepository userRepository;
+    private final FeeRepository feeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public LoginService(UserRepository userRepository, FeeRepository feeRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.feeRepository = feeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
@@ -34,6 +38,8 @@ public class LoginService implements ILoginService {
         }
 
         String accessToken = jwtService.generateToken(user);
+        boolean hasFee = feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING);
+        user.setHasFee(hasFee);
 
         return new LoginResponseDTO(
                 user.getId(),
@@ -42,6 +48,7 @@ public class LoginService implements ILoginService {
                 user.getEmail(),
                 user.getPhone(),
                 user.getRole(),
+                hasFee,
                 accessToken,
                 "Bearer"
         );
