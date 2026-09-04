@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.ReservationWithCountDTO;
+import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.BookCopy;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Reservation;
@@ -81,5 +83,22 @@ public class ReservationService implements IReservationService {
     @Override
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ReservationWithCountDTO> getReservationCountsByUser() {
+        return reservationRepository.countReservationsByUserRaw()
+                .stream()
+                .map(row -> new ReservationWithCountDTO(
+                        ((Number) row[0]).longValue(),
+                        new UserDTO(
+                                ((Number) row[1]).longValue(),
+                                (String) row[2],
+                                (String) row[3],
+                                (String) row[4]
+                        ),
+                        ((Number) row[5]).longValue()
+                ))
+                .toList();
     }
 }

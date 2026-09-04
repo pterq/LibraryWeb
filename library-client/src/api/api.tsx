@@ -395,6 +395,18 @@ export const deleteReservationById = async (id: number) => {
 	}
 };
 
+export const getReservationsWithCounts = async () => {
+	try {
+		const response = await axiosClient.get<ReservationCountType[]>(
+			`${RESERVATION_ENDPOINT}/counts`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch reservations with counts:", error);
+		throw error;
+	}
+};
+
 //===============================================================================
 //Fee
 

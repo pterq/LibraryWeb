@@ -1,11 +1,25 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { ReservationCountType, ReservationType } from "../../../types/DbTypes";
+import type { LoanCountType, ReservationCountType, ReservationType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../../types/MockData";
+
+import { getReservationsWithCounts } from "../../../api/api";
 
 const ShoppinCartsDashboard = () => {
+	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<ReservationCountType[]>(
+		[],
+	);
+
+	useEffect(() => {
+		getReservationsWithCounts()
+			.then((data) => {
+				setShoppingCartsWithCount(data);
+				console.log("Fetched shopping carts with count:", data);
+			})
+			.catch(console.error);
+	}, []);
+
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
 		key: "id" | "userId" | "user" | "copyId" | "itemsCount";
@@ -30,23 +44,24 @@ const ShoppinCartsDashboard = () => {
 	};
 
 	const getItemsCount = (shoppingCart: ReservationCountType) => {
-		return shoppingCart.numberOfReservations;
+		return shoppingCart.countReservations;
 	};
 
 	const filteredAndSortedShoppingCarts = useMemo(() => {
-		let data: ReservationCountType[] = [...MockData.mockReservationsCount];
+		let data: ReservationCountType[] = [...shoppingCartsWithCount];
 
 		if (search.trim()) {
 			const lowerSearch = search.toLowerCase();
 
 			data = data.filter((shoppingCart) => {
-				const fullName = `${shoppingCart.firstName} ${shoppingCart.lastName}`.toLowerCase();
+				const fullName =
+					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
 
 				return (
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(shoppingCart.id).includes(lowerSearch) ||
-					String(shoppingCart.numberOfReservations).includes(lowerSearch)
+					String(shoppingCart.countReservations).includes(lowerSearch)
 				);
 			});
 		}
@@ -66,16 +81,16 @@ const ShoppinCartsDashboard = () => {
 						bVal = b.id;
 						break;
 					case "user":
-						aVal = `${a.firstName} ${a.lastName}`;
-						bVal = `${b.firstName} ${b.lastName}`;
+						aVal = `${a.user.firstName} ${a.user.lastName}`;
+						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
 					case "copyId":
 						aVal = a.id;
 						bVal = b.id;
 						break;
 					case "itemsCount":
-						aVal = a.numberOfReservations;
-						bVal = b.numberOfReservations;
+						aVal = a.countReservations;
+						bVal = b.countReservations;
 						break;
 				}
 
@@ -90,7 +105,7 @@ const ShoppinCartsDashboard = () => {
 		}
 
 		return data;
-	}, [search, sortConfig]);
+	}, [shoppingCartsWithCount, search, sortConfig]);
 
 	return (
 		<div className="container-fluid">
@@ -126,7 +141,7 @@ const ShoppinCartsDashboard = () => {
 					<tr>
 						<th scope="col">#</th>
 						<th scope="col" onClick={() => requestSort("userId")}>
-							User ID {getSortIcon("userId")}
+							User ID {getSortIcon("user")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							User Name {getSortIcon("user")}
@@ -141,9 +156,9 @@ const ShoppinCartsDashboard = () => {
 					{filteredAndSortedShoppingCarts.map((shoppingCart, index) => (
 						<tr key={shoppingCart.id}>
 							<td>{index + 1}</td>
-							<td>{shoppingCart.id}</td>
+							<td>{shoppingCart.user.id}</td>
 							<td>
-								{shoppingCart.firstName} {shoppingCart.lastName}
+								{shoppingCart.user.firstName} {shoppingCart.user.lastName}
 							</td>
 							<td>{getItemsCount(shoppingCart)}</td>
 							<td>

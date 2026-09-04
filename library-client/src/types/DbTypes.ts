@@ -103,7 +103,6 @@ export interface CategoriesWithCountsType {
 
 export interface FeesWithCountsType {
 	id: number;
-	fee: FeeType;
 	user: UserType;
 	countFees: number;
 	countUnpaid: number;
@@ -129,7 +128,6 @@ export interface LoanCountType {
 
 export interface ReservationCountType {
 	id: number;
-	reservation: ReservationType;
+	user: UserDtoType;
 	countReservations: number;
-	user: UserType;
 }

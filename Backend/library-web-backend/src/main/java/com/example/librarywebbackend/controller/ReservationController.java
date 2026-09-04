@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.ReservationWithCountDTO;
 import com.example.librarywebbackend.entity.Reservation;
 import com.example.librarywebbackend.service.IReservationService;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,11 @@ public class ReservationController {
     @GetMapping
     public List<Reservation> getAll() {
         return reservationService.getAllReservations();
+    }
+
+    @GetMapping("/counts")
+    public List<ReservationWithCountDTO> getReservationCounts() {
+        return reservationService.getReservationCountsByUser();
     }
 
     @GetMapping("/{id}")
