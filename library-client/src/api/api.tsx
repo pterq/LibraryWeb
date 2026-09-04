@@ -39,7 +39,7 @@ export const getAuthors = async () => {
 	}
 };
 
-export const addAuthorById = async () => {
+export const addAuthorById = async (author: AuthorType) => {
 	try {
 		const response = await axiosClient.post<AuthorType>(AUTHORS_ENDPOINT, author);
 		return response.data;
