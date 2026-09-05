@@ -14,7 +14,7 @@ import type {
 	FeesWithCountsType,
 	ReservationCountType,
 	CategoriesWithCountsType,
-	CategoryFormData,
+	CategoryForm,
 } from "../types/DbTypes";
 
 //endpoints
@@ -234,7 +234,7 @@ export const getCategoryById = async (id: number) => {
 	}
 };
 
-export const addCategory = async (category: CategoryFormData) => {
+export const addCategory = async (category: CategoryForm) => {
 	try {
 		const response = await axiosClient.post<CategoryType>(CATEGORIES_ENDPOINT, category);
 		return response.data;
@@ -244,7 +244,7 @@ export const addCategory = async (category: CategoryFormData) => {
 	}
 };
 
-export const updateCategoryById = async (id: number, category: CategoryFormData) => {
+export const updateCategoryById = async (id: number, category: CategoryForm) => {
 	try {
 		const response = await axiosClient.put<CategoryType>(
 			`${CATEGORIES_ENDPOINT}/${id}`,

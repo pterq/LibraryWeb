@@ -1,4 +1,9 @@
 export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN";
+export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
+export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
+export type FeeStatusType = "PAID" | "UNPAID" | "CANCELLED";
+
+//============================================================================
 
 export interface AuthorType {
 	id: number;
@@ -7,6 +12,7 @@ export interface AuthorType {
 	biography: string;
 }
 
+//============================================================================
 export interface BookType {
 	id: number;
 	title: string;
@@ -18,13 +24,7 @@ export interface BookType {
 	authors: AuthorType[];
 }
 
-export interface CategoryType {
-	id: number;
-	name: string;
-}
-
-export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
-
+//============================================================================
 export interface BookPhysicalType {
 	id: number;
 	inventoryCode: string;
@@ -32,12 +32,13 @@ export interface BookPhysicalType {
 	book: BookType;
 }
 
-export interface CategoryFormData {
+//============================================================================
+export interface CategoryType {
+	id: number;
 	name: string;
 }
 
-export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
-
+//============================================================================
 export interface LoanType {
 	id: number;
 	copy: BookPhysicalType;
@@ -48,6 +49,7 @@ export interface LoanType {
 	user: UserType;
 }
 
+//===========================================================================
 export interface UserType {
 	//token: string;
 	id: number;
@@ -67,8 +69,14 @@ export interface UserData {
 	role: UserRoleType;
 }
 
-export type FeeStatusType = "PAID" | "UNPAID" | "CANCELLED";
+export interface UserDtoType {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+}
 
+//===========================================================================
 export type FeeType = {
 	amount: number;
 	createdAt: Date;
@@ -79,6 +87,8 @@ export type FeeType = {
 	user: UserType;
 };
 
+//===========================================================================
+
 export interface ReservationType {
 	id: number;
 	user: UserType;
@@ -88,12 +98,7 @@ export interface ReservationType {
 	bookPhysical: BookPhysicalType;
 }
 
-export interface ReservastionsType {
-	reservations: ReservationType[];
-}
-
-//============================================
-
+//============================================================================
 export interface CategoriesWithCountsType {
 	id: number;
 	name: string;
@@ -107,13 +112,6 @@ export interface FeesWithCountsType {
 	countUnpaid: number;
 	countPaid: number;
 	countCancelled: number;
-}
-
-export interface UserDtoType {
-	id: number;
-	firstName: string;
-	lastName: string;
-	email: string;
 }
 
 export interface LoanCountType {
@@ -131,10 +129,14 @@ export interface ReservationCountType {
 	countReservations: number;
 }
 
-//===========================================
-
+//============================================================================
+//interafaces for CRUD operations
 export interface AuthorForm {
 	firstName: string;
 	lastName: string;
 	bio: string;
+}
+
+export interface CategoryForm {
+	name: string;
 }

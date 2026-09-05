@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BookTile from "./BookTile";
-import PageNav from "../dashboards/page/PageNav";
+import PageNav from "../dashboards/admin-components/PageNav";
 
 import type { BookType } from "../../types/DbTypes";
 

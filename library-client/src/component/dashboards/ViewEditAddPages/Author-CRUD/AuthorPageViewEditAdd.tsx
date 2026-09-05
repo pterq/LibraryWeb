@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
 
-import DeleteButton from "../../ViewEditAddPages/DeleteButton";
+import DeleteButton from "../../admin-components/DeleteButton";
 import type {} from "../../../../types/DbTypes";
 
 import { getAuthorById, deleteAuthorById, updateAuthorById, addAuthor } from "../../../../api/api";

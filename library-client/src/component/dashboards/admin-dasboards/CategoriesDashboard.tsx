@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CategoriesWithCountsType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import DeleteButton from "../ViewEditAddPages/DeleteButton";
+import DeleteButton from "../admin-components/DeleteButton";
 
 import { getCategoriesWithCounts, deleteCategoryById } from "../../../api/api";
 import TableAlert from "../../common/TableAlert";

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import ReturnButton from "../../../common/ReturnButton";
 
-import DeleteButton from "../../ViewEditAddPages/DeleteButton";
+import DeleteButton from "../../admin-components/DeleteButton";
 import {
 	deleteCategoryById,
 	getCategoryById,
@@ -11,16 +11,16 @@ import {
 	addCategory,
 } from "../../../../api/api";
 
-import type { CategoryFormData } from "../../../../types/DbTypes";
+import type { CategoryForm } from "../../../../types/DbTypes";
 
-const EMPTY_FORM: CategoryFormData = { name: "" };
+const EMPTY_FORM: CategoryForm = { name: "" };
 
 const CategoryPageViewEditAdd = () => {
 	const action: PageAction = actionFromLink; // "view" lub "add"
 	const linkId = idFromLink;
 
-	const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);
-	const [originalFormData, setOriginalFormData] = useState<CategoryFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<CategoryForm>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<CategoryForm>(EMPTY_FORM);
 
 	const [isEditing, setIsEditing] = useState(action === "add");
 	const isReadOnly = action === "view" && !isEditing;

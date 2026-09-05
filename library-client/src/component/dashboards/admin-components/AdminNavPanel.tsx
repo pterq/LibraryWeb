@@ -1,3 +1,5 @@
+import React from "react";
+
 type NavPanelProps = {
 	activeItem: string;
 	onSelect: (item: string) => void;
@@ -14,27 +16,29 @@ const navItems = [
 	{ id: "loanItems", label: "Loan Items" },
 	{ id: "fees", label: "Fees" },
 	{ id: "feeItems", label: "Fees Items" },
-	{ id: "shoppingCarts", label: "Shopping Carts" },
-	{ id: "shoppingCartItems", label: "Shopping Cart Items" },
+	{ id: "shoppingCarts", label: "Carts" },
+	{ id: "shoppingCartItems", label: "Cart Items" },
 ];
+
+// ID sekcji, przed którymi ma być separator
+const separatorBefore = new Set(["books", "users", "loans", "fees", "shoppingCarts"]);
 
 const AdminNavPanel = ({ activeItem, onSelect }: NavPanelProps) => {
 	return (
 		<div className="list-group container-fluid mb-4">
 			<h3>Navigation</h3>
+
 			{navItems.map((item) => (
 				<div key={item.id}>
-					{item.id === "users" && <hr className="my-2 border-secondary-subtle" />}
-					{item.id === "books" && <hr className="my-2 border-secondary-subtle" />}
-					{item.id === "loans" && <hr className="my-2 border-secondary-subtle" />}
-					{item.id === "fees" && <hr className="my-2 border-secondary-subtle" />}
-					{item.id === "shoppingCarts" && <hr className="my-2 border-secondary-subtle" />}
+					{separatorBefore.has(item.id) && (
+						<hr className="my-2 border-secondary-subtle" />
+					)}
+
 					<button
 						type="button"
 						className={`list-group-item list-group-item-action ${
 							activeItem === item.id ? "active" : ""
 						}`}
-						aria-current={activeItem === item.id ? "true" : undefined}
 						onClick={() => onSelect(item.id)}
 					>
 						{item.label}

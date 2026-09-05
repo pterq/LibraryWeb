@@ -3,7 +3,7 @@ import type { AuthorType } from "../../../types/DbTypes";
 import { useEffect } from "react";
 
 import SearchBar from "../../common/SearchBar";
-import DeleteButton from "../ViewEditAddPages/DeleteButton";
+import DeleteButton from "../admin-components/DeleteButton";
 
 import { getAuthors, deleteAuthorById, updateAuthorById, addAuthor } from "../../../api/api";
 

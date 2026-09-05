@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import type { AuthorType, BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import DeleteButton from "../ViewEditAddPages/DeleteButton";
+import DeleteButton from "../admin-components/DeleteButton";
 import TableAlert from "../../common/TableAlert";
 
 import { deleteBookById, getBooks, getCategories } from "../../../api/api";
