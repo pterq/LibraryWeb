@@ -25,7 +25,7 @@ const UserBookCard = () => {
 			<div className="row mt-4 g-4 align-items-start">
 				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
 					<ImageFrame
-						imageUrl={loan.copy.book.coverImageUrl ?? null}
+						imageUrl={loan.copy.book.imageUrl ?? null}
 						alt={loan.copy.book.title}
 					/>
 				</div>

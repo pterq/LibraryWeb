@@ -1,8 +1,8 @@
 import React from "react";
-import SearchBar from "../common/SearchBar";
-import BookGrid from "./BookGrid";
+import SearchBar from "../component/common/SearchBar";
+import BookGrid from "../component/books/BookGrid";
 
-const BooksPage = () => {
+const BooksMainPage = () => {
 	const [search, setSearch] = React.useState("");
 
 	return (
@@ -16,4 +16,4 @@ const BooksPage = () => {
 	);
 };
 
-export default BooksPage;
+export default BooksMainPage;

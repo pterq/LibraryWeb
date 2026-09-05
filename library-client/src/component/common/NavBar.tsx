@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Offcanvas } from "bootstrap";
 import { useAuth } from "../../context/AuthContext";
-import CartPanel from "../shoppingCart/CartPanel";
+import CartPanel from "../../Pages/CartPanel";
 
 const NavBar = () => {
 	const { token, role, logout, hasFees } = useAuth();

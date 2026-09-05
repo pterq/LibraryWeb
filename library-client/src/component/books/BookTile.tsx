@@ -32,7 +32,7 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 				onMouseLeave={(e) => e.currentTarget.classList.remove("bg-primary-subtle")}
 			>
 				<img
-					src={book.coverImageUrl ?? "/src/assets/book-placeholder.jpg"}
+					src={book.imageUrl ?? "/src/assets/book-placeholder.jpg"}
 					className="card-img-top w-50 mx-auto d-block mt-3"
 					alt={book.title}
 				/>

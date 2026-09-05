@@ -161,7 +161,7 @@ const ShoppinCartsDashboard = () => {
 									: index + 1}
 							</td>
 							<td>
-								(ID: {shoppingCart.user.id}) {shoppingCart.user.firstName}{" "}
+								({shoppingCart.user.id}) {shoppingCart.user.firstName}{" "}
 								{shoppingCart.user.lastName}
 							</td>
 							<td>{getItemsCount(shoppingCart)}</td>

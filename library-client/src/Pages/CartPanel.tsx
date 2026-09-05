@@ -1,8 +1,8 @@
-import CartItem from "./CartItem";
-import type { ReservationType } from "../../types/DbTypes";
-import { useAuth } from "../../context/AuthContext";
+import CartItem from "../component/cart/CartItem";
+import type { ReservationType } from "../types/DbTypes";
+import { useAuth } from "../context/AuthContext";
 
-import { getReservationByUserId } from "../../api/api";
+import { getReservationByUserId } from "../api/api";
 import { useEffect, useState } from "react";
 
 const CartPanel = () => {

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { UserData } from "../../types/DbTypes";
+import type { UserData } from "../types/DbTypes";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
-const SettingsPage = () => {
+const MySettingsPage = () => {
 	const { token, firstName, lastName, email, role, updateUserData } = useAuth();
 	const userData: UserData | null =
 		token && firstName && lastName && email && role
@@ -232,4 +232,4 @@ const SettingsPage = () => {
 	);
 };
 
-export default SettingsPage;
+export default MySettingsPage;

@@ -27,7 +27,8 @@ const DeleteButton = ({
 
 	const handleClick = async () => {
 		const message =
-			confirmMessage ?? `Are you sure you want to delete ${entityName}: ${name} (ID: ${id})?`;
+			confirmMessage ??
+			`Are you sure you want to DELETE this ${entityName}?\nID: ${id}\nName: ${name}`;
 
 		if (!window.confirm(message)) return;
 

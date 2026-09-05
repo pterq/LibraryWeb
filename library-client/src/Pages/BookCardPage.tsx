@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import { MockData } from "../../types/MockData";
-import ImageFrame from "../common/ImageFrame";
-import { useAuth } from "../../context/AuthContext";
-import { getBookById } from "../../api/api";
+import { MockData } from "../types/MockData";
+import ImageFrame from "../component/common/ImageFrame";
+import { useAuth } from "../context/AuthContext";
+import { getBookById } from "../api/api";
 
-const BookCard = () => {
+const BookCardPage = () => {
 	const { id } = useParams<{ id?: string }>();
 	const { role, userId } = useAuth();
 
@@ -39,7 +39,7 @@ const BookCard = () => {
 
 			<div className="row mt-4 g-4 align-items-start">
 				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
-					<ImageFrame imageUrl={book.coverImageUrl ?? null} alt={book.title} />
+					<ImageFrame imageUrl={book.imageUrl ?? null} alt={book.title} />
 				</div>
 
 				<div className="col-12 col-md-8 col-lg-9">
@@ -48,7 +48,7 @@ const BookCard = () => {
 					</p>
 					<p>
 						<strong>Authors:</strong>{" "}
-						{book.bookAuthors?.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
+						{book.authors?.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
 					</p>
 					<p>
 						<strong>Published Year:</strong> {book.publishedYear}
@@ -71,4 +71,4 @@ const BookCard = () => {
 	);
 };
 
-export default BookCard;
+export default BookCardPage;

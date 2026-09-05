@@ -7,20 +7,20 @@ export interface AuthorType {
 	biography: string;
 }
 
-export interface AuthorsType {
-	id: number;
-	authors: AuthorType[];
-}
-
 export interface BookType {
 	id: number;
 	title: string;
 	description: string;
+	imageUrl: string | null;
 	isbn: string;
 	publishedYear: number;
-	bookAuthors: AuthorType[] | null;
-	categories?: CategoryType[];
-	coverImageUrl?: string;
+	categories: CategoryType[];
+	authors: AuthorType[];
+}
+
+export interface CategoryType {
+	id: number;
+	name: string;
 }
 
 export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
@@ -30,11 +30,6 @@ export interface BookPhysicalType {
 	inventoryCode: string;
 	status: BookPhysicalStatusType;
 	book: BookType;
-}
-
-export interface CategoryType {
-	id: number;
-	name: string;
 }
 
 export interface CategoryFormData {

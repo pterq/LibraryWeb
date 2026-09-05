@@ -49,7 +49,7 @@ const mockBook: BookType = {
 	isbn: "9780132350884",
 	publishedYear: 2008,
 	authors: mockBookAuthors,
-	coverImageUrl:
+	imageUrl:
 		"https://images-na.ssl-images-amazon.com/images/I/41xShlnTZTL._SX374_BO1,204,203,200_.jpg",
 };
 

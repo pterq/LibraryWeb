@@ -51,4 +51,10 @@ public class BookController {
                 ? ResponseEntity.ok(bookMapper.toDto(book))
                 : ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBookById(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -74,7 +74,7 @@ const loadBooksFromMockData = (): BookOption[] =>
 		isbn: book.isbn ?? "",
 		description: book.description ?? "",
 		publishedYear: book.publishedYear ?? null,
-		coverImageUrl: book.coverImageUrl ?? "/src/assets/book-placeholder.jpg",
+		coverImageUrl: book.imageUrl ?? "/src/assets/book-placeholder.jpg",
 	}));
 
 const BookCopyPageViewEditAdd = () => {

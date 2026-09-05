@@ -92,18 +92,9 @@ const BooksDashboard = () => {
 						aVal = (a.categories ?? []).map((category) => category.name).join(", ");
 						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
 						break;
-					case "bookAuthors":
-						aVal = (a.bookAuthors ?? [])
-							.map(
-								(authorsType) => authorsType.firstName + " " + authorsType.lastName,
-							)
-							.join(", ");
-
-						bVal = (b.bookAuthors ?? [])
-							.map(
-								(authorsType) => authorsType.firstName + " " + authorsType.lastName,
-							)
-							.join(", ");
+					case "authors":
+						aVal = a.authors.map((x) => `${x.firstName} ${x.lastName}`).join(", ");
+						bVal = b.authors.map((x) => `${x.firstName} ${x.lastName}`).join(", ");
 						break;
 
 					default:
@@ -133,7 +124,8 @@ const BooksDashboard = () => {
 			})
 			.catch((error) => {
 				if (error.response?.status === 409) {
-					alert(error.response.data);
+					console.log(error.response.data);
+					alert("This book has copies. \nDelete copies of this book first.");
 					return;
 				}
 
@@ -178,8 +170,8 @@ const BooksDashboard = () => {
 						<th scope="col" onClick={() => requestSort("title")}>
 							(ID) Title {getSortIcon("title")}
 						</th>
-						<th scope="col" onClick={() => requestSort("bookAuthors")}>
-							Authors {getSortIcon("bookAuthors")}
+						<th scope="col" onClick={() => requestSort("authors")}>
+							Authors {getSortIcon("authors")}
 						</th>
 						<th scope="col" onClick={() => requestSort("isbn")}>
 							ISBN {getSortIcon("isbn")}
@@ -223,10 +215,16 @@ const BooksDashboard = () => {
 								({book.id}) {book.title}
 							</td>
 							<td>
-								{(book.bookAuthors ?? [])
-									.map((author) => `${author.firstName} ${author.lastName}`)
-									.join(", ") || "-"}
+								{book.authors.length > 0
+									? book.authors
+											.map(
+												(author) =>
+													`${author.firstName} ${author.lastName}`,
+											)
+											.join(", ")
+									: "-"}
 							</td>
+
 							<td>{book.isbn}</td>
 							<td>{book.publishedYear}</td>
 							<td>

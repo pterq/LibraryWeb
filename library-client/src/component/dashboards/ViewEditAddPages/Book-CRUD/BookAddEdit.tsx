@@ -476,7 +476,6 @@ const BookAddEdit = ({
 								value={formData.isbn}
 								onChange={handleChange}
 								disabled={isReadOnly}
-								required
 							/>
 						</div>
 						<div className="form-check mt-4 pt-2">

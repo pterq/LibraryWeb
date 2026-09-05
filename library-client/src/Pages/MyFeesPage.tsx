@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { AuthorType, FeeType } from "../../types/DbTypes";
-import SearchBar from "../common/SearchBar";
-import TableAlert from "../common/TableAlert";
-import { useAuth } from "../../context/AuthContext";
-import { getFeesByUserId } from "../../api/api";
+import type { AuthorType, FeeType } from "../types/DbTypes";
+import SearchBar from "../component/common/SearchBar";
+import TableAlert from "../component/common/TableAlert";
+import { useAuth } from "../context/AuthContext";
+import { getFeesByUserId } from "../api/api";
 
 type FeeExtendedType = FeeType & {
 	authors: AuthorType[];

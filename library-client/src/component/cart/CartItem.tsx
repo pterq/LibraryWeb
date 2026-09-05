@@ -28,7 +28,7 @@ const CartItem = ({ item }: { item: ReservationType }) => {
 				<div style={{ flex: "1" }}>
 					<Link to={`/book/${item.bookPhysical.book.id}`}>
 						<img
-							src={item.bookPhysical.book.coverImageUrl}
+							src={item.bookPhysical.book.imageUrl}
 							alt={item.bookPhysical.book.title}
 							className="img-fluid img-thumbnail"
 						/>

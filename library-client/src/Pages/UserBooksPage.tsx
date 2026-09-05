@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import SearchBar from "../common/SearchBar";
+import { useAuth } from "../context/AuthContext";
+import SearchBar from "../component/common/SearchBar";
 
-import type { LoanType, AuthorType } from "../../types/DbTypes";
+import type { LoanType, AuthorType } from "../types/DbTypes";
 
 import { Link } from "react-router-dom";
 
-import { getLoansByUserId } from "../../api/api";
-import TableAlert from "../common/TableAlert";
+import { getLoansByUserId } from "../api/api";
+import TableAlert from "../component/common/TableAlert";
 
 type LoanExtended = LoanType & {
 	authors: AuthorType[];
@@ -192,7 +192,7 @@ const UserBooksPage = () => {
 
 								<td>{loan.copy.book.title}</td>
 								<td>
-									{(loan.copy.book.bookAuthors ?? [])
+									{(loan.copy.book.authors ?? [])
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>

@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.AuthorDto;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.service.IAuthorService;
 import org.springframework.http.ResponseEntity;
@@ -18,28 +19,31 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<Author> getAll() {
-        return authorService.getAllAuthors();
+    public List<AuthorDto> getAll() {
+        return authorService.getAllAuthors()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Author> getById(@PathVariable Long id) {
+    public ResponseEntity<AuthorDto> getById(@PathVariable Long id) {
         Author author = authorService.getAuthorById(id);
         return author != null
-                ? ResponseEntity.ok(author)
+                ? ResponseEntity.ok(toDto(author))
                 : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public Author create(@RequestBody Author author) {
-        return authorService.createAuthor(author);
+    public AuthorDto create(@RequestBody Author author) {
+        return toDto(authorService.createAuthor(author));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Author> update(@PathVariable Long id, @RequestBody Author updated) {
+    public ResponseEntity<AuthorDto> update(@PathVariable Long id, @RequestBody Author updated) {
         Author author = authorService.updateAuthor(id, updated);
         return author != null
-                ? ResponseEntity.ok(author)
+                ? ResponseEntity.ok(toDto(author))
                 : ResponseEntity.notFound().build();
     }
 
@@ -50,7 +54,19 @@ public class AuthorController {
     }
 
     @GetMapping("/search")
-    public List<Author> search(@RequestParam String q) {
-        return authorService.searchAuthors(q);
+    public List<AuthorDto> search(@RequestParam String q) {
+        return authorService.searchAuthors(q)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    private AuthorDto toDto(Author author) {
+        return new AuthorDto(
+                author.getId(),
+                author.getFirstName(),
+                author.getLastName(),
+                author.getBiography()
+        );
     }
 }
