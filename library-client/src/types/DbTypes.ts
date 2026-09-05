@@ -140,3 +140,9 @@ export interface UserData {
 	email: string;
 	role: UserRoleType;
 }
+
+export interface BookPhysicalForm {
+	bookId: number;
+	inventoryCode: string;
+	status: BookPhysicalStatusType;
+}

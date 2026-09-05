@@ -2,7 +2,7 @@ import React, { useEffect, type JSX } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import CartItemsDashboard from "../component/dashboards/admin-dasboards/CartItemsDashboard";
-import PhysicalBooksDashboard from "../component/dashboards/admin-dasboards/PhysicalBooksDashboard";
+import BooksPhysicalDashboard from "../component/dashboards/admin-dasboards/BooksPhysicalDashboard";
 import AdminNavPanel from "../component/dashboards/admin-components/AdminNavPanel";
 import { useAuth } from "../context/AuthContext";
 import AuthorsDashboard from "../component/dashboards/admin-dasboards/AuthorsDashboard";
@@ -69,7 +69,7 @@ const contentMap: Record<string, { title: string; description: string }> = {
 const sectionComponentMap: Record<string, JSX.Element> = {
 	authors: <AuthorsDashboard />,
 	books: <BooksDashboard />,
-	booksPhysical: <PhysicalBooksDashboard />,
+	booksPhysical: <BooksPhysicalDashboard />,
 	categories: <CategoriesDashboard />,
 	users: <UsersDashboard />,
 	loans: <LoansDashboard />,

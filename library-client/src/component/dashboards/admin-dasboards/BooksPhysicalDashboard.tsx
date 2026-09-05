@@ -1,27 +1,46 @@
-import { useEffect, useMemo, useState } from "react";
-
+import { useMemo, useState, useEffect } from "react";
 import type { BookPhysicalType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
+import TableAlert from "../../common/TableAlert";
+import DeleteButton from "../admin-components/DeleteButton";
 
 import apiBooksPhysical from "../../../api/apiBooksPhysical";
-import TableAlert from "../../common/TableAlert";
 
-const PhysicalBooksDashboard = () => {
+// CRUD SPA Components
+import ViewPhysicalBook from "../CRUDs/BookPhysical/ViewPhysicalBook";
+import EditPhysicalBook from "../CRUDs/BookPhysical/EditPhysicalBook";
+import AddPhysicalBook from "../CRUDs/BookPhysical/AddPhysicalBook";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
+const BooksPhysicalDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+
 	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalType[]>([]);
-
-	useEffect(() => {
-		apiBooksPhysical
-			.getBookCopies()
-			.then((data) => {
-				setBooksPhysical(data);
-				console.log("Fetched books:", data);
-			})
-			.catch(console.error);
-	}, []);
-
 	const [search, setSearch] = useState("");
 	const [filterStatus, setFilterStatus] = useState<"ALL" | BookPhysicalType["status"]>("ALL");
+	const [message, setMessage] = useState<string | null>(null);
+
+	useEffect(() => {
+		reloadBooksPhysical();
+	}, []);
+
+	const reloadBooksPhysical = () => {
+		apiBooksPhysical
+			.getBookCopies()
+			.then((data) => setBooksPhysical(data))
+			.catch(console.error);
+	};
+
+	const showMessage = (text: string) => {
+		setMessage(text);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof BookPhysicalType;
@@ -32,11 +51,9 @@ const PhysicalBooksDashboard = () => {
 
 	const requestSort = (key: keyof BookPhysicalType) => {
 		let direction: "asc" | "desc" = "asc";
-
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
 			direction = "desc";
 		}
-
 		setSortConfig({ key, direction });
 	};
 
@@ -51,14 +68,14 @@ const PhysicalBooksDashboard = () => {
 	);
 
 	const physicalBooks = useMemo(() => {
-		let data: BookPhysicalType[] = [...booksPhysical];
+		let data = [...booksPhysical];
 
-		if (search) {
-			const lowerSearch = search.toLowerCase();
+		if (search.trim()) {
+			const lower = search.toLowerCase();
 			data = data.filter(
 				(copy) =>
-					copy.inventoryCode.toLowerCase().includes(lowerSearch) ||
-					copy.book.title.toLowerCase().includes(lowerSearch),
+					copy.inventoryCode.toLowerCase().includes(lower) ||
+					copy.book.title.toLowerCase().includes(lower),
 			);
 		}
 
@@ -85,8 +102,8 @@ const PhysicalBooksDashboard = () => {
 						bVal = b.book.title;
 						break;
 					default:
-						aVal = a[sortConfig.key as keyof BookPhysicalType] as number | string;
-						bVal = b[sortConfig.key as keyof BookPhysicalType] as number | string;
+						aVal = a[sortConfig.key] as any;
+						bVal = b[sortConfig.key] as any;
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
@@ -102,6 +119,54 @@ const PhysicalBooksDashboard = () => {
 		return data;
 	}, [booksPhysical, search, filterStatus, sortConfig]);
 
+	// -----------------------------
+	// 🔥 SPA CRUD RENDER
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewPhysicalBook
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooksPhysical}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditPhysicalBook
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooksPhysical}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddPhysicalBook
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooksPhysical}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	const handleDelete = async (id: number) => {
+		try {
+			await apiBooksPhysical.deleteBookCopyById(id);
+			showMessage("Physical book has been deleted.");
+			reloadBooksPhysical();
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	// -----------------------------
+	// 🔥 DASHBOARD
+	// -----------------------------
 	return (
 		<div className="container-fluid">
 			<h1>Physical Books Dashboard</h1>
@@ -112,10 +177,16 @@ const PhysicalBooksDashboard = () => {
 				placeholder="Search physical book by inventory code or title"
 			/>
 
+			{message && (
+				<div className="alert alert-success" role="alert">
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/book-copy/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
 					Add Physical Book
 				</button>
@@ -133,7 +204,6 @@ const PhysicalBooksDashboard = () => {
 				</button>
 			</div>
 
-			{/* Physical books table */}
 			<table className="table table-striped">
 				<thead>
 					<tr>
@@ -171,9 +241,11 @@ const PhysicalBooksDashboard = () => {
 								</select>
 							</div>
 						</th>
+
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
+
 				<tbody>
 					{physicalBooks.map((copy, index) => (
 						<tr key={copy.id}>
@@ -182,36 +254,50 @@ const PhysicalBooksDashboard = () => {
 									? physicalBooks.length - index
 									: index + 1}
 							</td>
+
 							<td>
 								({copy.id}) {copy.inventoryCode}
 							</td>
+
 							<td>
-								({copy.book.id}) {copy.book.title}
-								{" ("}
-								{(copy.book.authors ?? [])
-									.map((author) => `${author.firstName} ${author.lastName}`)
-									.join(", ") || "-"}
+								({copy.book?.id ?? "?"}) {copy.book?.title ?? "Unknown"} (
+								{copy.book?.authors
+									?.map((a) => `${a.firstName} ${a.lastName}`)
+									.join(", ") ?? "-"}
 								)
 							</td>
 
 							<td>{copy.status}</td>
-							<td>
+
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
-									onClick={() =>
-										(window.location.href = `/book-copy/view/${copy.id}`)
-									}
+									className="btn btn-sm btn-primary me-2"
+									onClick={() => setCrud({ mode: "view", id: copy.id })}
 								>
-									View Details
+									View
 								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() => setCrud({ mode: "edit", id: copy.id })}
+								>
+									Edit
+								</button>
+								<DeleteButton
+									id={copy.id}
+									name={`(${copy.book?.id ?? "?"}) ${copy.book?.title ?? "Unknown"}`}
+									entityName="physical book"
+									onDelete={() => handleDelete(copy.id)}
+								/>
 							</td>
 						</tr>
 					))}
 				</tbody>
 			</table>
+
 			<TableAlert count={physicalBooks.length} message="No books found." />
 		</div>
 	);
 };
 
-export default PhysicalBooksDashboard;
+export default BooksPhysicalDashboard;

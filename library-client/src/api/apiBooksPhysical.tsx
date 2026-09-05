@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { BookPhysicalType } from "../types/DbTypes";
+import type { BookPhysicalType, BookPhysicalForm } from "../types/DbTypes";
 
 //endpoints
 const BOOK_COPY_ENDPOINT = "/copies";
@@ -17,7 +17,7 @@ const getBookCopies = async () => {
 	}
 };
 
-const addBookCopy = async (bookCopy: BookPhysicalType) => {
+const addBookCopy = async (bookCopy: BookPhysicalForm) => {
 	try {
 		const response = await axiosClient.post<BookPhysicalType>(BOOK_COPY_ENDPOINT, bookCopy);
 		return response.data;
@@ -37,7 +37,7 @@ const getBookCopyById = async (id: number) => {
 	}
 };
 
-const updateBookCopyById = async (id: number, bookCopy: BookPhysicalType) => {
+const updateBookCopyById = async (id: number, bookCopy: BookPhysicalForm) => {
 	try {
 		const response = await axiosClient.put<BookPhysicalType>(
 			`${BOOK_COPY_ENDPOINT}/${id}`,

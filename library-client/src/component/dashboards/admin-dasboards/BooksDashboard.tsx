@@ -8,10 +8,27 @@ import TableAlert from "../../common/TableAlert";
 import apiBooks from "../../../api/apiBooks";
 import apiCategories from "../../../api/apiCategories";
 
+import ViewBook from "../CRUDs/Book/ViewBook";
+import EditBook from "../CRUDs/Book/EditBook";
+import AddBook from "../CRUDs/Book/AddBook";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
 const BooksDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+	const [message, setMessage] = useState<string | null>(null);
+
 	const [books, setBooks] = useState<BookType[]>([]);
 
 	useEffect(() => {
+		reloadBooks();
+	}, []);
+
+	const reloadBooks = () => {
 		apiBooks
 			.getBooks()
 			.then((data) => {
@@ -19,7 +36,12 @@ const BooksDashboard = () => {
 				console.log("Fetched books:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string) => {
+		setMessage(text);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [categories, setCategories] = useState<CategoryType[]>([]);
 
@@ -135,6 +157,16 @@ const BooksDashboard = () => {
 			});
 	};
 
+	// const handleDelete = async (id: number) => {
+	// 	try {
+	// 		await apiAuthors.deleteAuthorById(id);
+	// 		showMessage("Author has been deleted.");
+	// 		reloadAuthors();
+	// 	} catch (err) {
+	// 		console.error(err);
+	// 	}
+	// };
+
 	return (
 		<div className="container-fluid">
 			<h1>Books Dashboard</h1>
@@ -246,6 +278,28 @@ const BooksDashboard = () => {
 									id={book.id}
 									name={book.title}
 									entityName="book"
+									onDelete={() => handleDelete(book.id)}
+								/>
+							</td>
+
+							<td className="text-nowrap">
+								<button
+									className="btn btn-sm btn-primary me-2"
+									onClick={() => setCrud({ mode: "view", id: book.id })}
+								>
+									View
+								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() => setCrud({ mode: "edit", id: book.id })}
+								>
+									Edit
+								</button>
+								<DeleteButton
+									id={book.id}
+									name={`(${book.id ?? "?"}) ${book.title ?? "Unknown"}`}
+									entityName="physical book"
 									onDelete={() => handleDelete(book.id)}
 								/>
 							</td>
