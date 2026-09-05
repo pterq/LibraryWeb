@@ -19,10 +19,10 @@ type CrudState =
 	| { mode: "add" };
 
 const AuthorsDashboard = () => {
-	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
-
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "A_M" | "N_Z">("ALL");
+
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [authors, setAuthors] = useState<AuthorType[]>([]);
 	const [message, setMessage] = useState<string | null>(null);
 

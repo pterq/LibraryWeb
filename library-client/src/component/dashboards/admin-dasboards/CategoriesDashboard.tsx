@@ -7,10 +7,27 @@ import DeleteButton from "../admin-components/DeleteButton";
 import apiCategories from "../../../api/apiCategories";
 import TableAlert from "../../common/TableAlert";
 
+import ViewCategory from "../CRUDs/Categories/ViewCategory";
+import EditCategory from "../CRUDs/Categories/EditCategory";
+import AddCategory from "../CRUDs/Categories/AddCategory";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
 const CategoriesDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
+		reloadCategories();
+	}, []);
+
+	const reloadCategories = () => {
 		apiCategories
 			.getCategoriesWithCounts()
 			.then((data) => {
@@ -18,7 +35,13 @@ const CategoriesDashboard = () => {
 				console.log("Fetched categories with counts:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [search, setSearch] = useState("");
 
@@ -45,8 +68,26 @@ const CategoriesDashboard = () => {
 	};
 
 	const handleDelete = async (id: number | string) => {
-		await apiCategories.deleteCategoryById(Number(id));
-		setCategoriesWithCount((prev) => prev.filter((cat) => cat.id !== Number(id)));
+		const categoryToDelete = categoriesWithCount.find((category) => category.id === Number(id));
+		const displayName = categoryToDelete?.name?.trim() || "Unnamed category";
+
+		try {
+			await apiCategories.deleteCategoryById(Number(id));
+			setCategoriesWithCount((prev) => prev.filter((cat) => cat.id !== Number(id)));
+			showMessage(`Category "${displayName}" has been deleted.`);
+			reloadCategories();
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete category "${displayName}": it is still assigned to books.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete category "${displayName}".`, "danger");
+			console.error(error);
+		}
 	};
 
 	const filteredAndSortedCategories = useMemo(() => {
@@ -98,6 +139,41 @@ const CategoriesDashboard = () => {
 		return data;
 	}, [categoriesWithCount, search, sortConfig]);
 
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewCategory
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCategories}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditCategory
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCategories}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddCategory
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCategories}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	return (
 		<div className="container-fluid">
 			<h1>Categories Dashboard</h1>
@@ -108,10 +184,19 @@ const CategoriesDashboard = () => {
 				placeholder="Search category by name or ID"
 			/>
 
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/category/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
 					Add Category
 				</button>
@@ -170,7 +255,33 @@ const CategoriesDashboard = () => {
 										(window.location.href = `/category/view/${categoryWithCount.id}`)
 									}
 								>
-									View Details
+									View
+								</button>
+
+								<DeleteButton
+									id={categoryWithCount.id}
+									name={categoryWithCount.name}
+									entityName="category"
+									onDelete={handleDelete}
+								/>
+							</td>
+							<td className="text-nowrap">
+								<button
+									className="btn btn-sm btn-primary me-2"
+									onClick={() =>
+										setCrud({ mode: "view", id: categoryWithCount.id })
+									}
+								>
+									View
+								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() =>
+										setCrud({ mode: "edit", id: categoryWithCount.id })
+									}
+								>
+									Edit
 								</button>
 
 								<DeleteButton
