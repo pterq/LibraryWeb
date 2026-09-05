@@ -8,7 +8,7 @@ import BookAddEdit, {
 	EMPTY_BOOK_FORM,
 	type AutofillSelection,
 	type BookFormData,
-} from "./BookAddEdit";
+} from "../../ViewEditAddPages/Book-CRUD/BookAddEdit";
 
 const BookPage = () => {
 	const action: PageAction = actionFromLink;

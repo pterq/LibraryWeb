@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./BookSearchGoogle.css";
 
 interface BookResult {
 	title: string;
@@ -26,12 +27,14 @@ const BookSearchGoogle: React.FC<BookSearchProps> = ({ onSelect }) => {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<BookResult[]>([]);
 	const [loading, setLoading] = useState(false);
+	const [hasSearched, setHasSearched] = useState(false);
 
 	const API_KEY = import.meta.env.VITE_BOOKS_API_KEY;
 
 	const searchBooks = async () => {
 		if (!query.trim()) return;
 
+		setHasSearched(true);
 		setLoading(true);
 
 		try {
@@ -109,6 +112,7 @@ const BookSearchGoogle: React.FC<BookSearchProps> = ({ onSelect }) => {
 		setQuery("");
 		setResults([]);
 		setLoading(false);
+		setHasSearched(false);
 	};
 
 	return (
@@ -140,15 +144,17 @@ const BookSearchGoogle: React.FC<BookSearchProps> = ({ onSelect }) => {
 			</div>
 
 			{loading && <p>Loading...</p>}
+			{!loading && hasSearched && results.length === 0 && (
+				<p className="text-muted mb-2">No books found.</p>
+			)}
 
-			<div className="list-group">
+			<div className="list-group book-search-results-scroll">
 				{results.map((book, idx) => (
 					<button
 						key={idx}
 						type="button"
-						className="list-group-item list-group-item-action d-flex gap-3 align-items-center"
+						className="list-group-item list-group-item-action d-flex gap-3 align-items-start book-search-result-item"
 						onClick={() => onSelect(book)}
-						style={{ minHeight: "110px" }}
 					>
 						<img
 							src={book.coverUrl ?? "/src/assets/book-placeholder.jpg"}
@@ -161,7 +167,7 @@ const BookSearchGoogle: React.FC<BookSearchProps> = ({ onSelect }) => {
 							}}
 						/>
 
-						<div className="text-start flex-grow-1">
+						<div className="text-start flex-grow-1 book-result-content">
 							<h6 className="mb-1">{book.title}</h6>
 							<p className="mb-1">
 								<b>Authors:</b> {book.authors.join(", ")}

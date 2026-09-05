@@ -18,9 +18,26 @@ type CrudState =
 	| { mode: "edit"; id: number }
 	| { mode: "add" };
 
+const getCategoryNames = (book: BookType): string[] => {
+	const legacyCategory = (book as BookType & { category?: { name?: string } | null }).category;
+
+	const namesFromList = (book.categories ?? [])
+		.map((category) => category?.name ?? "")
+		.filter(Boolean);
+
+	if (namesFromList.length > 0) return namesFromList;
+
+	if (legacyCategory?.name) {
+		return [legacyCategory.name];
+	}
+
+	return [];
+};
+
 const BooksDashboard = () => {
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	const [books, setBooks] = useState<BookType[]>([]);
 
@@ -38,8 +55,9 @@ const BooksDashboard = () => {
 			.catch(console.error);
 	};
 
-	const showMessage = (text: string) => {
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
 		setMessage(text);
+		setMessageType(type);
 		setTimeout(() => setMessage(null), 3000);
 	};
 
@@ -89,11 +107,9 @@ const BooksDashboard = () => {
 
 		if (filterStatus !== "ALL") {
 			if (filterStatus === "NONE") {
-				data = data.filter((book) => !book.categories || book.categories.length === 0);
+				data = data.filter((book) => getCategoryNames(book).length === 0);
 			} else {
-				data = data.filter((book) =>
-					(book.categories ?? []).some((category) => category.name === filterStatus),
-				);
+				data = data.filter((book) => getCategoryNames(book).includes(filterStatus));
 			}
 		}
 
@@ -112,8 +128,8 @@ const BooksDashboard = () => {
 						bVal = b.title;
 						break;
 					case "categories":
-						aVal = (a.categories ?? []).map((category) => category.name).join(", ");
-						bVal = (b.categories ?? []).map((category) => category.name).join(", ");
+						aVal = getCategoryNames(a).join(", ");
+						bVal = getCategoryNames(b).join(", ");
 						break;
 					case "authors":
 						aVal = a.authors.map((x) => `${x.firstName} ${x.lastName}`).join(", ");
@@ -139,19 +155,28 @@ const BooksDashboard = () => {
 	}, [books, search, filterStatus, sortConfig]);
 
 	const handleDelete = (id: number) => {
+		const bookToDelete = books.find((book) => book.id === id);
+		const displayTitle = bookToDelete?.title?.trim() || "Untitled";
+
 		apiBooks
 			.deleteBookById(id)
 			.then(() => {
 				setBooks((prev) => prev.filter((book) => book.id !== id));
+				showMessage(`Book \"${displayTitle}\" has been deleted.`);
 
 				console.log(`Book with id ${id} deleted`);
 			})
 			.catch((error) => {
 				if (error.response?.status === 409) {
 					console.log(error.response.data);
-					alert("This book has copies. \nDelete copies of this book first.");
+					showMessage(
+						`Failed to delete book \"${displayTitle}\": it still has copies.`,
+						"danger",
+					);
 					return;
 				}
+
+				showMessage(`Failed to delete book \"${displayTitle}\".`, "danger");
 
 				console.error(error);
 			});
@@ -208,10 +233,19 @@ const BooksDashboard = () => {
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search book by title" />
 
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/book/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
 					Add Book
 				</button>
@@ -296,11 +330,7 @@ const BooksDashboard = () => {
 
 							<td>{book.isbn}</td>
 							<td>{book.publishedYear}</td>
-							<td>
-								{(book.categories ?? [])
-									.map((category) => category.name)
-									.join(", ") || "-"}
-							</td>
+							<td>{getCategoryNames(book).join(", ") || "-"}</td>
 
 							<td className="text-nowrap">
 								<button

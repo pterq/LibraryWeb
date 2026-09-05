@@ -13,7 +13,7 @@ export type BookCreatePayload = {
 	imageUrl: string | null;
 	isbn: string;
 	publishedYear: number | null;
-	categoryId: number | null;
+	categoryIds: number[];
 	authorIds: number[];
 };
 
