@@ -22,7 +22,7 @@ import UserBookCard from "./component/books/UserBookCard";
 import BookCardPage from "./Pages/BookCardPage";
 
 import BookPage from "./component/dashboards/ViewEditAddPages/Book-CRUD/BookPage";
-import AuthorPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Author-CRUD/AuthorPageViewEditAdd";
+import AuthorPageViewEditAdd from "./component/dashboards/CRUDs/Author/AuthorPageViewEditAdd";
 import BookCopyPageViewEditAdd from "./component/dashboards/ViewEditAddPages/BookCopy-CRUD/BookCopyPageViewEditAdd";
 import CategoryPageViewEditAdd from "./component/dashboards/ViewEditAddPages/Category-CRUD/CategoryPageViewEditAdd";
 import ViewEditAddLoansUserPage from "./component/dashboards/Tables/ViewEditAddLoansUserPage";

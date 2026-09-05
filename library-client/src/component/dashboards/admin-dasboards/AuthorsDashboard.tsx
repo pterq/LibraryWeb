@@ -1,29 +1,46 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { AuthorType } from "../../../types/DbTypes";
-import { useEffect } from "react";
 
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
+import TableAlert from "../../common/TableAlert";
 
 import apiAuthors from "../../../api/apiAuthors";
 
-import TableAlert from "../../common/TableAlert";
+// Importy CRUD
+import ViewAuthor from "../CRUDs/Author/ViewAuthor";
+import EditAuthor from "../CRUDs/Author/EditAuthor";
+import AddAuthor from "../CRUDs/Author/AddAuthor";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
 
 const AuthorsDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | "A_M" | "N_Z">("ALL");
-
 	const [authors, setAuthors] = useState<AuthorType[]>([]);
+	const [message, setMessage] = useState<string | null>(null);
 
 	useEffect(() => {
+		reloadAuthors();
+	}, []);
+
+	const reloadAuthors = () => {
 		apiAuthors
 			.getAuthors()
-			.then((data) => {
-				setAuthors(data);
-				console.log("Fetched authors:", data);
-			})
+			.then((data) => setAuthors(data))
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string) => {
+		setMessage(text);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof AuthorType;
@@ -34,11 +51,9 @@ const AuthorsDashboard = () => {
 
 	const requestSort = (key: keyof AuthorType) => {
 		let direction: "asc" | "desc" = "asc";
-
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
 			direction = "desc";
 		}
-
 		setSortConfig({ key, direction });
 	};
 
@@ -79,15 +94,54 @@ const AuthorsDashboard = () => {
 		return data;
 	}, [authors, filter, search, sortConfig]);
 
-	const handleDelete = (id: number) => {
-		apiAuthors
-			.deleteAuthorById(id)
-			.then(() => {
-				setAuthors((prev) => prev.filter((author) => author.id !== id));
-			})
-			.catch(console.error);
+	const handleDelete = async (id: number) => {
+		try {
+			await apiAuthors.deleteAuthorById(id);
+			showMessage("Author has been deleted.");
+			reloadAuthors();
+		} catch (err) {
+			console.error(err);
+		}
 	};
 
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewAuthor
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadAuthors}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditAuthor
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadAuthors}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddAuthor
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadAuthors}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	// -----------------------------
+	// RENDER DASHBOARD
+	// -----------------------------
 	return (
 		<div className="container-fluid">
 			<h1>Authors Dashboard</h1>
@@ -98,10 +152,16 @@ const AuthorsDashboard = () => {
 				placeholder="Search author by name or biography"
 			/>
 
+			{message && (
+				<div className="alert alert-success" role="alert">
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/author/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
 					Add Author
 				</button>
@@ -118,7 +178,6 @@ const AuthorsDashboard = () => {
 				</button>
 			</div>
 
-			{/* Authors table */}
 			<table className="table table-striped">
 				<thead>
 					<tr>
@@ -131,12 +190,8 @@ const AuthorsDashboard = () => {
 						<th scope="col" onClick={() => requestSort("firstName")}>
 							First Name {getSortIcon("firstName")}
 						</th>
-						<th scope="col" style={{ maxWidth: "190px" }}>
-							<div className="d-flex align-items-center gap-2">
-								<span onClick={() => requestSort("lastName")}>
-									Last Name {getSortIcon("lastName")}
-								</span>
-							</div>
+						<th scope="col" onClick={() => requestSort("lastName")}>
+							Last Name {getSortIcon("lastName")}
 						</th>
 						<th scope="col" onClick={() => requestSort("biography")}>
 							Biography {getSortIcon("biography")}
@@ -146,14 +201,11 @@ const AuthorsDashboard = () => {
 						</th>
 					</tr>
 				</thead>
+
 				<tbody>
 					{filteredAndSortedAuthors.map((author, index) => (
 						<tr key={author.id}>
-							<td>
-								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
-									? filteredAndSortedAuthors.length - index
-									: index + 1}
-							</td>
+							<td>{index + 1}</td>
 							<td>{author.id}</td>
 							<td>{author.firstName}</td>
 							<td>{author.lastName}</td>
@@ -162,12 +214,18 @@ const AuthorsDashboard = () => {
 							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"
-									onClick={() =>
-										(window.location.href = `/author/view/${author.id}`)
-									}
+									onClick={() => setCrud({ mode: "view", id: author.id })}
 								>
-									View Details
+									View
 								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() => setCrud({ mode: "edit", id: author.id })}
+								>
+									Edit
+								</button>
+
 								<DeleteButton
 									id={author.id}
 									name={`${author.firstName} ${author.lastName}`}
@@ -179,6 +237,7 @@ const AuthorsDashboard = () => {
 					))}
 				</tbody>
 			</table>
+
 			<TableAlert count={filteredAndSortedAuthors.length} message="No authors found." />
 		</div>
 	);
