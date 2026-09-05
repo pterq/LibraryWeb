@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import type { AuthorType, UserType } from "../../../types/DbTypes";
+import type { AuthorType } from "../../../types/DbTypes";
 import { useEffect } from "react";
 
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../ViewEditAddPages/DeleteButton";
 
 import { getAuthors, deleteAuthorById, updateAuthorById, addAuthorById } from "../../../api/api";
+
+import TableAlert from "../../common/TableAlert";
 
 const AuthorsDashboard = () => {
 	const [search, setSearch] = useState("");
@@ -175,6 +177,7 @@ const AuthorsDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredAndSortedAuthors.length} message="No authors found." />
 		</div>
 	);
 };

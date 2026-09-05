@@ -5,6 +5,7 @@ import type { LoanCountType, ReservationCountType, ReservationType } from "../..
 import SearchBar from "../../common/SearchBar";
 
 import { getReservationsWithCounts } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const ShoppinCartsDashboard = () => {
 	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<ReservationCountType[]>(
@@ -178,6 +179,10 @@ const ShoppinCartsDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert
+				count={filteredAndSortedShoppingCarts.length}
+				message="No shopping carts found."
+			/>
 		</div>
 	);
 };

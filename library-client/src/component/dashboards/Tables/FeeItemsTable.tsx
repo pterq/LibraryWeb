@@ -4,6 +4,7 @@ import type { FeeType, FeeStatusType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import { getFees } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
@@ -224,6 +225,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredFees.length} message="No items found." />
 		</>
 	);
 };

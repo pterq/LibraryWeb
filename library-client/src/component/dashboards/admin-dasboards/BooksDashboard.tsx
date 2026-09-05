@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { AuthorType, BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
+import TableAlert from "../../common/TableAlert";
 
 import { getBooks, getCategories } from "../../../api/api";
 
@@ -231,6 +232,7 @@ const BooksDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredBooks.length} message="No books found." />
 		</div>
 	);
 };

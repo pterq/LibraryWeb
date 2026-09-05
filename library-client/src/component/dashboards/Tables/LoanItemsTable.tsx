@@ -6,6 +6,7 @@ import SearchBar from "../../common/SearchBar";
 import { MockData } from "../../../types/MockData";
 
 import { getLoans } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const [loans, setLoans] = useState<LoanType[]>([]);
@@ -230,6 +231,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={processedLoans.length} message="No items found." />
 		</>
 	);
 };

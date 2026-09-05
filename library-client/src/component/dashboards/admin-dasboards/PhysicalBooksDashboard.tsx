@@ -5,6 +5,7 @@ import type { BookPhysicalType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 
 import { getBookCopies } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const PhysicalBooksDashboard = () => {
 	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalType[]>([]);
@@ -207,6 +208,7 @@ const PhysicalBooksDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={physicalBooks.length} message="No books found." />
 		</div>
 	);
 };

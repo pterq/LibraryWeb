@@ -5,6 +5,7 @@ import type { FeesWithCountsType, FeeType, UserType } from "../../../types/DbTyp
 import SearchBar from "../../common/SearchBar";
 
 import { getFeesWithCounts } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const FeesDashboard = () => {
 	const [feesWithCount, setFeesWithCount] = useState<FeesWithCountsType[]>([]);
@@ -188,6 +189,7 @@ const FeesDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredAndSortedFees.length} message="No fees found." />
 		</div>
 	);
 };

@@ -5,6 +5,7 @@ import type { LoanType, LoanCountType, UserDtoType } from "../../../types/DbType
 import SearchBar from "../../common/SearchBar";
 
 import { getLoansWithCounts } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const LoansDashboard = () => {
 	const [loansWithCount, setLoansWithCount] = useState<LoanCountType[]>([]);
@@ -174,6 +175,7 @@ const LoansDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredAndSortedLoans.length} message="No loans found." />
 		</div>
 	);
 };

@@ -9,6 +9,7 @@ import type {
 
 import SearchBar from "../../common/SearchBar";
 import { getReservations } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const getReservationCopy = (reservation: ReservationType) =>
 	reservation.bookPhysical ?? reservation.copy;
@@ -250,6 +251,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={shoppingCarts.length} message="No items found." />
 		</>
 	);
 };

@@ -4,6 +4,7 @@ import type { UserType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 
 import { getUsers } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const UsersDashboard = () => {
 	const [users, setUsers] = useState<UserType[]>([]);
@@ -227,6 +228,7 @@ const UsersDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredAndSortedUsers.length} message="No users found." />
 		</div>
 	);
 };

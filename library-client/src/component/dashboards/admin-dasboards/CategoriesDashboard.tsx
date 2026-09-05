@@ -5,6 +5,7 @@ import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../ViewEditAddPages/DeleteButton";
 
 import { getCategoriesWithCounts, deleteCategoryById } from "../../../api/api";
+import TableAlert from "../../common/TableAlert";
 
 const CategoriesDashboard = () => {
 	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
@@ -182,6 +183,7 @@ const CategoriesDashboard = () => {
 					))}
 				</tbody>
 			</table>
+			<TableAlert count={filteredAndSortedCategories.length} message="No categories found." />
 		</div>
 	);
 };
