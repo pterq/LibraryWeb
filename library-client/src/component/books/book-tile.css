@@ -1,0 +1,5 @@
+.book-tile {
+	min-height: 420px; /* layout */
+	display: flex;
+	flex-direction: column;
+}

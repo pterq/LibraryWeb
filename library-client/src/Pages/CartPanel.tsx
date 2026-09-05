@@ -1,27 +1,28 @@
 import CartItem from "../component/cart/CartItem";
-import type { ReservationType } from "../types/DbTypes";
+import type { CartType } from "../types/DbTypes";
 import { useAuth } from "../context/AuthContext";
 
-import { getReservationByUserId } from "../api/api";
+import apiCarts from "../api/apiCarts";
 import { useEffect, useState } from "react";
 
 const CartPanel = () => {
 	const { userId } = useAuth();
 
-	const [reservations, setReservations] = useState<ReservationType[] | null>(null);
+	const [reservations, setReservations] = useState<CartType[] | null>(null);
 
 	useEffect(() => {
 		if (userId == null) return;
 
-		getReservationByUserId(userId)
+		apiCarts
+			.getUserCartItemsByUserId(userId)
 			.then((data) => {
 				setReservations(data);
 				console.log("Fetched reservations:", data);
 			})
 			.catch(console.error);
-	}, []);
+	}, [userId]);
 
-	const items: ReservationType[] = reservations ?? [];
+	const items: CartType[] = reservations ?? [];
 
 	return (
 		<div className="container">

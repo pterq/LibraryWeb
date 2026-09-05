@@ -6,7 +6,7 @@ import type { LoanType, AuthorType } from "../types/DbTypes";
 
 import { Link } from "react-router-dom";
 
-import { getLoansByUserId } from "../api/api";
+import apiLoans from "../api/apiLoans";
 import TableAlert from "../component/common/TableAlert";
 
 type LoanExtended = LoanType & {
@@ -19,7 +19,8 @@ const UserBooksPage = () => {
 	const [loans, setLoans] = useState<LoanType[]>([]);
 
 	useEffect(() => {
-		getLoansByUserId(userId)
+		apiLoans
+			.getLoansByUserId(userId)
 			.then((data) => {
 				setLoans(data);
 				console.log("Fetched loans:", data);

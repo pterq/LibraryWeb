@@ -6,13 +6,15 @@ import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
 import TableAlert from "../../common/TableAlert";
 
-import { deleteBookById, getBooks, getCategories } from "../../../api/api";
+import apiBooks from "../../../api/apiBooks";
+import apiCategories from "../../../api/apiCategories";
 
 const BooksDashboard = () => {
 	const [books, setBooks] = useState<BookType[]>([]);
 
 	useEffect(() => {
-		getBooks()
+		apiBooks
+			.getBooks()
 			.then((data) => {
 				setBooks(data);
 				console.log("Fetched books:", data);
@@ -23,7 +25,7 @@ const BooksDashboard = () => {
 	const [categories, setCategories] = useState<CategoryType[]>([]);
 
 	useEffect(() => {
-		getCategories().then(setCategories).catch(console.error);
+		apiCategories.getCategories().then(setCategories).catch(console.error);
 	}, []);
 
 	const [search, setSearch] = useState("");
@@ -116,7 +118,8 @@ const BooksDashboard = () => {
 	}, [books, search, filterStatus, sortConfig]);
 
 	const handleDelete = (id: number) => {
-		deleteBookById(id)
+		apiBooks
+			.deleteBookById(id)
 			.then(() => {
 				setBooks((prev) => prev.filter((book) => book.id !== id));
 

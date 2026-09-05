@@ -61,14 +61,6 @@ export interface UserType {
 	hasFee: boolean;
 }
 
-export interface UserData {
-	token: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	role: UserRoleType;
-}
-
 export interface UserDtoType {
 	id: number;
 	firstName: string;
@@ -89,7 +81,7 @@ export type FeeType = {
 
 //===========================================================================
 
-export interface ReservationType {
+export interface CartType {
 	id: number;
 	user: UserType;
 	copy: BookPhysicalType;
@@ -123,7 +115,7 @@ export interface LoanCountType {
 	countOverdue: number;
 }
 
-export interface ReservationCountType {
+export interface CartCountType {
 	id: number;
 	user: UserDtoType;
 	countReservations: number;
@@ -134,9 +126,17 @@ export interface ReservationCountType {
 export interface AuthorForm {
 	firstName: string;
 	lastName: string;
-	bio: string;
+	biography: string;
 }
 
 export interface CategoryForm {
 	name: string;
+}
+
+export interface UserData {
+	token: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	role: UserRoleType;
 }

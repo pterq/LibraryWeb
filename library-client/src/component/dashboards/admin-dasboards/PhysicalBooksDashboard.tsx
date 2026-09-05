@@ -4,14 +4,15 @@ import type { BookPhysicalType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
-import { getBookCopies } from "../../../api/api";
+import apiBooksPhysical from "../../../api/apiBooksPhysical";
 import TableAlert from "../../common/TableAlert";
 
 const PhysicalBooksDashboard = () => {
 	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalType[]>([]);
 
 	useEffect(() => {
-		getBookCopies()
+		apiBooksPhysical
+			.getBookCopies()
 			.then((data) => {
 				setBooksPhysical(data);
 				console.log("Fetched books:", data);
@@ -187,7 +188,7 @@ const PhysicalBooksDashboard = () => {
 							<td>
 								({copy.book.id}) {copy.book.title}
 								{" ("}
-								{(copy.book.bookAuthors ?? [])
+								{(copy.book.authors ?? [])
 									.map((author) => `${author.firstName} ${author.lastName}`)
 									.join(", ") || "-"}
 								)

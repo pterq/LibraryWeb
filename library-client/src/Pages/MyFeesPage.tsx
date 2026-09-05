@@ -5,7 +5,7 @@ import type { AuthorType, FeeType } from "../types/DbTypes";
 import SearchBar from "../component/common/SearchBar";
 import TableAlert from "../component/common/TableAlert";
 import { useAuth } from "../context/AuthContext";
-import { getFeesByUserId } from "../api/api";
+import apiFees from "../api/apiFees";
 
 type FeeExtendedType = FeeType & {
 	authors: AuthorType[];
@@ -21,7 +21,8 @@ const MyFeesPage = () => {
 	const [fees, setFees] = useState<FeeType[]>([]);
 
 	useEffect(() => {
-		getFeesByUserId(userId)
+		apiFees
+			.getFeesByUserId(userId)
 			.then((data) => {
 				setFees(data);
 				console.log("Fetched fees:", data);
@@ -98,10 +99,10 @@ const MyFeesPage = () => {
 						bVal = b.loan.copy.book.title;
 						break;
 					case "authors":
-						aVal = a.loan.copy.book.bookAuthors
+						aVal = a.loan.copy.book.authors
 							?.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
-						bVal = b.loan.copy.book.bookAuthors
+						bVal = b.loan.copy.book.authors
 							?.map((x) => `${x.firstName} ${x.lastName}`)
 							.join(", ");
 						break;
@@ -207,7 +208,7 @@ const MyFeesPage = () => {
 								<td>{index + 1}</td>
 								<td>{fee.loan.copy.book.title}</td>
 								<td>
-									{fee.loan.copy.book.bookAuthors
+									{fee.loan.copy.book.authors
 										?.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
 								</td>

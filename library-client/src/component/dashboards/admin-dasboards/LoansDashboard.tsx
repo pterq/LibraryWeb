@@ -4,14 +4,15 @@ import type { LoanType, LoanCountType, UserDtoType } from "../../../types/DbType
 
 import SearchBar from "../../common/SearchBar";
 
-import { getLoansWithCounts } from "../../../api/api";
+import apiLoans from "../../../api/apiLoans";
 import TableAlert from "../../common/TableAlert";
 
 const LoansDashboard = () => {
 	const [loansWithCount, setLoansWithCount] = useState<LoanCountType[]>([]);
 
 	useEffect(() => {
-		getLoansWithCounts()
+		apiLoans
+			.getLoansWithCounts()
 			.then((data) => {
 				setLoansWithCount(data);
 				console.log("Fetched loans with count:", data);

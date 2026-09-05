@@ -4,14 +4,15 @@ import type { FeesWithCountsType, FeeType, UserType } from "../../../types/DbTyp
 
 import SearchBar from "../../common/SearchBar";
 
-import { getFeesWithCounts } from "../../../api/api";
+import apiFees from "../../../api/apiFees";
 import TableAlert from "../../common/TableAlert";
 
 const FeesDashboard = () => {
 	const [feesWithCount, setFeesWithCount] = useState<FeesWithCountsType[]>([]);
 
 	useEffect(() => {
-		getFeesWithCounts()
+		apiFees
+			.getFeesWithCounts()
 			.then((data) => {
 				setFeesWithCount(data);
 				console.log("Fetched fees with count:", data);

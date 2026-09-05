@@ -1,6 +1,6 @@
 import CartItemsTable from "../Tables/CartItemsTable";
 
-const ShoppingCartItemsDashboard = () => {
+const CartItemsDashboard = () => {
 	return (
 		<div className="container-fluid">
 			<h1>Shopping Carts Dashboard</h1>
@@ -10,4 +10,4 @@ const ShoppingCartItemsDashboard = () => {
 	);
 };
 
-export default ShoppingCartItemsDashboard;
+export default CartItemsDashboard;

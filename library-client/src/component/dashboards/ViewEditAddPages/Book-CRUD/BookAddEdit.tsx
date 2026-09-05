@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
 import type { AuthorType, CategoryType } from "../../../../types/DbTypes";
 import type { PageAction } from "../../../../context/DataFromLink";
-import { addAuthor, addBook, getCategories, type BookCreatePayload } from "../../../../api/api";
+import apiBooks from "../../../../api/apiBooks";
+import apiCategories from "../../../../api/apiCategories";
 import { Navigate, useNavigate } from "react-router";
+import apiAuthors from "../../../../api/apiAuthors";
 
 export type BookFormData = {
 	title: string;
@@ -127,7 +129,7 @@ const BookAddEdit = ({
 
 		const loadCategories = async () => {
 			try {
-				const data = await getCategories();
+				const data = await apiCategories.getCategories();
 				if (!isActive) return;
 				setCategoryOptions(Array.isArray(data) ? data : []);
 			} catch {
@@ -302,7 +304,7 @@ const BookAddEdit = ({
 
 	const handleAddNewAuthor = async () => {
 		try {
-			const created = await addAuthor(newAuthor);
+			const created = await apiAuthors.addAuthor(newAuthor);
 
 			setAuthorOptions((prev) =>
 				prev.some((author) => author.id === created.id) ? prev : [...prev, created],
@@ -363,7 +365,7 @@ const BookAddEdit = ({
 
 		try {
 			if (action === "add") {
-				await addBook(payload);
+				await apiBooks.addBook(payload);
 
 				console.log("Book added: ", payload);
 

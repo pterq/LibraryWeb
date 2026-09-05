@@ -4,12 +4,7 @@ import { actionFromLink, idFromLink, type PageAction } from "../../../../context
 import ReturnButton from "../../../common/ReturnButton";
 
 import DeleteButton from "../../admin-components/DeleteButton";
-import {
-	deleteCategoryById,
-	getCategoryById,
-	updateCategoryById,
-	addCategory,
-} from "../../../../api/api";
+import apiCategories from "../../../../api/apiCategories";
 
 import type { CategoryForm } from "../../../../types/DbTypes";
 
@@ -56,7 +51,7 @@ const CategoryPageViewEditAdd = () => {
 			setError(null);
 
 			try {
-				const category = await getCategoryById(linkId);
+				const category = await apiCategories.getCategoryById(linkId);
 
 				if (!isActive) return;
 
@@ -103,7 +98,7 @@ const CategoryPageViewEditAdd = () => {
 			try {
 				setIsLoading(true);
 
-				await addCategory(formData);
+				await apiCategories.addCategory(formData);
 
 				setSuccess("Category created successfully.");
 				setFormData(EMPTY_FORM);
@@ -126,7 +121,7 @@ const CategoryPageViewEditAdd = () => {
 		try {
 			setIsLoading(true);
 
-			await updateCategoryById(Number(linkId), formData);
+			await apiCategories.updateCategoryById(Number(linkId), formData);
 
 			setOriginalFormData(formData);
 			setIsEditing(false);
@@ -171,7 +166,7 @@ const CategoryPageViewEditAdd = () => {
 
 	const handleDelete = async () => {
 		if (!linkId) return;
-		await deleteCategoryById(Number(linkId));
+		await apiCategories.deleteCategoryById(Number(linkId));
 		window.history.back();
 	};
 

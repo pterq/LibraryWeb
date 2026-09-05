@@ -7,7 +7,7 @@ import type {
 	CategoryType,
 	LoanType,
 	FeeType,
-	ReservationType,
+	CartType,
 	CategoryCountType,
 	FeeCountType,
 	LoanCountType,
@@ -16,7 +16,7 @@ import type {
 	BookPhysicalStatusType,
 	UserRoleType,
 	ReservastionsType,
-	ReservationCountType,
+	CartCountType,
 } from "./DbTypes";
 
 const mockUser: UserType = {
@@ -96,7 +96,7 @@ const mockFee: FeeType = {
 	user: mockUser,
 };
 
-const mockReservation: ReservationType = {
+const mockReservation: CartType = {
 	id: 1,
 	user: mockUser,
 	copy: mockBookPhysical.id,
@@ -208,7 +208,7 @@ const mockLoansCount: LoanCountType[] = Array.from({ length: 5 }, (_, i) => ({
 	user: mockUsers[(i * 3) % mockUsers.length],
 }));
 
-const mockReservationsCount: ReservationCountType[] = Array.from({ length: 5 }, (_, i) => ({
+const mockReservationsCount: CartCountType[] = Array.from({ length: 5 }, (_, i) => ({
 	id: i + 1,
 	firstName: `FirstN ${i + 1}`,
 	lastName: `LastN${i + 1}`,

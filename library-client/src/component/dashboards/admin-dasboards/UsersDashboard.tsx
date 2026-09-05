@@ -3,14 +3,15 @@ import { useEffect, useMemo, useState } from "react";
 import type { UserType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 
-import { getUsers } from "../../../api/api";
+import apiUsers from "../../../api/apiUsers";
 import TableAlert from "../../common/TableAlert";
 
 const UsersDashboard = () => {
 	const [users, setUsers] = useState<UserType[]>([]);
 
 	useEffect(() => {
-		getUsers()
+		apiUsers
+			.getUsers()
 			.then((data) => {
 				setUsers(data);
 				console.log("Fetched users:", data);

@@ -1,19 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { LoanCountType, ReservationCountType, ReservationType } from "../../../types/DbTypes";
+import type { CartCountType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
-import { getReservationsWithCounts } from "../../../api/api";
+import apiCarts from "../../../api/apiCarts";
 import TableAlert from "../../common/TableAlert";
 
-const ShoppinCartsDashboard = () => {
-	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<ReservationCountType[]>(
-		[],
-	);
+const CartsDashboard = () => {
+	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<CartCountType[]>([]);
 
 	useEffect(() => {
-		getReservationsWithCounts()
+		apiCarts
+			.getCartsWithCounts()
 			.then((data) => {
 				setShoppingCartsWithCount(data);
 				console.log("Fetched shopping carts with count:", data);
@@ -44,12 +43,12 @@ const ShoppinCartsDashboard = () => {
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const getItemsCount = (shoppingCart: ReservationCountType) => {
+	const getItemsCount = (shoppingCart: CartCountType) => {
 		return shoppingCart.countReservations;
 	};
 
 	const filteredAndSortedShoppingCarts = useMemo(() => {
-		let data: ReservationCountType[] = [...shoppingCartsWithCount];
+		let data: CartCountType[] = [...shoppingCartsWithCount];
 
 		if (search.trim()) {
 			const lowerSearch = search.toLowerCase();
@@ -78,8 +77,8 @@ const ShoppinCartsDashboard = () => {
 						bVal = b.id;
 						break;
 					case "userId":
-						aVal = a.id;
-						bVal = b.id;
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
@@ -187,4 +186,4 @@ const ShoppinCartsDashboard = () => {
 	);
 };
 
-export default ShoppinCartsDashboard;
+export default CartsDashboard;

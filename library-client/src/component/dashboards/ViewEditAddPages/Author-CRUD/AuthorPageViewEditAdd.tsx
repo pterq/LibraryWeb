@@ -6,15 +6,11 @@ import ReturnButton from "../../../common/ReturnButton";
 import DeleteButton from "../../admin-components/DeleteButton";
 import type {} from "../../../../types/DbTypes";
 
-import { getAuthorById, deleteAuthorById, updateAuthorById, addAuthor } from "../../../../api/api";
+import apiAuthors from "../../../../api/apiAuthors";
 
-type AuthorFormData = {
-	firstName: string;
-	lastName: string;
-	biography: string;
-};
+import type { AuthorForm } from "../../../../types/DbTypes";
 
-const EMPTY_FORM: AuthorFormData = {
+const EMPTY_FORM: AuthorForm = {
 	firstName: "",
 	lastName: "",
 	biography: "",
@@ -28,8 +24,8 @@ const AuthorPageViewEditAdd = () => {
 	const isReadOnly = action === "view" && !isEditing;
 	const isExistingAuthorAction = action === "view";
 
-	const [formData, setFormData] = useState<AuthorFormData>(EMPTY_FORM);
-	const [originalFormData, setOriginalFormData] = useState<AuthorFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<AuthorForm>(EMPTY_FORM);
+	const [originalFormData, setOriginalFormData] = useState<AuthorForm>(EMPTY_FORM);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -64,7 +60,7 @@ const AuthorPageViewEditAdd = () => {
 			setSuccess(null);
 
 			try {
-				const author = await getAuthorById(Number(linkId));
+				const author = await apiAuthors.getAuthorById(Number(linkId));
 				if (!isActive) return;
 
 				if (!author) {
@@ -126,7 +122,7 @@ const AuthorPageViewEditAdd = () => {
 			try {
 				setIsLoading(true);
 
-				await addAuthor(formData);
+				await apiAuthors.addAuthor(formData);
 
 				setSuccess("Author created successfully.");
 				setFormData(EMPTY_FORM);
@@ -149,7 +145,7 @@ const AuthorPageViewEditAdd = () => {
 		try {
 			setIsLoading(true);
 
-			await updateAuthorById(Number(linkId), formData);
+			await apiAuthors.updateAuthorById(Number(linkId), formData);
 
 			setOriginalFormData(formData);
 			setIsEditing(false);
@@ -206,7 +202,7 @@ const AuthorPageViewEditAdd = () => {
 		setSuccess(null);
 
 		try {
-			await deleteAuthorById(Number(linkId));
+			await apiAuthors.deleteAuthorById(Number(linkId));
 			setSuccess("Author deleted successfully.");
 			window.history.back();
 		} catch {

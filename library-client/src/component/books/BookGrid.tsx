@@ -4,7 +4,7 @@ import PageNav from "../dashboards/admin-components/PageNav";
 
 import type { BookType } from "../../types/DbTypes";
 
-import { getBooks } from "../../api/api";
+import apiBooks from "../../api/apiBooks";
 import TableAlert from "../common/TableAlert";
 
 interface BookGridProps {
@@ -15,7 +15,8 @@ const BookGrid: React.FC<BookGridProps> = ({ search }) => {
 	const [books, setBooks] = useState<BookType[]>([]);
 
 	useEffect(() => {
-		getBooks()
+		apiBooks
+			.getBooks()
 			.then((data) => {
 				setBooks(data);
 				console.log("Fetched books:", data);

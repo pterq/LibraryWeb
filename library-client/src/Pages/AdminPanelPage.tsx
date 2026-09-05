@@ -1,7 +1,7 @@
 import React, { useEffect, type JSX } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import ShoppingCartItemsDashboard from "../component/dashboards/admin-dasboards/ShoppingCartItemsDashboard";
+import CartItemsDashboard from "../component/dashboards/admin-dasboards/CartItemsDashboard";
 import PhysicalBooksDashboard from "../component/dashboards/admin-dasboards/PhysicalBooksDashboard";
 import AdminNavPanel from "../component/dashboards/admin-components/AdminNavPanel";
 import { useAuth } from "../context/AuthContext";
@@ -10,7 +10,7 @@ import BooksDashboard from "../component/dashboards/admin-dasboards/BooksDashboa
 import UsersDashboard from "../component/dashboards/admin-dasboards/UsersDashboard";
 import LoansDashboard from "../component/dashboards/admin-dasboards/LoansDashboard";
 import FeesDashboard from "../component/dashboards/admin-dasboards/FeesDashboard";
-import ShoppinCartsDashboard from "../component/dashboards/admin-dasboards/ShoppinCartsDashboard";
+import CartsDashboard from "../component/dashboards/admin-dasboards/CartsDashboard";
 import CategoriesDashboard from "../component/dashboards/admin-dasboards/CategoriesDashboard";
 import LoanItemsDashboard from "../component/dashboards/admin-dasboards/LoanItemsDashboard";
 import FeeItemsDashboard from "../component/dashboards/admin-dasboards/FeeItemsDashboard";
@@ -76,8 +76,8 @@ const sectionComponentMap: Record<string, JSX.Element> = {
 	loanItems: <LoanItemsDashboard />,
 	fees: <FeesDashboard />,
 	feeItems: <FeeItemsDashboard />,
-	shoppingCarts: <ShoppinCartsDashboard />,
-	shoppingCartItems: <ShoppingCartItemsDashboard />,
+	carts: <CartsDashboard />,
+	cartItems: <CartItemsDashboard />,
 };
 
 const AdminPanelPage = () => {

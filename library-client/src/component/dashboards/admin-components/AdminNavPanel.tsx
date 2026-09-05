@@ -16,12 +16,12 @@ const navItems = [
 	{ id: "loanItems", label: "Loan Items" },
 	{ id: "fees", label: "Fees" },
 	{ id: "feeItems", label: "Fees Items" },
-	{ id: "shoppingCarts", label: "Carts" },
-	{ id: "shoppingCartItems", label: "Cart Items" },
+	{ id: "carts", label: "Carts" },
+	{ id: "cartItems", label: "Cart Items" },
 ];
 
 // ID sekcji, przed którymi ma być separator
-const separatorBefore = new Set(["books", "users", "loans", "fees", "shoppingCarts"]);
+const separatorBefore = new Set(["books", "users", "loans", "fees", "carts"]);
 
 const AdminNavPanel = ({ activeItem, onSelect }: NavPanelProps) => {
 	return (

@@ -8,13 +8,14 @@ import type {
 	BookPhysicalType,
 	CategoryType,
 	LoanType,
-	ReservationType,
+	CartType,
 	FeeType,
 	LoanStatusType,
 	FeesWithCountsType,
-	ReservationCountType,
+	CartCountType,
 	CategoriesWithCountsType,
 	CategoryForm,
+	LoanCountType,
 } from "../types/DbTypes";
 
 //endpoints
@@ -92,15 +93,7 @@ export const deleteLoanById = async (id: number) => {
 
 export const getLoansWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<
-			{
-				loanId: number;
-				user: UserType;
-				firstName: string;
-				lastName: string;
-				numberOfLoans: number;
-			}[]
-		>(`${LOAN_ENDPOINT}/counts`);
+		const response = await axiosClient.get<LoanCountType[]>(`${LOAN_ENDPOINT}/counts`);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch loans with counts:", error);

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FeeType, FeeStatusType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { getFees } from "../../../api/api";
+import apiFees from "../../../api/apiFees";
 import TableAlert from "../../common/TableAlert";
 
 const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
@@ -12,7 +12,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const [fees, setFees] = useState<FeeType[]>([]);
 
 	useEffect(() => {
-		getFees()
+		apiFees
+			.getFees()
 			.then((data) => {
 				setFees(data);
 				console.log("Fetched fees:", data);
@@ -200,8 +201,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							<td>{fee.amount.toFixed(2)} zł</td>
 							<td>
 								{`(${fee.loan.id}) ${fee.loan.copy.inventoryCode} (${fee.loan.copy.book.title} (${
-									fee.loan.copy.book.bookAuthors?.length
-										? fee.loan.copy.book.bookAuthors
+									fee.loan.copy.book.authors?.length
+										? fee.loan.copy.book.authors
 												.map((a) => `${a.firstName} ${a.lastName}`)
 												.join(", ")
 										: "-"

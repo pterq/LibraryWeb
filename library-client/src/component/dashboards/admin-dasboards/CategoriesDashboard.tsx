@@ -4,14 +4,15 @@ import type { CategoriesWithCountsType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
 
-import { getCategoriesWithCounts, deleteCategoryById } from "../../../api/api";
+import apiCategories from "../../../api/apiCategories";
 import TableAlert from "../../common/TableAlert";
 
 const CategoriesDashboard = () => {
 	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
 
 	useEffect(() => {
-		getCategoriesWithCounts()
+		apiCategories
+			.getCategoriesWithCounts()
 			.then((data) => {
 				setCategoriesWithCount(data);
 				console.log("Fetched categories with counts:", data);
@@ -44,7 +45,7 @@ const CategoriesDashboard = () => {
 	};
 
 	const handleDelete = async (id: number | string) => {
-		await deleteCategoryById(Number(id));
+		await apiCategories.deleteCategoryById(Number(id));
 		setCategoriesWithCount((prev) => prev.filter((cat) => cat.id !== Number(id)));
 	};
 

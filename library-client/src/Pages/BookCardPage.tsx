@@ -1,20 +1,27 @@
 import { useParams } from "react-router-dom";
-import { MockData } from "../types/MockData";
 import ImageFrame from "../component/common/ImageFrame";
 import { useAuth } from "../context/AuthContext";
-import { getBookById } from "../api/api";
+import apiBooks from "../api/apiBooks";
+import apiCarts from "../api/apiCarts";
+import { useEffect, useState } from "react";
+
+import type { BookType } from ".././/types/DbTypes";
 
 const BookCardPage = () => {
 	const { id } = useParams<{ id?: string }>();
+	const bookId = Number(id);
 	const { role, userId } = useAuth();
 
+	const [bookData, setBookData] = useState<BookType | null>(null);
+
 	const handleAddToCart = () => {
-		console.log("Dodano do koszyka bookId:", book?.id);
+		console.log("Dodano do koszyka bookId:");
 
 		//sprawdź czy istnieje userId, jeśli nie to przekierowanie na stronę logowania
 		if (!userId) {
 			window.location.href = "/login";
 			return;
+		} else {
 		}
 	};
 
@@ -22,10 +29,18 @@ const BookCardPage = () => {
 		return <div>Book not found</div>;
 	}
 
-	const bookId = parseInt(id, 10);
-	const book = MockData.mockBooks.find((b) => b.id === bookId);
+	useEffect(() => {
+		apiBooks
+			.getBookById(bookId)
+			.then((data) => {
+				setBookData(data);
 
-	if (!book) {
+				console.log("Fetched 1 book data:", data);
+			})
+			.catch(console.error);
+	}, []);
+
+	if (!bookData) {
 		return <div>Book not found</div>;
 	}
 
@@ -39,22 +54,27 @@ const BookCardPage = () => {
 
 			<div className="row mt-4 g-4 align-items-start">
 				<div className="col-12 col-md-4 col-lg-3 d-flex justify-content-center">
-					<ImageFrame imageUrl={book.imageUrl ?? null} alt={book.title} />
+					<ImageFrame imageUrl={bookData.imageUrl ?? null} alt={bookData.title} />
 				</div>
 
 				<div className="col-12 col-md-8 col-lg-9">
 					<p>
-						<strong>Book Title:</strong> {book.title}
+						<strong>Book Title:</strong> {bookData.title}
 					</p>
 					<p>
 						<strong>Authors:</strong>{" "}
-						{book.authors?.map((a) => `${a.firstName} ${a.lastName}`).join(", ")}
+						{bookData.authors
+							?.map(
+								(a: { firstName: string; lastName: string }) =>
+									`${a.firstName} ${a.lastName}`,
+							)
+							.join(", ")}
 					</p>
 					<p>
-						<strong>Published Year:</strong> {book.publishedYear}
+						<strong>Published Year:</strong> {bookData.publishedYear}
 					</p>
 					<p>
-						<strong>Description:</strong> {book.description}
+						<strong>Description:</strong> {bookData.description}
 					</p>
 				</div>
 			</div>

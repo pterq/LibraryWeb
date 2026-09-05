@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
 
-import { getAuthors, deleteAuthorById, updateAuthorById, addAuthor } from "../../../api/api";
+import apiAuthors from "../../../api/apiAuthors";
 
 import TableAlert from "../../common/TableAlert";
 
@@ -16,7 +16,8 @@ const AuthorsDashboard = () => {
 	const [authors, setAuthors] = useState<AuthorType[]>([]);
 
 	useEffect(() => {
-		getAuthors()
+		apiAuthors
+			.getAuthors()
 			.then((data) => {
 				setAuthors(data);
 				console.log("Fetched authors:", data);
@@ -79,7 +80,8 @@ const AuthorsDashboard = () => {
 	}, [authors, filter, search, sortConfig]);
 
 	const handleDelete = (id: number) => {
-		deleteAuthorById(id)
+		apiAuthors
+			.deleteAuthorById(id)
 			.then(() => {
 				setAuthors((prev) => prev.filter((author) => author.id !== id));
 			})

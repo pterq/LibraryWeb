@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 
 import type {
-	ReservationType,
+	CartType,
 	BookPhysicalType,
 	BookType,
 	AuthorType,
 	AuthorsType,
 } from "../../types/DbTypes";
 
-const CartItem = ({ item }: { item: ReservationType }) => {
+const CartItem = ({ item }: { item: CartType }) => {
 	const calculateDaysLeft = (expiresAt: Date): number => {
 		const currentDate = new Date();
 		const expirationDate = new Date(expiresAt);

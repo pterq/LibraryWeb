@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { ReservationType, ReservationCountType } from "../types/DbTypes";
+import type { CartType, CartCountType } from "../types/DbTypes";
 
 //endpoints
 const RESERVATION_ENDPOINT = "/carts";
@@ -7,9 +7,9 @@ const RESERVATION_ENDPOINT = "/carts";
 //===============================================================================
 //Reservation
 
-export const getReservations = async () => {
+export const getAllCarts = async () => {
 	try {
-		const response = await axiosClient.get<ReservationType[]>(RESERVATION_ENDPOINT);
+		const response = await axiosClient.get<CartType[]>(RESERVATION_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch reservations:", error);
@@ -17,9 +17,9 @@ export const getReservations = async () => {
 	}
 };
 
-export const getReservationById = async (id: number) => {
+export const getCartById = async (id: number) => {
 	try {
-		const response = await axiosClient.get<ReservationType>(`${RESERVATION_ENDPOINT}/${id}`);
+		const response = await axiosClient.get<CartType>(`${RESERVATION_ENDPOINT}/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch reservation with id ${id}:`, error);
@@ -27,9 +27,9 @@ export const getReservationById = async (id: number) => {
 	}
 };
 
-export const addReservation = async (reservation: ReservationType) => {
+export const addCart = async (reservation: CartType) => {
 	try {
-		const response = await axiosClient.post<ReservationType>(RESERVATION_ENDPOINT, reservation);
+		const response = await axiosClient.post<CartType>(RESERVATION_ENDPOINT, reservation);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add reservation:", error);
@@ -37,9 +37,9 @@ export const addReservation = async (reservation: ReservationType) => {
 	}
 };
 
-export const updateReservationById = async (id: number, reservation: ReservationType) => {
+export const updateCartById = async (id: number, reservation: CartType) => {
 	try {
-		const response = await axiosClient.put<ReservationType>(
+		const response = await axiosClient.put<CartType>(
 			`${RESERVATION_ENDPOINT}/${id}`,
 			reservation,
 		);
@@ -50,7 +50,7 @@ export const updateReservationById = async (id: number, reservation: Reservation
 	}
 };
 
-export const deleteReservationById = async (id: number) => {
+export const deleteCartById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`${RESERVATION_ENDPOINT}/${id}`);
 		return response.data;
@@ -60,11 +60,9 @@ export const deleteReservationById = async (id: number) => {
 	}
 };
 
-export const getReservationsWithCounts = async () => {
+export const getCartsWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<ReservationCountType[]>(
-			`${RESERVATION_ENDPOINT}/counts`,
-		);
+		const response = await axiosClient.get<CartCountType[]>(`${RESERVATION_ENDPOINT}/counts`);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch reservations with counts:", error);
@@ -72,9 +70,9 @@ export const getReservationsWithCounts = async () => {
 	}
 };
 
-export const getReservationByUserId = async (userId: number | null) => {
+export const getUserCartItemsByUserId = async (userId: number) => {
 	try {
-		const response = await axiosClient.get<ReservationType[]>(
+		const response = await axiosClient.get<CartType[]>(
 			`${RESERVATION_ENDPOINT}/user/${userId}`,
 		);
 		return response.data;
@@ -85,13 +83,13 @@ export const getReservationByUserId = async (userId: number | null) => {
 };
 
 const apiCarts = {
-	getReservations,
-	getReservationById,
-	addReservation,
-	updateReservationById,
-	deleteReservationById,
-	getReservationsWithCounts,
-	getReservationByUserId,
+	getAllCarts,
+	getCartById,
+	addCart,
+	updateCartById,
+	deleteCartById,
+	getCartsWithCounts,
+	getUserCartItemsByUserId,
 };
 
 export default apiCarts;

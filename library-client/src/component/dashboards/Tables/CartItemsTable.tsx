@@ -1,27 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type {
-	AuthorType,
-	ReservationType,
-	BookType,
-	BookPhysicalType,
-} from "../../../types/DbTypes";
+import type { AuthorType, CartType, BookType, BookPhysicalType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { getReservations } from "../../../api/api";
+import apiCarts from "../../../api/apiCarts";
 import TableAlert from "../../common/TableAlert";
 
-const getReservationCopy = (reservation: ReservationType) =>
-	reservation.bookPhysical ?? reservation.copy;
+const getReservationCopy = (reservation: CartType) => reservation.bookPhysical ?? reservation.copy;
 
 const formatReservationDate = (value: Date | string) => new Date(value).toLocaleString();
 
 const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
-	const [reservations, setReservations] = useState<ReservationType[] | null>(null);
+	const [reservations, setReservations] = useState<CartType[] | null>(null);
 
 	useEffect(() => {
-		getReservations()
+		apiCarts
+			.getAllCarts()
 			.then((data) => {
 				setReservations(data);
 				console.log("Fetched reservations:", data);
@@ -32,13 +27,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	//=====================================================
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof ReservationType;
+		key: keyof CartType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof ReservationType) => {
+	const requestSort = (key: keyof CartType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -48,13 +43,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof ReservationType) => {
+	const getSortIcon = (key: keyof CartType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const shoppingCarts = useMemo(() => {
-		let data: ReservationType[] = [...(reservations ?? [])];
+		let data: CartType[] = [...(reservations ?? [])];
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
 			data = data.filter((reservation) => reservation.user.id === selectedUserId);
@@ -71,7 +66,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 
 				const fullName =
 					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
-				const authors = (bookCopy.book.bookAuthors ?? [])
+				const authors = (bookCopy.book.authors ?? [])
 					.map((author) => `${author.firstName} ${author.lastName}`)
 					.join(", ")
 					.toLowerCase();
@@ -117,13 +112,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					case "bookPhysical":
 						aVal =
 							getReservationCopy(a)
-								?.book.bookAuthors?.map(
+								?.book.authors?.map(
 									(author) => `${author.firstName} ${author.lastName}`,
 								)
 								.join(", ") ?? "";
 						bVal =
 							getReservationCopy(b)
-								?.book.bookAuthors?.map(
+								?.book.authors?.map(
 									(author) => `${author.firstName} ${author.lastName}`,
 								)
 								.join(", ") ?? "";

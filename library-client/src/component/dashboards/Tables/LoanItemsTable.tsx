@@ -3,16 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import type { LoanType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
-import { MockData } from "../../../types/MockData";
 
-import { getLoans } from "../../../api/api";
+import apiLoans from "../../../api/apiLoans";
 import TableAlert from "../../common/TableAlert";
 
 const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const [loans, setLoans] = useState<LoanType[]>([]);
 
 	useEffect(() => {
-		getLoans()
+		apiLoans
+			.getLoans()
 			.then((data) => {
 				setLoans(data);
 				console.log("Fetched loans:", data);

@@ -36,7 +36,7 @@ export const getAuthorById = async (id: number) => {
 	}
 };
 
-export const updateAuthorById = async (id: number, author: AuthorType) => {
+export const updateAuthorById = async (id: number, author: AuthorForm) => {
 	try {
 		const response = await axiosClient.put<AuthorType>(`${AUTHORS_ENDPOINT}/${id}`, author);
 		return response.data;
