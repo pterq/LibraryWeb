@@ -1,10 +1,10 @@
-import LoanItemsTable from "./LoanItemsTable";
+import LoanItemsTable from "./Tables/LoanItemsTable";
 
 type Props = {
 	userId: number;
 };
 
-const UserBooksTable = ({ userId }: Props) => {
+const UserLoansView = ({ userId }: Props) => {
 	return (
 		<div>
 			<h4 className="mb-3">Books</h4>
@@ -14,4 +14,4 @@ const UserBooksTable = ({ userId }: Props) => {
 	);
 };
 
-export default UserBooksTable;
+export default UserLoansView;

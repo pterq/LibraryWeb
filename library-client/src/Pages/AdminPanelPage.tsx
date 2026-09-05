@@ -102,8 +102,8 @@ const AdminPanelPage = () => {
 	);
 
 	return (
-		<div>
-			<h1 className="mb-4">{role} Panel</h1>
+		<div className="container-fluid">
+			<h1>{role} Panel</h1>
 			<h2 className="mb-4">
 				User: {firstName} {lastName} ({email})
 			</h2>
@@ -116,7 +116,7 @@ const AdminPanelPage = () => {
 					/>
 				</aside>
 
-				<div className="container col-lg-9 col-md-8 col-12">{sectionContent}</div>
+				<div className="container col-lg-9 col-md-8 col-12 border">{sectionContent}</div>
 			</div>
 		</div>
 	);

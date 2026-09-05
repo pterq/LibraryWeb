@@ -86,9 +86,9 @@ export const getFeesWithCounts = async () => {
 	}
 };
 
-export const getFeesByUserId = async (userId: number | null) => {
+export const getFeesByUserId = async (userId: number) => {
 	try {
-		const response = await axiosClient.get<FeeType[]>(`${FEE_ENDPOINT}/user/${userId}`);
+		const response = await axiosClient.get<FeeType[]>(`${FEE_ENDPOINT}/userFees/${userId}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch fees for user with id ${userId}:`, error);

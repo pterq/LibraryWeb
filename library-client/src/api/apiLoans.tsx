@@ -19,14 +19,7 @@ import type {
 } from "../types/DbTypes";
 
 //endpoints
-const BOOKS_ENDPOINT = "/books";
-const BOOK_COPY_ENDPOINT = "/copies";
-const CATEGORIES_ENDPOINT = "/categories";
-const AUTHORS_ENDPOINT = "/authors";
-const USER_ENDPOINT = "/user";
 const LOAN_ENDPOINT = "/loans";
-const FEE_ENDPOINT = "/fees";
-const RESERVATION_ENDPOINT = "/reservations";
 
 //===============================================================================
 //Loan
@@ -51,7 +44,7 @@ export const getLoansByLoanStatus = async (status: LoanStatusType) => {
 	}
 };
 
-export const getLoansByUserId = async (userId: number | null) => {
+export const getLoansByUserId = async (userId: number) => {
 	try {
 		const response = await axiosClient.get<LoanType[]>(`${LOAN_ENDPOINT}/userBooks/${userId}`);
 		return response.data;

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import apiUsers from "../../../../api/apiUsers";
 import type { UserType } from "../../../../types/DbTypes";
-import UserBooksTable from "./UserBooksTable";
-import UserFeesTable from "./UserFeesTable";
+import UserLoansView from "./UserLoansView";
+import UserFeesView from "./UserFeesView";
 import UserCartTable from "./UserCartTable";
 
 type Props = {
@@ -21,7 +21,7 @@ const EMPTY: Omit<UserType, "id"> = {
 	hasFee: false,
 };
 
-type UserDetailsTab = "books" | "fees" | "cart" | null;
+type UserDetailsTab = "loans" | "fees" | "cart" | null;
 
 const ViewUser = ({ id, onBack, onReload }: Props) => {
 	const [data, setData] = useState(EMPTY);
@@ -101,12 +101,12 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 
 				<div className="d-flex flex-wrap gap-2 mt-4">
 					<button
-						className={`btn ${activeTab === "books" ? "btn-primary" : "btn-outline-primary"}`}
+						className={`btn ${activeTab === "loans" ? "btn-primary" : "btn-outline-primary"}`}
 						onClick={() =>
-							setActiveTab((current) => (current === "books" ? null : "books"))
+							setActiveTab((current) => (current === "loans" ? null : "loans"))
 						}
 					>
-						Books
+						Loans
 					</button>
 					<button
 						className={`btn ${activeTab === "fees" ? "btn-warning" : "btn-outline-warning"}`}
@@ -127,8 +127,8 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 				</div>
 
 				<div className="mt-4">
-					{activeTab === "books" && <UserBooksTable userId={id} />}
-					{activeTab === "fees" && <UserFeesTable userId={id} />}
+					{activeTab === "loans" && <UserLoansView userId={id} />}
+					{activeTab === "fees" && <UserFeesView userId={id} />}
 					{activeTab === "cart" && <UserCartTable userId={id} />}
 				</div>
 			</div>

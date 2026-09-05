@@ -1,10 +1,10 @@
-import FeeItemsTable from "./FeeItemsTable";
+import FeeItemsTable from "./Tables/FeeItemsTable";
 
 type Props = {
 	userId: number;
 };
 
-const UserFeesTable = ({ userId }: Props) => {
+const UserFeesView = ({ userId }: Props) => {
 	return (
 		<div>
 			<h4 className="mb-3">Fees</h4>
@@ -14,4 +14,4 @@ const UserFeesTable = ({ userId }: Props) => {
 	);
 };
 
-export default UserFeesTable;
+export default UserFeesView;
