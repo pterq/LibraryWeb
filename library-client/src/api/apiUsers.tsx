@@ -1,5 +1,12 @@
 import axiosClient from "./axiosClient";
-import type { UserType, UserRoleType } from "../types/DbTypes";
+import type {
+	UserType,
+	UserRoleType,
+	LoginForm,
+	LoginResponse,
+	RegisterForm,
+	RegisterResponse,
+} from "../types/DbTypes";
 
 //endpoints
 const USER_ENDPOINT = "/user";
@@ -57,7 +64,7 @@ export const addUser = async (user: BackendUserType) => {
 	}
 };
 
-export const updateUser = async (id: number, user: BackendUserType) => {
+export const updateUserById = async (id: number, user: BackendUserType) => {
 	try {
 		const response = await axiosClient.put<BackendUserType>(`${USER_ENDPOINT}/${id}`, user);
 		return normalizeUser(response.data);
@@ -67,7 +74,7 @@ export const updateUser = async (id: number, user: BackendUserType) => {
 	}
 };
 
-export const deleteUser = async (id: number) => {
+export const deleteUserById = async (id: number) => {
 	try {
 		const response = await axiosClient.delete(`${USER_ENDPOINT}/${id}`);
 		return response.data;
@@ -87,10 +94,10 @@ export const registerUser = async (user: BackendUserType) => {
 	}
 };
 
-export const loginUser = async (user: BackendUserType) => {
+export const loginUser = async (user: LoginForm) => {
 	try {
-		const response = await axiosClient.post<BackendUserType>(`${USER_ENDPOINT}/login`, user);
-		return normalizeUser(response.data);
+		const response = await axiosClient.post<LoginResponse>(`${USER_ENDPOINT}/login`, user);
+		return response.data;
 	} catch (error) {
 		console.error("Failed to login user:", error);
 		throw error;
@@ -116,8 +123,8 @@ const apiUsers = {
 	getUsers,
 	getUserById,
 	addUser,
-	updateUser,
-	deleteUser,
+	updateUserById,
+	deleteUserById,
 	registerUser,
 	loginUser,
 	changeUserPassword,

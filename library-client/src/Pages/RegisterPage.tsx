@@ -2,23 +2,7 @@ import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-interface RegisterForm {
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-}
-
-interface RegisterResponse {
-	userId: number;
-	firstName: string;
-	lastName: string;
-	email: string;
-	role: string;
-	accessToken: string;
-	tokenType: string;
-}
+import type { RegisterForm, RegisterResponse } from "../types/DbTypes";
 
 const RegisterPage: React.FC = () => {
 	const navigate = useNavigate();

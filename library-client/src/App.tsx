@@ -16,6 +16,7 @@ import BookCardPage from "./Pages/BookCardPage";
 import UserBooksPage from "./Pages/UserBooksPage";
 import MyFeesPage from "./Pages/MyFeesPage";
 import UserSettingsPage from "./Pages/LoginPage";
+import CartPanel from "./Pages/CartPanel";
 import FeeCard from "./component/fees/FeeCard";
 import UserBookCard from "./component/books/UserBookCard";
 
@@ -49,6 +50,15 @@ function App() {
 							}
 						/>
 
+						<Route
+							path="/user/:id/books"
+							element={
+								<ProtectedRoute>
+									<UserBooksPage />
+								</ProtectedRoute>
+							}
+						/>
+
 						<Route path="/user-loan/:id" element={<UserBookCard />} />
 
 						<Route
@@ -56,6 +66,24 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<MyFeesPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/user/:id/fees"
+							element={
+								<ProtectedRoute>
+									<MyFeesPage />
+								</ProtectedRoute>
+							}
+						/>
+
+						<Route
+							path="/user/:id/cart-items"
+							element={
+								<ProtectedRoute>
+									<CartPanel />
 								</ProtectedRoute>
 							}
 						/>

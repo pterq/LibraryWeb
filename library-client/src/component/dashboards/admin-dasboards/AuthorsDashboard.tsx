@@ -34,7 +34,10 @@ const AuthorsDashboard = () => {
 	const reloadAuthors = () => {
 		apiAuthors
 			.getAuthors()
-			.then((data) => setAuthors(data))
+			.then((data) => {
+				setAuthors(data);
+				console.log("Fetched authors:", data);
+			})
 			.catch(console.error);
 	};
 

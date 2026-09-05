@@ -1,0 +1,139 @@
+import { useEffect, useState } from "react";
+import apiUsers from "../../../../api/apiUsers";
+import type { UserType } from "../../../../types/DbTypes";
+import UserBooksTable from "./UserBooksTable";
+import UserFeesTable from "./UserFeesTable";
+import UserCartTable from "./UserCartTable";
+
+type Props = {
+	id: number;
+	onBack: () => void;
+	onReload: () => void;
+	showMessage: (text: string) => void;
+};
+
+const EMPTY: Omit<UserType, "id"> = {
+	firstName: "",
+	lastName: "",
+	email: "",
+	phone: "",
+	role: "USER",
+	hasFee: false,
+};
+
+type UserDetailsTab = "books" | "fees" | "cart" | null;
+
+const ViewUser = ({ id, onBack, onReload }: Props) => {
+	const [data, setData] = useState(EMPTY);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [activeTab, setActiveTab] = useState<UserDetailsTab>(null);
+
+	useEffect(() => {
+		let active = true;
+
+		const load = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const user = await apiUsers.getUserById(id);
+				if (!active) return;
+
+				setData({
+					firstName: user.firstName ?? "",
+					lastName: user.lastName ?? "",
+					email: user.email ?? "",
+					phone: user.phone ?? "",
+					role: user.role ?? "USER",
+					hasFee: user.hasFee ?? false,
+				});
+			} catch {
+				if (active) setError("Failed to load user.");
+			} finally {
+				if (active) setIsLoading(false);
+			}
+		};
+
+		load();
+		return () => {
+			active = false;
+		};
+	}, [id]);
+
+	return (
+		<div className="container py-3">
+			<div className="d-flex gap-2 mb-3">
+				<button
+					className="btn btn-secondary"
+					onClick={() => {
+						onBack();
+						onReload();
+					}}
+				>
+					Back
+				</button>
+				<h2>View User Data</h2>
+			</div>
+
+			{isLoading && <p>Loading...</p>}
+			{error && <p className="text-danger">{error}</p>}
+
+			<div className="mt-3">
+				<p>
+					<strong>First Name:</strong> {data.firstName}
+				</p>
+				<p>
+					<strong>Last Name:</strong> {data.lastName}
+				</p>
+				<p>
+					<strong>Email:</strong> {data.email}
+				</p>
+				<p>
+					<strong>Phone:</strong> {data.phone || "-"}
+				</p>
+				<p>
+					<strong>Role:</strong> {data.role}
+				</p>
+				<p>
+					<strong>Has Unpaid Fees:</strong> {data.hasFee ? "Yes" : "No"}
+				</p>
+
+				<div className="d-flex flex-wrap gap-2 mt-4">
+					<button
+						className={`btn ${activeTab === "books" ? "btn-primary" : "btn-outline-primary"}`}
+						onClick={() =>
+							setActiveTab((current) => (current === "books" ? null : "books"))
+						}
+					>
+						Books
+					</button>
+					<button
+						className={`btn ${activeTab === "fees" ? "btn-warning" : "btn-outline-warning"}`}
+						onClick={() =>
+							setActiveTab((current) => (current === "fees" ? null : "fees"))
+						}
+					>
+						Fees
+					</button>
+					<button
+						className={`btn ${activeTab === "cart" ? "btn-success" : "btn-outline-success"}`}
+						onClick={() =>
+							setActiveTab((current) => (current === "cart" ? null : "cart"))
+						}
+					>
+						Cart items
+					</button>
+				</div>
+
+				<div className="mt-4">
+					{activeTab === "books" && <UserBooksTable userId={id} />}
+					{activeTab === "fees" && <UserFeesTable userId={id} />}
+					{activeTab === "cart" && <UserCartTable userId={id} />}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default ViewUser;

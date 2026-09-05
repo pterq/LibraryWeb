@@ -6,10 +6,28 @@ import SearchBar from "../../common/SearchBar";
 import apiUsers from "../../../api/apiUsers";
 import TableAlert from "../../common/TableAlert";
 
+import ViewUser from "../CRUDs/User/ViewUser";
+import EditUser from "../CRUDs/User/EditUser";
+import AddUser from "../CRUDs/User/AddUser";
+import DeleteButton from "../admin-components/DeleteButton";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
 const UsersDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [users, setUsers] = useState<UserType[]>([]);
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
+		reloadUsers();
+	}, []);
+
+	const reloadUsers = () => {
 		apiUsers
 			.getUsers()
 			.then((data) => {
@@ -17,7 +35,13 @@ const UsersDashboard = () => {
 				console.log("Fetched users:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | UserType["role"]>("ALL");
@@ -88,16 +112,84 @@ const UsersDashboard = () => {
 		return data;
 	}, [users, filter, search, sortConfig, feeFilter]);
 
+	const handleDelete = async (id: number) => {
+		const userToDelete = users.find((user) => user.id === id);
+		const displayName = userToDelete
+			? `${userToDelete.firstName} ${userToDelete.lastName}`.trim()
+			: "Unknown user";
+
+		try {
+			await apiUsers.deleteUserById(id);
+			showMessage(`User "${displayName}" has been deleted.`);
+			reloadUsers();
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete user "${displayName}": it is still assigned to books.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete user "${displayName}".`, "danger");
+			console.error(error);
+		}
+	};
+
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewUser
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadUsers}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditUser
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadUsers}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddUser
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadUsers}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	return (
 		<div className="container-fluid">
 			<h1>Users Dashboard</h1>
 
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search user" />
 
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/user/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
 					Add User
 				</button>
@@ -217,13 +309,28 @@ const UsersDashboard = () => {
 							<td className="text-nowrap">{user.phone}</td>
 							<td className="text-nowrap">{user.role}</td>
 							<td>{user.hasFee ? "Yes" : "No"}</td>
-							<td>
+
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
-									onClick={() => (window.location.href = `/user/view/${user.id}`)}
+									className="btn btn-sm btn-primary me-2"
+									onClick={() => setCrud({ mode: "view", id: user.id })}
 								>
-									View Details
+									View
 								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() => setCrud({ mode: "edit", id: user.id })}
+								>
+									Edit
+								</button>
+
+								<DeleteButton
+									id={user.id}
+									name={`${user.firstName} ${user.lastName}`}
+									entityName="user"
+									onDelete={() => handleDelete(user.id)}
+								/>
 							</td>
 						</tr>
 					))}
