@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,24 +25,28 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 1024)
-    private String imageUrl;
-
-
-    @Column
     private String isbn;
 
     private Integer publishedYear;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(length = 1024)
+    private String imageUrl;
 
+    //WIELE AUTORÓW
     @ManyToMany
     @JoinTable(
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
-    private List<Author> authors;
+    private List<Author> authors = new ArrayList<>();
+
+    //WIELE KATEGORII
+    @ManyToMany
+    @JoinTable(
+            name = "book_categories",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
 }

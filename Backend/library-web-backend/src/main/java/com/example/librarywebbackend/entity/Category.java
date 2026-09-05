@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,9 +24,7 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    private Set<Book> books;
+    @ManyToMany(mappedBy = "categories")
+    private List<Book> books = new ArrayList<>();
 
-    // getters/setters
 }

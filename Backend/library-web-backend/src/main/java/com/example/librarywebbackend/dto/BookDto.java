@@ -9,6 +9,7 @@ public record BookDto(
         String imageUrl,
         String isbn,
         Integer publishedYear,
-        CategoryDto category,
+        List<CategoryDto> categories,
         List<AuthorDto> authors
 ) {}
+

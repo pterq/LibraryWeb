@@ -33,6 +33,25 @@ public class BookService implements IBookService {
         this.bookCopyRepository = bookCopyRepository;
     }
 
+    private List<Category> resolveCategories(List<Long> categoryIds) {
+        if (categoryIds == null) {
+            return new ArrayList<>();
+        }
+
+        List<Category> categories = new ArrayList<>();
+        for (Long categoryId : categoryIds) {
+            if (categoryId == null) {
+                continue;
+            }
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+            if (category != null) {
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+
     @Override
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
@@ -47,26 +66,21 @@ public class BookService implements IBookService {
     @Override
     public Book createBook(BookCreateDTO dto) {
 
-        Category category = null;
-        if (dto.getCategoryId() != null) {
-            category = categoryRepository.findById(dto.getCategoryId())
-                    .orElse(null);
-        }
-
         Book book = new Book();
         book.setTitle(dto.getTitle());
         book.setDescription(dto.getDescription());
         book.setImageUrl(dto.getImageUrl());
         book.setIsbn(dto.getIsbn());
         book.setPublishedYear(dto.getPublishedYear());
-        book.setCategory(category);
+
         book.setAuthors(resolveAuthors(dto.getAuthorIds()));
+        book.setCategories(resolveCategories(dto.getCategoryIds())); // 🔥 TU ZMIANA
 
         bookRepository.save(book);
 
-        // pobieramy pełną encję z relacjami
         return bookRepository.findById(book.getId()).orElseThrow();
     }
+
 
 
 
@@ -76,25 +90,20 @@ public class BookService implements IBookService {
         return bookRepository.findById(id)
                 .map(book -> {
 
-                    Category category = null;
-                    if (dto.getCategoryId() != null) {
-                        category = categoryRepository.findById(dto.getCategoryId())
-                                .orElse(null);
-                    }
-
-                    // aktualizacja pól książki
                     book.setTitle(dto.getTitle());
                     book.setDescription(dto.getDescription());
                     book.setImageUrl(dto.getImageUrl());
                     book.setIsbn(dto.getIsbn());
                     book.setPublishedYear(dto.getPublishedYear());
-                    book.setCategory(category);
+
                     book.setAuthors(resolveAuthors(dto.getAuthorIds()));
+                    book.setCategories(resolveCategories(dto.getCategoryIds())); // 🔥 TU ZMIANA
 
                     return bookRepository.save(book);
                 })
                 .orElse(null);
     }
+
 
     @Override
     public void deleteBook(Long id) {

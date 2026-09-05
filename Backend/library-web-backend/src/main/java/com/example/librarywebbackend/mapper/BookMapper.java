@@ -15,6 +15,7 @@ public class BookMapper {
     public BookDto toDto(Book book) {
         if (book == null) return null;
 
+        // 🔵 Autorzy
         List<AuthorDto> authors = book.getAuthors() == null
                 ? List.of()
                 : book.getAuthors()
@@ -22,9 +23,13 @@ public class BookMapper {
                 .map(this::toAuthorDto)
                 .toList();
 
-        CategoryDto categoryDto = book.getCategory() != null
-                ? new CategoryDto(book.getCategory().getId(), book.getCategory().getName())
-                : null;
+        // 🟢 Kategorie (lista!)
+        List<CategoryDto> categories = book.getCategories() == null
+                ? List.of()
+                : book.getCategories()
+                .stream()
+                .map(cat -> new CategoryDto(cat.getId(), cat.getName()))
+                .toList();
 
         return new BookDto(
                 book.getId(),
@@ -33,7 +38,7 @@ public class BookMapper {
                 book.getImageUrl(),
                 book.getIsbn(),
                 book.getPublishedYear(),
-                categoryDto,
+                categories,   // 🔥 tu przekazujesz listę kategorii
                 authors
         );
     }
@@ -47,3 +52,4 @@ public class BookMapper {
         );
     }
 }
+

@@ -13,6 +13,7 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
             "LOWER(a.lastName) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Author> searchByName(String query);
 
-    @Query("SELECT COUNT(b) FROM Author a JOIN a.books b WHERE a.id = :authorId")
+    @Query("SELECT COUNT(b.id) FROM Book b JOIN b.authors a WHERE a.id = :authorId")
     long countBooksByAuthorId(Long authorId);
+
 }
