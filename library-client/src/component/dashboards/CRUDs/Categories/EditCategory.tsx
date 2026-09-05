@@ -66,8 +66,13 @@ const EditCategory = ({ id, onBack, onReload, showMessage }: Props) => {
 			onReload();
 			showMessage("Category has been updated.");
 			onBack();
-		} catch {
-			setError("Failed to save changes.");
+		} catch (error) {
+			const message =
+				(error as { response?: { data?: { message?: string } } })?.response?.data
+					?.message ?? "Failed to save changes.";
+
+			setError(message);
+			showMessage(message, "danger");
 		} finally {
 			setIsLoading(false);
 		}
@@ -83,10 +88,6 @@ const EditCategory = ({ id, onBack, onReload, showMessage }: Props) => {
 			<div className="d-flex gap-2 mb-3">
 				<button className="btn btn-secondary" onClick={onBack}>
 					Back
-				</button>
-
-				<button className="btn btn-warning" onClick={handleCancel}>
-					Cancel
 				</button>
 			</div>
 

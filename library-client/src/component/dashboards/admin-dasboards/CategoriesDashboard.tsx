@@ -248,23 +248,7 @@ const CategoriesDashboard = () => {
 							<td>{categoryWithCount.id}</td>
 							<td>{categoryWithCount.name}</td>
 							<td>{categoryWithCount.countBooks ?? 0}</td>
-							<td className="text-nowrap">
-								<button
-									className="btn btn-sm btn-primary me-2"
-									onClick={() =>
-										(window.location.href = `/category/view/${categoryWithCount.id}`)
-									}
-								>
-									View
-								</button>
 
-								<DeleteButton
-									id={categoryWithCount.id}
-									name={categoryWithCount.name}
-									entityName="category"
-									onDelete={handleDelete}
-								/>
-							</td>
 							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"

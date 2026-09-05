@@ -388,34 +388,6 @@ const EditBook = ({ id, onBack, onReload, showMessage }: Props) => {
 		}
 	};
 
-	const handleCancel = () => {
-		setFormData(originalFormData);
-		setSelectedAuthorIds(
-			originalFormData.authors.length > 0
-				? originalFormData.authors.map((author) => String(author.id))
-				: [NO_AUTHOR_ID],
-		);
-		setSelectedCategoryId(originalCategoryId);
-		onBack();
-	};
-
-	const handleDelete = async () => {
-		const shouldDelete = window.confirm("Are you sure you want to delete this item?");
-		if (!shouldDelete) return;
-		const displayTitle = formData.title.trim() || "Untitled";
-
-		try {
-			await apiBooks.deleteBookById(id);
-			onReload();
-			showMessage(`Book \"${displayTitle}\" has been deleted.`);
-			onBack();
-		} catch {
-			const message = `Failed to delete book \"${displayTitle}\".`;
-			setError(message);
-			showMessage(message, "danger");
-		}
-	};
-
 	const handleAutofillSelectionChange = (field: AutofillFieldKey) => {
 		setAutofillSelection((prev) => ({
 			...prev,

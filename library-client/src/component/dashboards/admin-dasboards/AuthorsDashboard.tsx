@@ -25,6 +25,7 @@ const AuthorsDashboard = () => {
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [authors, setAuthors] = useState<AuthorType[]>([]);
 	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
 		reloadAuthors();
@@ -37,8 +38,9 @@ const AuthorsDashboard = () => {
 			.catch(console.error);
 	};
 
-	const showMessage = (text: string) => {
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
 		setMessage(text);
+		setMessageType(type);
 		setTimeout(() => setMessage(null), 3000);
 	};
 
@@ -95,12 +97,26 @@ const AuthorsDashboard = () => {
 	}, [authors, filter, search, sortConfig]);
 
 	const handleDelete = async (id: number) => {
+		const authorToDelete = authors.find((author) => author.id === id);
+		const displayName = authorToDelete
+			? `${authorToDelete.firstName} ${authorToDelete.lastName}`.trim()
+			: "Unknown author";
+
 		try {
 			await apiAuthors.deleteAuthorById(id);
-			showMessage("Author has been deleted.");
+			showMessage(`Author "${displayName}" has been deleted.`);
 			reloadAuthors();
-		} catch (err) {
-			console.error(err);
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete author "${displayName}": it is still assigned to books.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete author "${displayName}".`, "danger");
+			console.error(error);
 		}
 	};
 
@@ -153,7 +169,10 @@ const AuthorsDashboard = () => {
 			/>
 
 			{message && (
-				<div className="alert alert-success" role="alert">
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
 					{message}
 				</div>
 			)}

@@ -55,7 +55,7 @@ const ViewCategory = ({ id, onBack, onReload, showMessage }: Props) => {
 					onClick={() => {
 						onBack();
 						onReload();
-						showMessage("Returned from category view.");
+						//showMessage("Returned from category view.");
 					}}
 				>
 					Back

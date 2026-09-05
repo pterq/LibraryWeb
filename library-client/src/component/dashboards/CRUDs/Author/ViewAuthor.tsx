@@ -56,7 +56,7 @@ const ViewAuthor = ({ id, onBack, onReload, showMessage }: Props) => {
 					onClick={() => {
 						onBack();
 						onReload();
-						showMessage("Returned from author view.");
+						//showMessage("Returned from author view.");
 					}}
 				>
 					Back

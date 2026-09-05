@@ -33,8 +33,13 @@ const AddCategory = ({ onBack, onReload, showMessage }: Props) => {
 			onReload();
 			showMessage("Category has been added.");
 			onBack();
-		} catch {
-			setError("Failed to create category.");
+		} catch (error) {
+			const message =
+				(error as { response?: { data?: { message?: string } } })?.response?.data
+					?.message ?? "Failed to create category.";
+
+			setError(message);
+			showMessage(message, "danger");
 		} finally {
 			setIsLoading(false);
 		}

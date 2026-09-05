@@ -96,7 +96,7 @@ const ViewBook = ({ id, onBack, onReload, showMessage }: Props) => {
 					onClick={() => {
 						onBack();
 						onReload();
-						showMessage("Returned from book view.");
+						//showMessage("Returned from book view.");
 					}}
 				>
 					Back

@@ -87,10 +87,6 @@ const EditAuthor = ({ id, onBack, onReload, showMessage }: Props) => {
 				<button className="btn btn-secondary" onClick={onBack}>
 					Back
 				</button>
-
-				<button className="btn btn-danger" onClick={handleCancel}>
-					Cancel
-				</button>
 			</div>
 
 			<h2>Edit Author</h2>
