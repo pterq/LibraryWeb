@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import type { AuthorType, BookType, CategoryType } from "../../../types/DbTypes";
+import type { BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
