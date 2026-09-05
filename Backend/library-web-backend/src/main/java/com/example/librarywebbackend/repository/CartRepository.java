@@ -1,27 +1,27 @@
 package com.example.librarywebbackend.repository;
 
-import com.example.librarywebbackend.entity.Reservation;
+import com.example.librarywebbackend.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findByExpiresAtBefore(LocalDateTime time);
+public interface CartRepository extends JpaRepository<Cart, Long> {
+    List<Cart> findByExpiresAtBefore(LocalDateTime time);
 
     @Query("""
     select
-        row_number() over (order by count(r) desc) as id,
+        row_number() over (order by count(c) desc) as id,
         u.id as userId,
         u.firstName as firstName,
         u.lastName as lastName,
         u.email as email,
-        count(r) as countReservations
-    from Reservation r
-    join r.user u
+        count(c) as countCarts
+    from Cart c
+    join c.user u
     group by u.id, u.firstName, u.lastName, u.email
-    order by count(r) desc
+    order by count(c) desc
 """)
-    List<Object[]> countReservationsByUserRaw();
+    List<Object[]> countCartsByUserRaw();
 }

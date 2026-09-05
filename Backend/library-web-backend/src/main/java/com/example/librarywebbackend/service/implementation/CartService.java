@@ -1,15 +1,15 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.ReservationWithCountDTO;
+import com.example.librarywebbackend.dto.CartWithCountDTO;
 import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
-import com.example.librarywebbackend.entity.Reservation;
+import com.example.librarywebbackend.entity.Cart;
 import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.repository.BookCopyRepository;
-import com.example.librarywebbackend.repository.ReservationRepository;
+import com.example.librarywebbackend.repository.CartRepository;
 import com.example.librarywebbackend.repository.UserRepository;
-import com.example.librarywebbackend.service.IReservationService;
+import com.example.librarywebbackend.service.ICartService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,48 +17,48 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ReservationService implements IReservationService {
+public class CartService implements ICartService {
 
     @Value("${reservation-expires-after-days}")
     private int reservationExpiresAfterDays;
 
-    private final ReservationRepository reservationRepository;
+    private final CartRepository cartRepository;
     private final BookCopyRepository bookCopyRepository;
     private final UserRepository userRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public CartService(CartRepository cartRepository,
                               BookCopyRepository bookCopyRepository,
                               UserRepository userRepository) {
-        this.reservationRepository = reservationRepository;
+        this.cartRepository = cartRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.userRepository = userRepository;
     }
 
     @Override
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    public List<Cart> getAllCarts() {
+        return cartRepository.findAll();
     }
 
     @Override
-    public Reservation getReservationById(Long id) {
-        return reservationRepository.findById(id)
+    public Cart getCartById(Long id) {
+        return cartRepository.findById(id)
                 .orElse(null);
     }
 
     @Override
-    public Reservation createReservation(Reservation reservation) {
-        if (reservation.getUser() == null || reservation.getUser().getId() == null) {
+    public Cart createCart(Cart cart) {
+        if (cart.getUser() == null || cart.getUser().getId() == null) {
             throw new IllegalArgumentException("User id is required");
         }
 
-        if (reservation.getCopy() == null || reservation.getCopy().getId() == null) {
+        if (cart.getCopy() == null || cart.getCopy().getId() == null) {
             throw new IllegalArgumentException("Copy id is required");
         }
 
-        User user = userRepository.findById(reservation.getUser().getId())
+        User user = userRepository.findById(cart.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookPhyscial copy = bookCopyRepository.findById(reservation.getCopy().getId())
+        BookPhyscial copy = bookCopyRepository.findById(cart.getCopy().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {
@@ -70,26 +70,26 @@ public class ReservationService implements IReservationService {
         bookCopyRepository.save(copy);
 
         // ustawienie daty rezerwacji
-        reservation.setUser(user);
-        reservation.setCopy(copy);
-        reservation.setReservedAt(LocalDateTime.now());
-        reservation.setExpiresAt(LocalDateTime.now().plusDays(reservationExpiresAfterDays));
+        cart.setUser(user);
+        cart.setCopy(copy);
+        cart.setReservedAt(LocalDateTime.now());
+        cart.setExpiresAt(LocalDateTime.now().plusDays(reservationExpiresAfterDays));
 
-        return reservationRepository.save(reservation);
+        return cartRepository.save(cart);
     }
 
 
 
     @Override
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+    public void deleteCart(Long id) {
+        cartRepository.deleteById(id);
     }
 
     @Override
-    public List<ReservationWithCountDTO> getReservationCountsByUser() {
-        return reservationRepository.countReservationsByUserRaw()
+    public List<CartWithCountDTO> getCartCountsByUser() {
+        return cartRepository.countCartsByUserRaw()
                 .stream()
-                .map(row -> new ReservationWithCountDTO(
+                .map(row -> new CartWithCountDTO(
                         ((Number) row[0]).longValue(),
                         new UserDTO(
                                 ((Number) row[1]).longValue(),

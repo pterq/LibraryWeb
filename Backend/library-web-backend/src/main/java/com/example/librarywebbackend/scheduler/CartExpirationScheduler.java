@@ -2,9 +2,9 @@ package com.example.librarywebbackend.scheduler;
 
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
-import com.example.librarywebbackend.entity.Reservation;
+import com.example.librarywebbackend.entity.Cart;
 import com.example.librarywebbackend.repository.BookCopyRepository;
-import com.example.librarywebbackend.repository.ReservationRepository;
+import com.example.librarywebbackend.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,32 +17,32 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReservationExpirationScheduler {
+public class CartExpirationScheduler {
 
-    private final ReservationRepository reservationRepository;
+    private final CartRepository cartRepository;
     private final BookCopyRepository bookCopyRepository;
 
     /**
      * Uruchamiane co minutę.
-     * Sprawdza rezerwacje, które wygasły i zwalnia egzemplarze.
+     * Sprawdza koszyki, które wygasły i zwalnia egzemplarze.
      */
     @Scheduled(fixedRate = 60_000)
     @Transactional
-    public void expireReservations() {
+    public void expireCarts() {
 
         LocalDateTime now = LocalDateTime.now();
 
-        List<Reservation> expired = reservationRepository.findByExpiresAtBefore(now);
+        List<Cart> expired = cartRepository.findByExpiresAtBefore(now);
 
         if (expired.isEmpty()) {
             return;
         }
 
-        log.info("Wygasłe rezerwacje: {}", expired.size());
+        log.info("Wygasłe koszyki: {}", expired.size());
 
-        for (Reservation reservation : expired) {
+        for (Cart cart : expired) {
 
-            BookPhyscial copy = reservation.getCopy();
+            BookPhyscial copy = cart.getCopy();
 
             // zwolnienie egzemplarza
             if (copy.getStatus() == CopyStatus.RESERVED) {
@@ -50,10 +50,10 @@ public class ReservationExpirationScheduler {
                 bookCopyRepository.save(copy);
             }
 
-            // jeśli masz pole status w Reservation, możesz ustawić:
-            // reservation.setStatus(ReservationStatus.EXPIRED);
+            // jeśli masz pole status w Cart, możesz ustawić:
+            // cart.setStatus(CartStatus.EXPIRED);
 
-            reservationRepository.delete(reservation);
+            cartRepository.delete(cart);
         }
     }
 }

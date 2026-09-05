@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ReservationWithCountDTO {
+public class CartWithCountDTO {
 
     private Long id;
     private UserDTO user;
-    private Long countReservations;
+    private Long countCarts;
 }
