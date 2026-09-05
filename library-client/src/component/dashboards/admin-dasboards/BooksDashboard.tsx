@@ -167,6 +167,41 @@ const BooksDashboard = () => {
 	// 	}
 	// };
 
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewBook
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooks}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditBook
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooks}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddBook
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadBooks}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	return (
 		<div className="container-fluid">
 			<h1>Books Dashboard</h1>
@@ -265,21 +300,6 @@ const BooksDashboard = () => {
 								{(book.categories ?? [])
 									.map((category) => category.name)
 									.join(", ") || "-"}
-							</td>
-
-							<td className="text-nowrap">
-								<button
-									className="btn btn-sm btn-primary me-2"
-									onClick={() => (window.location.href = `/book/view/${book.id}`)}
-								>
-									View Details
-								</button>
-								<DeleteButton
-									id={book.id}
-									name={book.title}
-									entityName="book"
-									onDelete={() => handleDelete(book.id)}
-								/>
 							</td>
 
 							<td className="text-nowrap">
