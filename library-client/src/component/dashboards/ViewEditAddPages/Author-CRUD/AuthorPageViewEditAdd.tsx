@@ -6,12 +6,7 @@ import ReturnButton from "../../../common/ReturnButton";
 import DeleteButton from "../../ViewEditAddPages/DeleteButton";
 import type {} from "../../../../types/DbTypes";
 
-import {
-	getAuthorById,
-	deleteAuthorById,
-	updateAuthorById,
-	addAuthorById,
-} from "../../../../api/api";
+import { getAuthorById, deleteAuthorById, updateAuthorById, addAuthor } from "../../../../api/api";
 
 type AuthorFormData = {
 	firstName: string;
@@ -131,7 +126,7 @@ const AuthorPageViewEditAdd = () => {
 			try {
 				setIsLoading(true);
 
-				await addAuthorById(formData);
+				await addAuthor(formData);
 
 				setSuccess("Author created successfully.");
 				setFormData(EMPTY_FORM);

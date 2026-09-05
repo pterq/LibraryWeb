@@ -135,3 +135,11 @@ export interface ReservationCountType {
 	user: UserDtoType;
 	countReservations: number;
 }
+
+//===========================================
+
+export interface AuthorForm {
+	firstName: string;
+	lastName: string;
+	bio: string;
+}

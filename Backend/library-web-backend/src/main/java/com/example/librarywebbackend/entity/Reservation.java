@@ -22,7 +22,7 @@ public class Reservation {
     private User user;
 
     @ManyToOne
-    private BookCopy copy;
+    private BookPhyscial copy;
 
     @Column(nullable = false)
     private LocalDateTime reservedAt;

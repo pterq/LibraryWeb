@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
 import type { AuthorType, CategoryType } from "../../../../types/DbTypes";
 import type { PageAction } from "../../../../context/DataFromLink";
-import { addBook, getCategories, type BookCreatePayload } from "../../../../api/api";
+import { addAuthor, addBook, getCategories, type BookCreatePayload } from "../../../../api/api";
 import { Navigate, useNavigate } from "react-router";
 
 export type BookFormData = {
@@ -154,7 +154,6 @@ const BookAddEdit = ({
 		categories?: { id?: number; name?: string }[] | null;
 		imageUrl?: string | null;
 		coverImageUrl?: string | null;
-		coverUrl?: string | null;
 	};
 
 	useEffect(() => {
@@ -208,7 +207,7 @@ const BookAddEdit = ({
 						book.categories?.map((category) => category.name ?? "").filter(Boolean) ??
 						[],
 					genre: [],
-					coverImageUrl: book.imageUrl ?? book.coverImageUrl ?? book.coverUrl ?? "",
+					coverImageUrl: book.imageUrl ?? book.coverImageUrl ?? "",
 				};
 
 				setFormData(loadedData);
@@ -303,12 +302,12 @@ const BookAddEdit = ({
 
 	const handleAddNewAuthor = async () => {
 		try {
-			const res = await axiosClient.post("/authors", newAuthor);
-			const created = res.data as AuthorType;
+			const created = await addAuthor(newAuthor);
 
 			setAuthorOptions((prev) =>
 				prev.some((author) => author.id === created.id) ? prev : [...prev, created],
 			);
+
 			setSelectedAuthorIds((prev) => {
 				const emptyIndex = prev.findIndex((id) => id === "NO_AUTHOR_ID");
 
@@ -320,9 +319,13 @@ const BookAddEdit = ({
 
 				return [...prev, String(created.id)];
 			});
+
+			console.log("Author added:", created);
+
 			setShowAddAuthorModal(false);
 			setNewAuthor({ firstName: "", lastName: "", bio: "" });
-		} catch {
+		} catch (error) {
+			console.error("Failed to add author:", error);
 			alert("Failed to add author");
 		}
 	};
@@ -362,7 +365,7 @@ const BookAddEdit = ({
 			if (action === "add") {
 				await addBook(payload);
 
-				console.log("Book added!");
+				console.log("Book added: ", payload);
 
 				handleClearAddForm();
 				navigate("/admin-panel", { replace: true });

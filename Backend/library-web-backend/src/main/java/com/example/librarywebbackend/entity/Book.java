@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,7 +28,7 @@ public class Book {
     private String imageUrl;
 
 
-    @Column(unique = true)
+    @Column
     private String isbn;
 
     private Integer publishedYear;
@@ -37,9 +37,11 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "book")
-    private Set<BookAuthor> bookAuthors;
-
-
-
+    @ManyToMany
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors;
 }

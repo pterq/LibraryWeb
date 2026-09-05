@@ -1,21 +1,21 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.entity.BookCopy;
+import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 
 import java.util.List;
 
 public interface IBookCopyService {
 
-    List<BookCopy> getAllCopies();
+    List<BookPhyscial> getAllCopies();
 
-    BookCopy getCopyById(Long id);
+    BookPhyscial getCopyById(Long id);
 
-    BookCopy createCopy(BookCopy copy);
+    BookPhyscial createCopy(BookPhyscial copy);
 
-    BookCopy updateCopy(Long id, BookCopy updated);
+    BookPhyscial updateCopy(Long id, BookPhyscial updated);
 
-    BookCopy updateStatus(Long id, CopyStatus status);
+    BookPhyscial updateStatus(Long id, CopyStatus status);
 
     void deleteCopy(Long id);
 }

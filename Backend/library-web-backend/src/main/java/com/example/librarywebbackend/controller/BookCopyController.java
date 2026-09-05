@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.entity.BookCopy;
+import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.service.IBookCopyService;
 import org.springframework.http.ResponseEntity;
@@ -19,34 +19,34 @@ public class BookCopyController {
     }
 
     @GetMapping
-    public List<BookCopy> getAll() {
+    public List<BookPhyscial> getAll() {
         return bookCopyService.getAllCopies();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookCopy> getById(@PathVariable Long id) {
-        BookCopy copy = bookCopyService.getCopyById(id);
+    public ResponseEntity<BookPhyscial> getById(@PathVariable Long id) {
+        BookPhyscial copy = bookCopyService.getCopyById(id);
         return copy != null
                 ? ResponseEntity.ok(copy)
                 : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public BookCopy create(@RequestBody BookCopy copy) {
+    public BookPhyscial create(@RequestBody BookPhyscial copy) {
         return bookCopyService.createCopy(copy);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookCopy> update(@PathVariable Long id, @RequestBody BookCopy updated) {
-        BookCopy copy = bookCopyService.updateCopy(id, updated);
+    public ResponseEntity<BookPhyscial> update(@PathVariable Long id, @RequestBody BookPhyscial updated) {
+        BookPhyscial copy = bookCopyService.updateCopy(id, updated);
         return copy != null
                 ? ResponseEntity.ok(copy)
                 : ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<BookCopy> updateStatus(@PathVariable Long id, @RequestParam CopyStatus status) {
-        BookCopy copy = bookCopyService.updateStatus(id, status);
+    public ResponseEntity<BookPhyscial> updateStatus(@PathVariable Long id, @RequestParam CopyStatus status) {
+        BookPhyscial copy = bookCopyService.updateStatus(id, status);
         return copy != null
                 ? ResponseEntity.ok(copy)
                 : ResponseEntity.notFound().build();
@@ -57,4 +57,5 @@ public class BookCopyController {
         bookCopyService.deleteCopy(id);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.scheduler;
 
-import com.example.librarywebbackend.entity.BookCopy;
+import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Reservation;
 import com.example.librarywebbackend.repository.BookCopyRepository;
@@ -42,7 +42,7 @@ public class ReservationExpirationScheduler {
 
         for (Reservation reservation : expired) {
 
-            BookCopy copy = reservation.getCopy();
+            BookPhyscial copy = reservation.getCopy();
 
             // zwolnienie egzemplarza
             if (copy.getStatus() == CopyStatus.RESERVED) {

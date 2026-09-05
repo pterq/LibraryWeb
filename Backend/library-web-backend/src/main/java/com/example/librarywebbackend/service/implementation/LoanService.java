@@ -2,7 +2,7 @@ package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
-import com.example.librarywebbackend.entity.BookCopy;
+import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.LoanStatus;
@@ -69,7 +69,7 @@ public class LoanService implements ILoanService {
         User user = userRepository.findById(loan.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookCopy copy = bookCopyRepository.findById(loan.getCopy().getId())
+        BookPhyscial copy = bookCopyRepository.findById(loan.getCopy().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {
@@ -97,7 +97,7 @@ public class LoanService implements ILoanService {
         return loanRepository.findById(id)
                 .map(loan -> {
 
-                    BookCopy copy = loan.getCopy();
+                    BookPhyscial copy = loan.getCopy();
 
                     // zmiana statusu kopii
                     copy.setStatus(CopyStatus.AVAILABLE);

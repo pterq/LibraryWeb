@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,7 +26,6 @@ public class Author {
 
     private String biography;
 
-    @OneToMany(mappedBy = "author")
-    private Set<BookAuthor> bookAuthors;
-    
+    @ManyToMany(mappedBy = "authors")
+    private List<Book> books;
 }

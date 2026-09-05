@@ -2,7 +2,6 @@ package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.repository.AuthorRepository;
-import com.example.librarywebbackend.repository.BookAuthorRepository;
 import com.example.librarywebbackend.service.IAuthorService;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +12,8 @@ public class AuthorService implements IAuthorService {
 
     private final AuthorRepository authorRepository;
 
-    private final BookAuthorRepository bookAuthorRepository;
-
-
-    public AuthorService(AuthorRepository authorRepository, BookAuthorRepository bookAuthorRepository) {
+    public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.bookAuthorRepository = bookAuthorRepository;
     }
 
     @Override
@@ -52,11 +47,11 @@ public class AuthorService implements IAuthorService {
     @Override
     public void deleteAuthor(Long id) {
 
-        Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Author not found"));
+        if (!authorRepository.existsById(id)) {
+            throw new RuntimeException("Author not found");
+        }
 
-        // sprawdzamy powiązania
-        int count = bookAuthorRepository.countByAuthorId(id);
+        long count = authorRepository.countBooksByAuthorId(id);
 
         if (count > 0) {
             throw new IllegalStateException("Cannot delete author. Author is assigned to " + count + " books.");

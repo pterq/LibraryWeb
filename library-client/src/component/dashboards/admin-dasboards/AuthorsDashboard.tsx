@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../ViewEditAddPages/DeleteButton";
 
-import { getAuthors, deleteAuthorById, updateAuthorById, addAuthorById } from "../../../api/api";
+import { getAuthors, deleteAuthorById, updateAuthorById, addAuthor } from "../../../api/api";
 
 import TableAlert from "../../common/TableAlert";
 

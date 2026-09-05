@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import type { AuthorType, BookType, CategoryType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
+import DeleteButton from "../ViewEditAddPages/DeleteButton";
 import TableAlert from "../../common/TableAlert";
 
-import { getBooks, getCategories } from "../../../api/api";
+import { deleteBookById, getBooks, getCategories } from "../../../api/api";
 
 const BooksDashboard = () => {
 	const [books, setBooks] = useState<BookType[]>([]);
@@ -123,6 +124,23 @@ const BooksDashboard = () => {
 		return data;
 	}, [books, search, filterStatus, sortConfig]);
 
+	const handleDelete = (id: number) => {
+		deleteBookById(id)
+			.then(() => {
+				setBooks((prev) => prev.filter((book) => book.id !== id));
+
+				console.log(`Book with id ${id} deleted`);
+			})
+			.catch((error) => {
+				if (error.response?.status === 409) {
+					alert(error.response.data);
+					return;
+				}
+
+				console.error(error);
+			});
+	};
+
 	return (
 		<div className="container-fluid">
 			<h1>Books Dashboard</h1>
@@ -190,9 +208,6 @@ const BooksDashboard = () => {
 								</select>
 							</div>
 						</th>
-						<th scope="col" onClick={() => requestSort("bookAuthors")}>
-							Authors {getSortIcon("bookAuthors")}
-						</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
@@ -220,13 +235,19 @@ const BooksDashboard = () => {
 									.join(", ") || "-"}
 							</td>
 
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() => (window.location.href = `/book/view/${book.id}`)}
 								>
 									View Details
 								</button>
+								<DeleteButton
+									id={book.id}
+									name={book.title}
+									entityName="book"
+									onDelete={() => handleDelete(book.id)}
+								/>
 							</td>
 						</tr>
 					))}

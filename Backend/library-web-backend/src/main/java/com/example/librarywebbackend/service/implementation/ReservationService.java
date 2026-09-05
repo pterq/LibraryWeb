@@ -2,7 +2,7 @@ package com.example.librarywebbackend.service.implementation;
 
 import com.example.librarywebbackend.dto.ReservationWithCountDTO;
 import com.example.librarywebbackend.dto.UserDTO;
-import com.example.librarywebbackend.entity.BookCopy;
+import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Reservation;
 import com.example.librarywebbackend.entity.User;
@@ -58,7 +58,7 @@ public class ReservationService implements IReservationService {
         User user = userRepository.findById(reservation.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookCopy copy = bookCopyRepository.findById(reservation.getCopy().getId())
+        BookPhyscial copy = bookCopyRepository.findById(reservation.getCopy().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {

@@ -17,7 +17,6 @@ public class BookCreateDTO {
 
     private String imageUrl;
 
-    @NotBlank
     private String isbn;
 
     private Integer publishedYear;

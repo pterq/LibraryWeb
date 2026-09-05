@@ -3,6 +3,7 @@ import type {
 	UserType,
 	UserRoleType,
 	AuthorType,
+	AuthorForm,
 	BookType,
 	BookPhysicalType,
 	CategoryType,
@@ -39,7 +40,7 @@ export const getAuthors = async () => {
 	}
 };
 
-export const addAuthorById = async (author: AuthorType) => {
+export const addAuthor = async (author: AuthorForm) => {
 	try {
 		const response = await axiosClient.post<AuthorType>(AUTHORS_ENDPOINT, author);
 		return response.data;
@@ -644,7 +645,7 @@ export const changeUserPassword = async (id: number, newPassword: string) => {
 
 const api = {
 	getAuthors,
-	addAuthorById,
+	addAuthorById: addAuthor,
 	updateAuthorById,
 	deleteAuthorById,
 	searchAuthors,

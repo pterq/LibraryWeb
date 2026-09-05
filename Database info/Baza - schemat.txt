@@ -40,9 +40,8 @@ Table books {
   id integer [pk, increment]
   title varchar [not null]
   description text
-  isbn varchar [unique]
+  isbn varchar
   published_year integer
-  category_id integer [ref: > categories.id]
   cover_image_url varchar
 }
 
@@ -54,6 +53,17 @@ Table categories {
   id integer [pk, increment]
   name varchar
 }
+
+//////////////////////////////////////////////////////
+// CATEGORIES - names of book genres
+//////////////////////////////////////////////////////
+
+Table book_to_category {
+  id integer [pk, increment]
+  book_id integer [ref: > books.id]
+  category_id integer [ref: > categories.id]
+}
+
 
 //////////////////////////////////////////////////////
 // COPIES -  physical items/books
