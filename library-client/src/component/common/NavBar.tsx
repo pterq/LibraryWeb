@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Offcanvas } from "bootstrap";
 import { useAuth } from "../../context/AuthContext";
 import CartPanel from "../../Pages/CartPanel";
@@ -10,6 +10,8 @@ const NavBar = () => {
 	const dropdownRef = useRef<HTMLLIElement | null>(null);
 
 	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+	const navigate = useNavigate(); // 🔥 NAWIGACJA BEZ PRZEŁADOWANIA
 
 	const openCartOffcanvas = (event: React.MouseEvent<HTMLAnchorElement>) => {
 		event.preventDefault();
@@ -26,12 +28,12 @@ const NavBar = () => {
 	const closeProfileDropdown = () => setProfileDropdownOpen(false);
 
 	const handleLogout = () => {
-		logout();
+		logout(true); // manualny logout → toast „Wylogowano pomyślnie”
 		closeProfileDropdown();
-		window.location.replace("/");
+		navigate("/"); //
 	};
 
-	//closed dropdown if clicking outside of it
+	// Zamykaj dropdown po kliknięciu poza nim
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
@@ -136,7 +138,7 @@ const NavBar = () => {
 										</>
 									)}
 
-									{/* 🔥 Dropdown z refem */}
+									{/* Dropdown */}
 									<li
 										className="nav-item dropdown d-flex align-items-center"
 										ref={dropdownRef}
@@ -150,6 +152,7 @@ const NavBar = () => {
 											<i className="bi bi-person-circle text-white me-2"></i>
 											Profile
 										</button>
+
 										<ul
 											className={`dropdown-menu dropdown-menu-end ${
 												profileDropdownOpen ? "show" : ""
@@ -171,9 +174,11 @@ const NavBar = () => {
 													Settings
 												</Link>
 											</li>
+
 											<li>
 												<hr className="dropdown-divider" />
 											</li>
+
 											<li>
 												<button
 													className="dropdown-item"
@@ -207,6 +212,7 @@ const NavBar = () => {
 				</div>
 			</nav>
 
+			{/* Offcanvas koszyka */}
 			<div
 				className="offcanvas offcanvas-end"
 				data-bs-scroll="true"
@@ -226,10 +232,11 @@ const NavBar = () => {
 						aria-label="Close"
 					></button>
 				</div>
+
 				<div className="offcanvas-body">
 					<CartPanel />
 				</div>
-				{/* at the bottom of the cart panel */}
+
 				<div className="d-flex justify-content-center m-3">
 					<div className="d-flex justify-content-center">Get your books in library</div>
 				</div>

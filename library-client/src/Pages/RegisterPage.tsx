@@ -29,6 +29,8 @@ const RegisterPage: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
+		console.log("Register data:", form);
+
 		try {
 			const response = await axios.post<RegisterResponse>(
 				`${import.meta.env.VITE_BACKEND_URL}/register`,
@@ -42,20 +44,46 @@ const RegisterPage: React.FC = () => {
 				lastName: response.data.lastName,
 				email: response.data.email,
 				role: response.data.role,
+				tokenExpiresAt: response.data.tokenExpiresAt, // <── DODANE
 			});
-			setMessage("Registered successfully");
 
+			console.log("Register response:", response.data);
+
+			setMessage("Registered successfully");
 			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
-			console.error("Axios error:", err);
 
 			if (!err.response) {
 				setMessage("Server not responding — check your connection.");
 				return;
 			}
 
-			setMessage("Wrong email or password.");
+			// Backend może zwrócić różne formaty błędów
+			const backendMessage =
+				(err.response.data as any)?.message ||
+				(err.response.data as any)?.error ||
+				(err.response.data as any)?.details ||
+				null;
+
+			// Obsługa typowych błędów rejestracji
+			if (err.response.status === 409) {
+				setMessage(backendMessage || "Email already exists.");
+				return;
+			}
+
+			if (err.response.status === 400) {
+				setMessage(backendMessage || "Invalid registration data.");
+				return;
+			}
+
+			if (err.response.status === 500) {
+				setMessage("Server error — try again later.");
+				return;
+			}
+
+			// Fallback
+			setMessage(backendMessage || "Registration failed.");
 		}
 	};
 

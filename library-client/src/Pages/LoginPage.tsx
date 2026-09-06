@@ -16,11 +16,12 @@ interface LoginResponse {
 	role: string;
 	accessToken: string;
 	tokenType: string;
+	tokenExpiresAt: string;
 }
 
 const LoginPage: React.FC = () => {
 	const navigate = useNavigate();
-	const { login, role } = useAuth();
+	const { login } = useAuth();
 
 	const [form, setForm] = useState<LoginForm>({
 		email: "",
@@ -53,13 +54,15 @@ const LoginPage: React.FC = () => {
 				lastName: response.data.lastName,
 				email: response.data.email,
 				role: response.data.role,
+				tokenExpiresAt: response.data.tokenExpiresAt,
 			});
+
 			setMessage("Logged in successfully");
+			console.log("Login response:", response.data);
 
 			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;
-			console.error("Axios error:", err);
 
 			if (!err.response) {
 				setMessage("Server not responding — check your connection.");

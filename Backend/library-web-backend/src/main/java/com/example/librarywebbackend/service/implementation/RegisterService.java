@@ -6,11 +6,13 @@ import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.entity.UserRole;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
+import com.example.librarywebbackend.security.JwtService.TokenData;
 import com.example.librarywebbackend.service.IRegisterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 public class RegisterService implements IRegisterService {
@@ -41,7 +43,9 @@ public class RegisterService implements IRegisterService {
         user.setRole(UserRole.USER);
 
         user = userRepository.save(user);
-        String accessToken = jwtService.generateToken(user);
+
+        // Generujemy token tylko raz
+        TokenData tokenData = jwtService.generateToken(user);
 
         return new RegisterResponseDTO(
                 user.getId(),
@@ -51,8 +55,9 @@ public class RegisterService implements IRegisterService {
                 user.getPhone(),
                 user.getRole(),
                 user.getCreatedAt(),
-                accessToken,
-                "Bearer"
+                tokenData.accessToken(),
+                "Bearer",
+                tokenData.tokenExpiresAt()
         );
     }
 }

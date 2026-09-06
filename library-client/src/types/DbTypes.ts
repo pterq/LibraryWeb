@@ -155,14 +155,16 @@ export interface RegisterForm {
 }
 
 export interface RegisterResponse {
-	id: number;
+	userId: number;
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: UserRoleType;
+	phone: string | null;
+	role: string;
+	createdAt: string;
 	accessToken: string;
-	//tokenExpiresAt: string;
-	hasFee: boolean;
+	tokenType: string;
+	tokenExpiresAt: string;
 }
 
 export interface LoginForm {

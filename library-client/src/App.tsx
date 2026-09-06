@@ -129,16 +129,6 @@ function App() {
 							}
 						/>
 
-						{/* Logout */}
-						<Route
-							path="/logout"
-							element={
-								<ProtectedRoute>
-									<LoginPage />
-								</ProtectedRoute>
-							}
-						/>
-
 						{/* Fallback */}
 						<Route path="*" element={<MissingPage />} />
 					</Routes>

@@ -8,10 +8,12 @@ import com.example.librarywebbackend.entity.UserRole;
 import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
+import com.example.librarywebbackend.security.JwtService.TokenData;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -43,7 +45,8 @@ class LoginServiceTest {
         when(userRepository.findByEmail(request.getEmail())).thenReturn(java.util.Optional.of(user));
         when(passwordEncoder.matches(request.getPassword(), user.getPasswordHash())).thenReturn(true);
         when(feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING)).thenReturn(true);
-        when(jwtService.generateToken(user)).thenReturn("jwt-token");
+        Instant tokenExpiresAt = Instant.parse("2026-09-06T16:57:13Z");
+        when(jwtService.generateToken(user)).thenReturn(new TokenData("jwt-token", tokenExpiresAt));
 
         LoginResponseDTO response = loginService.login(request);
 
@@ -52,5 +55,6 @@ class LoginServiceTest {
         assertEquals(true, response.isHasFee());
         assertEquals("jwt-token", response.getAccessToken());
         assertEquals("Bearer", response.getTokenType());
+        assertEquals(tokenExpiresAt, response.getTokenExpiresAt());
     }
 }

@@ -4,6 +4,8 @@ import com.example.librarywebbackend.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.Instant;
+
 @Getter
 @AllArgsConstructor
 public class LoginResponseDTO {
@@ -17,4 +19,5 @@ public class LoginResponseDTO {
     private boolean hasFee;
     private String accessToken;
     private String tokenType;
+    private Instant tokenExpiresAt;
 }

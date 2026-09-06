@@ -6,10 +6,12 @@ import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.entity.UserRole;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
+import com.example.librarywebbackend.security.JwtService.TokenData;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -46,7 +48,8 @@ class RegisterServiceTest {
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        when(jwtService.generateToken(savedUser)).thenReturn("jwt-token");
+        Instant tokenExpiresAt = Instant.parse("2026-09-06T16:57:13Z");
+        when(jwtService.generateToken(savedUser)).thenReturn(new TokenData("jwt-token", tokenExpiresAt));
 
         RegisterResponseDTO response = registerService.register(request);
 
@@ -54,5 +57,6 @@ class RegisterServiceTest {
         assertEquals(1L, response.getUserId());
         assertEquals("jwt-token", response.getAccessToken());
         assertEquals("Bearer", response.getTokenType());
+        assertEquals(tokenExpiresAt, response.getTokenExpiresAt());
     }
 }

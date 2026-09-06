@@ -38,10 +38,10 @@ const EditUser = ({ id, onBack, onReload, showMessage }: Props) => {
 
 	const auth = useAuth();
 
+	// 🔥 Poprawiona logika — tylko ADMIN może ustawiać ADMIN + LIBRARIAN
 	const allowedRoles = useMemo<UserType["role"][]>(() => {
 		if (auth.role === "ADMIN") return ["ADMIN", "LIBRARIAN", "USER"];
-		if (auth.role === "LIBRARIAN") return ["USER"];
-		return ["USER"];
+		return ["USER"]; // LIBRARIAN i USER mogą ustawiać tylko USER
 	}, [auth.role]);
 
 	useEffect(() => {

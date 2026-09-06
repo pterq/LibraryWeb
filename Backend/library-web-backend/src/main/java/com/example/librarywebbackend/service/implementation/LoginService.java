@@ -7,6 +7,7 @@ import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
+import com.example.librarywebbackend.security.JwtService.TokenData;
 import com.example.librarywebbackend.service.ILoginService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,7 @@ public class LoginService implements ILoginService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        String accessToken = jwtService.generateToken(user);
+        TokenData tokenData = jwtService.generateToken(user);
         boolean hasFee = feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING);
         user.setHasFee(hasFee);
 
@@ -49,8 +50,9 @@ public class LoginService implements ILoginService {
                 user.getPhone(),
                 user.getRole(),
                 hasFee,
-                accessToken,
-                "Bearer"
+                tokenData.accessToken(),
+                "Bearer",
+                tokenData.tokenExpiresAt()
         );
     }
 }
