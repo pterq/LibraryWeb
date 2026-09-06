@@ -9,6 +9,7 @@ import java.time.Instant;
 
 
 @Setter
+@Getter
 @AllArgsConstructor
 public class UserRequestDTO {
     private String firstName;

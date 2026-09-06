@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
 
 		try {
 			const response = await axios.post<LoginUserResponse>(
-				`${import.meta.env.VITE_BACKEND_URL}/login`,
+				`${import.meta.env.VITE_BACKEND_URL}/user/login`,
 				form,
 			);
 

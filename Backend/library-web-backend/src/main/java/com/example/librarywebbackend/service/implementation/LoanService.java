@@ -129,10 +129,11 @@ public class LoanService implements ILoanService {
                 .map(row -> new LoanWithCountDTO(
                         ((Number) row[0]).longValue(), // id
                         new UserDTO(
-                                ((Number) row[1]).longValue(), // userId
-                                (String) row[2],               // firstName
-                                (String) row[3],               // lastName
-                                (String) row[4]                // email
+                                ((Number) row[0]).longValue(),
+                                (String) row[1], // firstName
+                                (String) row[2], // lastName
+                                (String) row[3], // email
+                                (String) row[4]  // phone
                         ),
                         ((Number) row[5]).longValue(),        // countLoans
                         ((Number) row[6]).longValue(),        // countBorrowed (ACTIVE)

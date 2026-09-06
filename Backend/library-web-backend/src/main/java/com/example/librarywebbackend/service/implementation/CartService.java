@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class CartService implements ICartService {
 
@@ -142,15 +144,17 @@ public class CartService implements ICartService {
         return cartRepository.countCartsByUserRaw()
                 .stream()
                 .map(row -> new CartWithCountDTO(
-                        ((Number) row[0]).longValue(),
+                        ((Number) row[0]).longValue(), // id (row_number)
                         new UserDTO(
-                                ((Number) row[1]).longValue(),
-                                (String) row[2],
-                                (String) row[3],
-                                (String) row[4]
+                                ((Number) row[1]).longValue(), // userId
+                                (String) row[2],               // firstName
+                                (String) row[3],               // lastName
+                                (String) row[4],               // email
+                                (String) row[5]                // phone
                         ),
-                        ((Number) row[5]).longValue()
+                        ((Number) row[6]).longValue()         // countCarts
                 ))
                 .toList();
     }
+
 }

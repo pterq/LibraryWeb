@@ -46,7 +46,7 @@ const RegisterPage = () => {
 
 		try {
 			const response = await axios.post<RegisterUserResponse>(
-				`${import.meta.env.VITE_BACKEND_URL}/register`,
+				`${import.meta.env.VITE_BACKEND_URL}/user/register`,
 				form,
 			);
 

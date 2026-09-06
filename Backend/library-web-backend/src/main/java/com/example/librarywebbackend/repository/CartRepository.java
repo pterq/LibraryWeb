@@ -10,6 +10,7 @@ import java.util.List;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     List<Cart> findByExpiresAtBefore(LocalDateTime time);
 
+
     @Query("""
     select
         row_number() over (order by count(c) desc) as id,
@@ -17,13 +18,15 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
         u.firstName as firstName,
         u.lastName as lastName,
         u.email as email,
+        u.phone as phone,
         count(c) as countCarts
     from Cart c
     join c.user u
-    group by u.id, u.firstName, u.lastName, u.email
+    group by u.id, u.firstName, u.lastName, u.email, u.phone
     order by count(c) desc
-""")
+    """)
     List<Object[]> countCartsByUserRaw();
+
 
     @Query("""
     select c from Cart c
