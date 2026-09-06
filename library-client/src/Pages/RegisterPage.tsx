@@ -16,12 +16,13 @@ const RegisterPage: React.FC = () => {
 
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
-	const [form, setForm] = useState<RegisterForm>({
+	const [form, setForm] = useState<EmptyRegisterForm>({
 		firstName: "",
 		lastName: "",
 		email: "",
 		phone: "",
 		password: "",
+		password2: "",
 	});
 
 	const [message, setMessage] = useState<string>("");
@@ -35,6 +36,11 @@ const RegisterPage: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		if (form.password !== form.password2) {
+			setMessage("Passwords do not match.");
+			return;
+		}
 
 		try {
 			const response = await axios.post<RegisterResponse>(
@@ -71,11 +77,11 @@ const RegisterPage: React.FC = () => {
 
 			switch (err.response.status) {
 				case 409:
-					setMessage(backendMessage || "Email already exists.");
+					setMessage("Email already exists.");
 					break;
 
 				case 400:
-					setMessage(backendMessage || "Invalid registration data.");
+					setMessage("Invalid registration data.");
 					break;
 
 				case 500:
@@ -151,6 +157,28 @@ const RegisterPage: React.FC = () => {
 							name="password"
 							className="form-control"
 							value={form.password}
+							onChange={handleChange}
+							required
+						/>
+
+						<button
+							type="button"
+							className="btn btn-outline-secondary"
+							onClick={() => setShowPassword((prev) => !prev)}
+						>
+							<i className={showPassword ? "bi bi-eye" : "bi bi-eye-slash"}></i>
+						</button>
+					</div>
+				</div>
+				<div className="mb-3">
+					<label className="form-label">Repeat Password</label>
+
+					<div className="input-group">
+						<input
+							type={showPassword ? "text" : "password"}
+							name="password2"
+							className="form-control"
+							value={form.password2}
 							onChange={handleChange}
 							required
 						/>
