@@ -1,7 +1,12 @@
 package com.example.librarywebbackend.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Setter
+@AllArgsConstructor
 public class CartRequestDTO {
     private Long userId;
     private Long copyId;

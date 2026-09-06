@@ -10,7 +10,7 @@ public class FeeWithCountDTO {
     private Long id;
     private UserDTO user;
     private Long countFees;
-    private Long countUnpaid;
+    private Long countPending;
     private Long countPaid;
     private Long countCancelled;
 }

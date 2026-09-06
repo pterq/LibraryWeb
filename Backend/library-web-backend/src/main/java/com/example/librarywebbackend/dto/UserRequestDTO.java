@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Getter
+
 @Setter
 @AllArgsConstructor
 public class UserRequestDTO {

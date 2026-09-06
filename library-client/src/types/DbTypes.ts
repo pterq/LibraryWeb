@@ -1,7 +1,7 @@
 export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN";
 export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
 export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
-export type FeeStatusType = "PAID" | "UNPAID" | "CANCELLED";
+export type FeeStatusType = "PAID" | "PENDING" | "CANCELLED";
 
 //============================================================================
 
@@ -100,7 +100,7 @@ export interface FeesWithCountsType {
 	id: number;
 	user: UserType;
 	countFees: number;
-	countUnpaid: number;
+	countPending: number;
 	countPaid: number;
 	countCancelled: number;
 }

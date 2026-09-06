@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.mapper;
 
-import com.example.librarywebbackend.dto.AuthorResponseDTO;
+import com.example.librarywebbackend.dto.AuthorDTO;
 import com.example.librarywebbackend.dto.BookResponseDTO;
 import com.example.librarywebbackend.dto.CategoryResponseDTO;
 import com.example.librarywebbackend.entity.Author;
@@ -16,7 +16,7 @@ public class BookMapper {
         if (book == null) return null;
 
         // 🔵 Autorzy
-        List<AuthorResponseDTO> authors = book.getAuthors() == null
+        List<AuthorDTO> authors = book.getAuthors() == null
                 ? List.of()
                 : book.getAuthors()
                 .stream()
@@ -43,8 +43,8 @@ public class BookMapper {
         );
     }
 
-    private AuthorResponseDTO toAuthorDto(Author author) {
-        return new AuthorResponseDTO(
+    private AuthorDTO toAuthorDto(Author author) {
+        return new AuthorDTO(
                 author.getId(),
                 author.getFirstName(),
                 author.getLastName(),

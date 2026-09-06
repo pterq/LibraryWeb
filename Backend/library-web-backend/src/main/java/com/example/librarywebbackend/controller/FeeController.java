@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.FeeRequestDTO;
+import com.example.librarywebbackend.dto.FeeResponseDTO;
 import com.example.librarywebbackend.dto.FeeWithCountDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
@@ -20,7 +22,7 @@ public class FeeController {
     }
 
     @GetMapping
-    public List<Fee> getAll() {
+    public List<FeeResponseDTO> getAll() {
         return feeService.getAllFees();
     }
 
@@ -30,41 +32,26 @@ public class FeeController {
     }
 
     @GetMapping("/userFees/{userId}")
-    public List<Fee> getFeesByUserId(@PathVariable Long userId) {
-        return feeService.getUserFessByUserId(userId);
+    public List<FeeResponseDTO> getFeesByUserId(@PathVariable Long userId) {
+        return feeService.getUserFeesByUserId(userId);
     }
 
-    /*
-    @GetMapping("/status/{status}")
-    public List<Fee> getByStatus(@PathVariable FeeStatus status) {
-        return feeService.getFeesByStatus(status);
-    }
-    */
     @GetMapping("/{id}")
-    public ResponseEntity<Fee> getById(@PathVariable Long id) {
-        Fee fee = feeService.getFeeByFeeId(id);
+    public ResponseEntity<FeeResponseDTO> getById(@PathVariable Long id) {
+        FeeResponseDTO fee = feeService.getFeeByFeeId(id);
         return fee != null
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public Fee create(@RequestBody Fee fee) {
-        return feeService.createFee(fee);
+    public FeeResponseDTO create(@RequestBody FeeRequestDTO dto) {
+        return feeService.createFee(dto);
     }
 
-    /*
-    @PostMapping("/pay/{id}")
-    public ResponseEntity<Fee> pay(@PathVariable Long id) {
-        Fee fee = feeService.payFee(id);
-        return fee != null
-                ? ResponseEntity.ok(fee)
-                : ResponseEntity.notFound().build();
-    }
-    */
     @PatchMapping("/{id}/{status}")
-    public ResponseEntity<Fee> updateStatus(@PathVariable Long id, @PathVariable FeeStatus status) {
-        Fee fee = feeService.updateFeeStatus(id, status);
+    public ResponseEntity<FeeResponseDTO> updateStatus(@PathVariable Long id, @PathVariable FeeStatus status) {
+        FeeResponseDTO fee = feeService.updateFeeStatus(id, status);
         return fee != null
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();
@@ -76,3 +63,4 @@ public class FeeController {
         return ResponseEntity.noContent().build();
     }
 }
+

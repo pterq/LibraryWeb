@@ -1,9 +1,9 @@
 package com.example.librarywebbackend.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Setter;
 
-@Data
+@Setter
 @AllArgsConstructor
 public class BookCopyResponseDTO {
     private Long bookId;

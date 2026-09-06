@@ -1,10 +1,13 @@
 package com.example.librarywebbackend.service.implementation;
 
 
+import com.example.librarywebbackend.dto.FeeResponseDTO;
+import com.example.librarywebbackend.dto.FeeRequestDTO;
 import com.example.librarywebbackend.dto.FeeWithCountDTO;
 import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
+import com.example.librarywebbackend.mapper.FeeMapper;
 import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.stereotype.Service;
@@ -22,53 +25,43 @@ public class FeeService implements IFeeService {
     }
 
     @Override
-    public List<Fee> getAllFees() {
-        return feeRepository.findAll();
-    }
-
-    /*
-    @Override
-    public List<Fee> getFeesByStatus(FeeStatus status) {
-        return feeRepository.findByStatus(status);
-    }
-    */
-    @Override
-    public List<Fee> getUserFessByUserId(Long userId) {
-        return feeRepository.findByUserId(userId);
+    public List<FeeResponseDTO> getAllFees() {
+        return feeRepository.findAll()
+                .stream()
+                .map(FeeMapper::toResponse)
+                .toList();
     }
 
     @Override
-    public Fee getFeeByFeeId(Long id) {
+    public List<FeeResponseDTO> getUserFeesByUserId(Long userId) {
+        return feeRepository.findByUserId(userId)
+                .stream()
+                .map(FeeMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public FeeResponseDTO getFeeByFeeId(Long id) {
         return feeRepository.findById(id)
+                .map(FeeMapper::toResponse)
                 .orElse(null);
     }
 
     @Override
-    public Fee createFee(Fee fee) {
+    public FeeResponseDTO createFee(FeeRequestDTO dto) {
+        Fee fee = FeeMapper.toEntity(dto);
         fee.setCreatedAt(LocalDateTime.now());
         fee.setStatus(FeeStatus.PENDING);
-        return feeRepository.save(fee);
+        return FeeMapper.toResponse(feeRepository.save(fee));
     }
-    /*
-    @Override
-    public Fee payFee(Long id) {
-        return feeRepository.findById(id)
-                .map(fee -> {
-                    fee.setPaidAt(LocalDateTime.now());
-                    fee.setStatus(FeeStatus.PAID);
-                    return feeRepository.save(fee);
-                })
-                .orElse(null);
-    }
-    */
 
     @Override
-    public Fee updateFeeStatus(Long id, FeeStatus status) {
+    public FeeResponseDTO updateFeeStatus(Long id, FeeStatus status) {
         return feeRepository.findById(id)
                 .map(fee -> {
                     fee.setStatus(status);
                     fee.setPaidAt(status == FeeStatus.PAID ? LocalDateTime.now() : null);
-                    return feeRepository.save(fee);
+                    return FeeMapper.toResponse(feeRepository.save(fee));
                 })
                 .orElse(null);
     }
@@ -83,18 +76,23 @@ public class FeeService implements IFeeService {
         return feeRepository.countFeesByUserRaw()
                 .stream()
                 .map(row -> new FeeWithCountDTO(
-                        ((Number) row[0]).longValue(),
+                        ((Number) row[0]).longValue(), // userId
                         new UserDTO(
-                                ((Number) row[1]).longValue(),
-                                (String) row[2],
-                                (String) row[3],
-                                (String) row[4]
+                                ((Number) row[0]).longValue(),
+                                (String) row[1], // firstName
+                                (String) row[2], // lastName
+                                (String) row[3], // email
+                                (String) row[4]  // phone
                         ),
-                        ((Number) row[5]).longValue(),
-                        ((Number) row[6]).longValue(),
-                        ((Number) row[7]).longValue(),
-                        ((Number) row[8]).longValue()
+                        ((Number) row[5]).longValue(), // countFees
+                        ((Number) row[6]).longValue(), // countPending
+                        ((Number) row[7]).longValue(), // countPaid
+                        ((Number) row[8]).longValue()  // countCancelled
                 ))
                 .toList();
     }
+
+
+
 }
+

@@ -83,9 +83,9 @@ const FeesDashboard = () => {
 						aVal = a.countFees;
 						bVal = b.countFees;
 						break;
-					case "countUnpaid":
-						aVal = a.countUnpaid;
-						bVal = b.countUnpaid;
+					case "countPending":
+						aVal = a.countPending;
+						bVal = b.countPending;
 						break;
 					case "countPaid":
 						aVal = a.countPaid;
@@ -145,8 +145,8 @@ const FeesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("countFees")}>
 							Total Fees {getSortIcon("countFees")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countUnpaid")}>
-							Fees UNPAID {getSortIcon("countUnpaid")}
+						<th scope="col" onClick={() => requestSort("countPending")}>
+							Fees PENDING {getSortIcon("countPending")}
 						</th>
 						<th scope="col" onClick={() => requestSort("countPaid")}>
 							Fees PAID {getSortIcon("countPaid")}
@@ -167,7 +167,7 @@ const FeesDashboard = () => {
 							</td>
 							<td>{`(${fee.user.id}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
 							<td>{fee.countFees}</td>
-							<td>{fee.countUnpaid}</td>
+							<td>{fee.countPending}</td>
 							<td>{fee.countPaid}</td>
 							<td>{fee.countCancelled}</td>
 							<td>

@@ -22,20 +22,20 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
     List<Fee> findByUserId(@Param("userId") Long userId);
 
     @Query("""
-    select
-        row_number() over (order by count(f) desc) as id,
-        u.id as userId,
-        u.firstName as firstName,
-        u.lastName as lastName,
-        u.email as email,
-        count(f) as countFees,
-        sum(case when f.status = com.example.librarywebbackend.entity.FeeStatus.PENDING then 1 else 0 end) as countUnpaid,
-        sum(case when f.status = com.example.librarywebbackend.entity.FeeStatus.PAID then 1 else 0 end) as countPaid,
-        sum(case when f.status = com.example.librarywebbackend.entity.FeeStatus.CANCELLED then 1 else 0 end) as countCancelled
-    from Fee f
-    join f.user u
-    group by u.id, u.firstName, u.lastName, u.email
-    order by count(f) desc
-""")
+    SELECT 
+        u.id AS userId,
+        u.firstName,
+        u.lastName,
+        u.email,
+        COUNT(f.id) AS countFees,
+        SUM(CASE WHEN f.status = 'PENDING' THEN 1 ELSE 0 END) AS countPending,
+        SUM(CASE WHEN f.status = 'PAID' THEN 1 ELSE 0 END) AS countPaid,
+        SUM(CASE WHEN f.status = 'CANCELLED' THEN 1 ELSE 0 END) AS countCancelled
+    FROM User u
+    LEFT JOIN Fee f ON f.user.id = u.id
+    GROUP BY u.id, u.firstName, u.lastName, u.email, u.phone
+    """)
     List<Object[]> countFeesByUserRaw();
+
+
 }

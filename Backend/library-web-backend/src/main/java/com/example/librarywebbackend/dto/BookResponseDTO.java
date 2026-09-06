@@ -10,6 +10,6 @@ public record BookResponseDTO(
         String isbn,
         Integer publishedYear,
         List<CategoryResponseDTO> categories,
-        List<AuthorResponseDTO> authors
+        List<AuthorDTO> authors
 ) {}
 

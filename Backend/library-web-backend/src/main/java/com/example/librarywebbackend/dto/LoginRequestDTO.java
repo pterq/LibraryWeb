@@ -2,11 +2,11 @@ package com.example.librarywebbackend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@AllArgsConstructor
 public class LoginRequestDTO {
 
     @NotBlank

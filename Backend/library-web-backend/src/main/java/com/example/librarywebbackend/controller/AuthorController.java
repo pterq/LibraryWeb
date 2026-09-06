@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.AuthorResponseDTO;
+import com.example.librarywebbackend.dto.AuthorDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.service.IAuthorService;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<AuthorResponseDTO> getAll() {
+    public List<AuthorDTO> getAll() {
         return authorService.getAllAuthors()
                 .stream()
                 .map(this::toDto)
@@ -27,7 +27,7 @@ public class AuthorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorResponseDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<AuthorDTO> getById(@PathVariable Long id) {
         Author author = authorService.getAutorByAuthorId(id);
         return author != null
                 ? ResponseEntity.ok(toDto(author))
@@ -35,12 +35,12 @@ public class AuthorController {
     }
 
     @PostMapping
-    public AuthorResponseDTO create(@RequestBody Author author) {
+    public AuthorDTO create(@RequestBody Author author) {
         return toDto(authorService.createAuthor(author));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorResponseDTO> update(@PathVariable Long id, @RequestBody Author updated) {
+    public ResponseEntity<AuthorDTO> update(@PathVariable Long id, @RequestBody Author updated) {
         Author author = authorService.updateAuthorByAuthorId(id, updated);
         return author != null
                 ? ResponseEntity.ok(toDto(author))
@@ -64,8 +64,8 @@ public class AuthorController {
 
      */
 
-    private AuthorResponseDTO toDto(Author author) {
-        return new AuthorResponseDTO(
+    private AuthorDTO toDto(Author author) {
+        return new AuthorDTO(
                 author.getId(),
                 author.getFirstName(),
                 author.getLastName(),
