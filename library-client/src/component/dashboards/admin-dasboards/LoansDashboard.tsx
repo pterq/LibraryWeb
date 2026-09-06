@@ -97,8 +97,7 @@ const LoansDashboard = () => {
 
 	return (
 		<div className="container-fluid">
-			<h1>Loans Dashboard</h1>
-
+			<h1>Loans Dashboard - Raport</h1>
 			<SearchBar
 				search={search}
 				setSearch={setSearch}
@@ -106,12 +105,6 @@ const LoansDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button
-					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/userLoans/add`)}
-				>
-					Create Users Loans Record
-				</button>
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -123,7 +116,6 @@ const LoansDashboard = () => {
 					Clear filters
 				</button>
 			</div>
-
 			<table className="table table-striped table-hover shadow text-center">
 				<thead>
 					<tr>

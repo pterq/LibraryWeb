@@ -112,7 +112,7 @@ const FeesDashboard = () => {
 
 	return (
 		<div className="container-fluid">
-			<h1>Fees Dashboard</h1>
+			<h1>Fees Dashboard - Raport</h1>
 
 			<SearchBar
 				search={search}
@@ -121,12 +121,6 @@ const FeesDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button
-					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/userFees/add`)}
-				>
-					Create Users Fees Record
-				</button>
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}

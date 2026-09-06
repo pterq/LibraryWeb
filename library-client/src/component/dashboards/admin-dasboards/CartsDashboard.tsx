@@ -109,7 +109,7 @@ const CartsDashboard = () => {
 
 	return (
 		<div className="container-fluid">
-			<h1>Shopping Carts Dashboard</h1>
+			<h1>Carts Dashboard - Raport</h1>
 
 			<SearchBar
 				search={search}
@@ -118,12 +118,6 @@ const CartsDashboard = () => {
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button
-					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/shoppingCart/add`)}
-				>
-					Add Users Shopping Cart
-				</button>
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
