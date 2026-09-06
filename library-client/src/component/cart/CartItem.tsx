@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 
 import type {
-	CartType,
+	CartItemResponse,
 	BookPhysicalResponse,
 	BookType,
 	AuthorType,
 	AuthorsType,
 } from "../../types/DbTypes";
 
-const CartItem = ({ item }: { item: CartType }) => {
+const CartItem = ({ item }: { item: CartItemResponse }) => {
 	const calculateDaysLeft = (expiresAt: Date): number => {
 		const currentDate = new Date();
 		const expirationDate = new Date(expiresAt);

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "current_loans_status")
+@Table(name = "loans")
 public class Loan {
 
     @Id

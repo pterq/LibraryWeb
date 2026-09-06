@@ -81,7 +81,7 @@ export type FeeType = {
 
 //===========================================================================
 
-export interface CartType {
+export interface CartItemResponse {
 	id: number;
 	user: UserType;
 	copy: BookPhysicalResponse;
@@ -115,10 +115,10 @@ export interface LoanCountType {
 	countOverdue: number;
 }
 
-export interface CartCountType {
+export interface CartCountResponse {
 	id: number;
 	user: UserDtoType;
-	countReservations: number;
+	countCartItems: number;
 }
 
 //============================================================================

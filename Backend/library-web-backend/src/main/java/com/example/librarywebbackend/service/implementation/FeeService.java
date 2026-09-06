@@ -76,13 +76,13 @@ public class FeeService implements IFeeService {
         return feeRepository.countFeesByUserRaw()
                 .stream()
                 .map(row -> new FeeWithCountDTO(
-                        ((Number) row[0]).longValue(), // userId
+                        ((Number) row[0]).longValue(), // userId jako id
                         new UserDTO(
-                                ((Number) row[0]).longValue(),
-                                (String) row[1], // firstName
-                                (String) row[2], // lastName
-                                (String) row[3], // email
-                                (String) row[4]  // phone
+                                ((Number) row[0]).longValue(), // userId
+                                (String) row[1],               // firstName
+                                (String) row[2],               // lastName
+                                (String) row[3],               // email
+                                (String) row[4]                // phone
                         ),
                         ((Number) row[5]).longValue(), // countFees
                         ((Number) row[6]).longValue(), // countPending
@@ -91,8 +91,5 @@ public class FeeService implements IFeeService {
                 ))
                 .toList();
     }
-
-
-
 }
 

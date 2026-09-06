@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { CartType, CartCountType } from "../types/DbTypes";
+import type { CartItemResponse, CartCountResponse } from "../types/DbTypes";
 
 //endpoints
 const RESERVATION_ENDPOINT = "/carts";
@@ -9,7 +9,7 @@ const RESERVATION_ENDPOINT = "/carts";
 
 export const getAllCarts = async () => {
 	try {
-		const response = await axiosClient.get<CartType[]>(RESERVATION_ENDPOINT);
+		const response = await axiosClient.get<CartItemResponse[]>(RESERVATION_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch reservations:", error);
@@ -19,7 +19,7 @@ export const getAllCarts = async () => {
 
 export const getCartById = async (id: number) => {
 	try {
-		const response = await axiosClient.get<CartType>(`${RESERVATION_ENDPOINT}/${id}`);
+		const response = await axiosClient.get<CartItemResponse>(`${RESERVATION_ENDPOINT}/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch reservation with id ${id}:`, error);
@@ -27,9 +27,12 @@ export const getCartById = async (id: number) => {
 	}
 };
 
-export const addCart = async (reservation: CartType) => {
+export const addCart = async (reservation: CartItemResponse) => {
 	try {
-		const response = await axiosClient.post<CartType>(RESERVATION_ENDPOINT, reservation);
+		const response = await axiosClient.post<CartItemResponse>(
+			RESERVATION_ENDPOINT,
+			reservation,
+		);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add reservation:", error);
@@ -37,9 +40,9 @@ export const addCart = async (reservation: CartType) => {
 	}
 };
 
-export const updateCartById = async (id: number, reservation: CartType) => {
+export const updateCartById = async (id: number, reservation: CartItemResponse) => {
 	try {
-		const response = await axiosClient.put<CartType>(
+		const response = await axiosClient.put<CartItemResponse>(
 			`${RESERVATION_ENDPOINT}/${id}`,
 			reservation,
 		);
@@ -62,7 +65,9 @@ export const deleteCartById = async (id: number) => {
 
 export const getCartsWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<CartCountType[]>(`${RESERVATION_ENDPOINT}/counts`);
+		const response = await axiosClient.get<CartCountResponse[]>(
+			`${RESERVATION_ENDPOINT}/counts`,
+		);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch reservations with counts:", error);
@@ -72,7 +77,7 @@ export const getCartsWithCounts = async () => {
 
 export const getUserCartItemsByUserId = async (userId: number) => {
 	try {
-		const response = await axiosClient.get<CartType[]>(
+		const response = await axiosClient.get<CartItemResponse[]>(
 			`${RESERVATION_ENDPOINT}/user/${userId}`,
 		);
 		return response.data;

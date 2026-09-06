@@ -200,7 +200,7 @@ const AuthorsDashboard = () => {
 				</button>
 			</div>
 
-			<table className="table table-striped">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th scope="col" onClick={() => requestSort("id")}>

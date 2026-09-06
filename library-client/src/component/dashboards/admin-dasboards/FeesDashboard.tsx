@@ -133,7 +133,7 @@ const FeesDashboard = () => {
 				</button>
 			</div>
 
-			<table className="table table-striped table-hover shadow text-center">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th scope="col" onClick={() => requestSort("id")}>

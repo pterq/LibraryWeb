@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { CartCountType } from "../../../types/DbTypes";
+import type { CartCountResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -8,7 +8,7 @@ import apiCarts from "../../../api/apiCarts";
 import TableAlert from "../../common/TableAlert";
 
 const CartsDashboard = () => {
-	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<CartCountType[]>([]);
+	const [shoppingCartsWithCount, setShoppingCartsWithCount] = useState<CartCountResponse[]>([]);
 
 	useEffect(() => {
 		apiCarts
@@ -43,12 +43,12 @@ const CartsDashboard = () => {
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const getItemsCount = (shoppingCart: CartCountType) => {
-		return shoppingCart.countReservations;
+	const getItemsCount = (shoppingCart: CartCountResponse) => {
+		return shoppingCart.countCartItems;
 	};
 
 	const filteredAndSortedShoppingCarts = useMemo(() => {
-		let data: CartCountType[] = [...shoppingCartsWithCount];
+		let data: CartCountResponse[] = [...shoppingCartsWithCount];
 
 		if (search.trim()) {
 			const lowerSearch = search.toLowerCase();
@@ -61,7 +61,7 @@ const CartsDashboard = () => {
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(shoppingCart.id).includes(lowerSearch) ||
-					String(shoppingCart.countReservations).includes(lowerSearch)
+					String(shoppingCart.countCartItems).includes(lowerSearch)
 				);
 			});
 		}
@@ -89,8 +89,8 @@ const CartsDashboard = () => {
 						bVal = b.id;
 						break;
 					case "itemsCount":
-						aVal = a.countReservations;
-						bVal = b.countReservations;
+						aVal = a.countCartItems;
+						bVal = b.countCartItems;
 						break;
 				}
 
@@ -130,7 +130,7 @@ const CartsDashboard = () => {
 				</button>
 			</div>
 
-			<table className="table table-striped table-hover shadow text-center">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th scope="col" onClick={() => requestSort("id")}>
@@ -157,7 +157,7 @@ const CartsDashboard = () => {
 								({shoppingCart.user.id}) {shoppingCart.user.firstName}{" "}
 								{shoppingCart.user.lastName}
 							</td>
-							<td>{getItemsCount(shoppingCart)}</td>
+							<td>{shoppingCart.countCartItems}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"

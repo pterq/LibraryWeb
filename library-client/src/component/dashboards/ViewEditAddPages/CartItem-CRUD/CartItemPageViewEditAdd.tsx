@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
-import type { BookPhysicalResponse, CartType, UserType } from "../../../../types/DbTypes";
+import type { BookPhysicalResponse, CartItemResponse, UserType } from "../../../../types/DbTypes";
 import { MockData } from "../../../../types/MockData";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
@@ -200,8 +200,8 @@ const CartItemPageViewEditAdd = () => {
 					copy?: { id?: number | string | null } | null;
 					copyId?: number | string | null;
 					bookPhysical?: { id?: number | string | null } | null;
-					reservedAt?: CartType["reservedAt"] | null;
-					expiresAt?: CartType["expiresAt"] | null;
+					reservedAt?: CartItemResponse["reservedAt"] | null;
+					expiresAt?: CartItemResponse["expiresAt"] | null;
 				};
 
 				if (!isActive) return;

@@ -1,5 +1,5 @@
 import CartItem from "../component/cart/CartItem";
-import type { CartType } from "../types/DbTypes";
+import type { CartItemResponse } from "../types/DbTypes";
 import { useAuth } from "../context/AuthContext";
 
 import apiCarts from "../api/apiCarts";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const CartPanel = () => {
 	const { userId } = useAuth();
 
-	const [reservations, setReservations] = useState<CartType[] | null>(null);
+	const [reservations, setReservations] = useState<CartItemResponse[] | null>(null);
 
 	useEffect(() => {
 		if (userId == null) return;
@@ -22,7 +22,7 @@ const CartPanel = () => {
 			.catch(console.error);
 	}, [userId]);
 
-	const items: CartType[] = reservations ?? [];
+	const items: CartItemResponse[] = reservations ?? [];
 
 	return (
 		<div className="container">

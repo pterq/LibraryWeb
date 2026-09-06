@@ -27,6 +27,7 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
         u.firstName,
         u.lastName,
         u.email,
+        u.phone,
         COUNT(f.id) AS countFees,
         SUM(CASE WHEN f.status = 'PENDING' THEN 1 ELSE 0 END) AS countPending,
         SUM(CASE WHEN f.status = 'PAID' THEN 1 ELSE 0 END) AS countPaid,
@@ -34,8 +35,9 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
     FROM User u
     LEFT JOIN Fee f ON f.user.id = u.id
     GROUP BY u.id, u.firstName, u.lastName, u.email, u.phone
-    """)
+""")
     List<Object[]> countFeesByUserRaw();
+
 
 
 }

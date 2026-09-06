@@ -92,10 +92,6 @@ const BooksPhysicalDashboard = () => {
 				let bVal: number | string;
 
 				switch (sortConfig.key) {
-					case "id":
-						aVal = a.copyId;
-						bVal = b.copyId;
-						break;
 					case "inventoryCode":
 						aVal = a.inventoryCode;
 						bVal = b.inventoryCode;
@@ -210,8 +206,8 @@ const BooksPhysicalDashboard = () => {
 			<table className="table table-striped">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("id")}>
-							# {getSortIcon("id")}
+						<th scope="col" onClick={() => requestSort("inventoryCode")}>
+							# {getSortIcon("inventoryCode")}
 						</th>
 						<th scope="col" onClick={() => requestSort("inventoryCode")}>
 							(ID) Inventory Code {getSortIcon("inventoryCode")}
@@ -255,7 +251,8 @@ const BooksPhysicalDashboard = () => {
 					{physicalBooks.map((copy, index) => (
 						<tr key={copy.copyId}>
 							<td>
-								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+								{sortConfig?.key === "inventoryCode" &&
+								sortConfig?.direction === "desc"
 									? physicalBooks.length - index
 									: index + 1}
 							</td>

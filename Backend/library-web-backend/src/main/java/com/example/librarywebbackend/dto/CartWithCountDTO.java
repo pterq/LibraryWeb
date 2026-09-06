@@ -9,5 +9,5 @@ public class CartWithCountDTO {
 
     private Long id;
     private UserDTO user;
-    private Long countCarts;
+    private Long countCartItems;
 }

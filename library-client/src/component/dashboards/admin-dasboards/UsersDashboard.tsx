@@ -208,7 +208,7 @@ const UsersDashboard = () => {
 			</div>
 
 			{/* Users table */}
-			<table className="table table-striped">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th scope="col" onClick={() => requestSort("id")}>

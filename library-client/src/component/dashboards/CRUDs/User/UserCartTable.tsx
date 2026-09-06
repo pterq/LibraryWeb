@@ -1,4 +1,4 @@
-import CartItemsTable from "./CartItemsTable";
+import CartItemsTable from "./Tables/CartItemsTable";
 
 type Props = {
 	userId: number;

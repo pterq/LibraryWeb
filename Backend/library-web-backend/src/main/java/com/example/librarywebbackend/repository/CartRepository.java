@@ -12,20 +12,20 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
 
     @Query("""
-    select
-        row_number() over (order by count(c) desc) as id,
-        u.id as userId,
-        u.firstName as firstName,
-        u.lastName as lastName,
-        u.email as email,
-        u.phone as phone,
-        count(c) as countCarts
-    from Cart c
-    join c.user u
-    group by u.id, u.firstName, u.lastName, u.email, u.phone
-    order by count(c) desc
-    """)
+    SELECT 
+        u.id AS userId,
+        u.firstName,
+        u.lastName,
+        u.email,
+        u.phone,
+        COUNT(c.id) AS countCarts
+    FROM User u
+    LEFT JOIN Cart c ON c.user.id = u.id
+    GROUP BY u.id, u.firstName, u.lastName, u.email, u.phone
+    ORDER BY countCarts DESC
+""")
     List<Object[]> countCartsByUserRaw();
+
 
 
     @Query("""

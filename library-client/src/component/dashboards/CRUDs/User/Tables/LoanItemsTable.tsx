@@ -143,7 +143,7 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 				</button>
 			</div>
 
-			<table className="table table-bordered table-hover shadow text-center">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th onClick={() => requestSort("id")}># {getSortIcon("id")}</th>

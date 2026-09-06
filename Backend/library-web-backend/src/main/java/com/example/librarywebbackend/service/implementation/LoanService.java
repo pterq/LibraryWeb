@@ -127,21 +127,25 @@ public class LoanService implements ILoanService {
         return loanRepository.countLoansByUserRaw()
                 .stream()
                 .map(row -> new LoanWithCountDTO(
-                        ((Number) row[0]).longValue(), // id
+                        ((Number) row[0]).longValue(), // userId jako id
                         new UserDTO(
-                                ((Number) row[0]).longValue(),
-                                (String) row[1], // firstName
-                                (String) row[2], // lastName
-                                (String) row[3], // email
-                                (String) row[4]  // phone
+                                ((Number) row[0]).longValue(), // userId (Long)
+                                (String) row[1],               // firstName
+                                (String) row[2],               // lastName
+                                (String) row[3],               // email
+                                (String) row[4]                // phone
                         ),
-                        ((Number) row[5]).longValue(),        // countLoans
-                        ((Number) row[6]).longValue(),        // countBorrowed (ACTIVE)
-                        ((Number) row[7]).longValue(),        // countReturned
-                        ((Number) row[8]).longValue()         // countOverdue
+                        ((Number) row[5]).longValue(), // countLoans
+                        ((Number) row[6]).longValue(), // countBorrowed
+                        ((Number) row[7]).longValue(), // countReturned
+                        ((Number) row[8]).longValue()  // countOverdue
                 ))
                 .toList();
     }
+
+
+
+
 
 
 }

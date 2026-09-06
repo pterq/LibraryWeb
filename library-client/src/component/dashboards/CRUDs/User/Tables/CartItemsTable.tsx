@@ -1,29 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { AuthorType, FeeType } from "../../../../../types/DbTypes";
+import type {
+	AuthorType,
+	CartItemResponse as CartItemResponse,
+} from "../../../../../types/DbTypes";
 import SearchBar from "../../../../common/SearchBar";
 import TableAlert from "../../../../common/TableAlert";
-import apiFees from "../../../../../api/apiFees";
+import apiCarts from "../../../../../api/apiCarts";
 
-type FeeExtendedType = FeeType & {
-	authors: AuthorType[];
+type CartExtendedType = CartItemResponse & {
 	title: string;
+	authors: AuthorType[];
+	inventoryCode: String;
 };
 
-const FeeItemsTable = ({ userId }: { userId: number }) => {
-	const [fees, setFees] = useState<FeeType[]>([]);
+const CartItemsTable = ({ userId }: { userId: number }) => {
+	const [items, setItems] = useState<CartItemResponse[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		if (!userId) return;
 
-		apiFees
-			.getFeesByUserId(userId)
+		apiCarts
+			.getUserCartItemsByUserId(userId)
 			.then((data) => {
-				setFees(data);
+				setItems(data);
 				setLoading(false);
-				console.log("Fetched fees:", data);
+				console.log("Fetched cart items:", data);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -32,22 +36,19 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 	}, [userId]);
 
 	// ============================
-	// Search / Filter / Sort
+	// Search / Sort
 	// ============================
 
 	const [search, setSearch] = useState("");
-	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof FeeExtendedType;
+		key: keyof CartExtendedType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
-	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
+	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof FeeExtendedType) => {
-		if (key === "status") return;
-
+	const requestSort = (key: keyof CartExtendedType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -57,18 +58,13 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof FeeExtendedType) => {
-		if (key === "status") return "";
+	const getSortIcon = (key: keyof CartExtendedType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const processedFees = useMemo(() => {
-		let data = [...fees];
-
-		if (filter !== "ALL") {
-			data = data.filter((fee) => fee.status === filter);
-		}
+	const processedItems = useMemo(() => {
+		let data = [...items];
 
 		if (sortConfig) {
 			data.sort((a, b) => {
@@ -77,26 +73,30 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 
 				switch (sortConfig.key) {
 					case "title":
-						aVal = a.loan.copy.book?.title ?? "";
-						bVal = b.loan.copy.book?.title ?? "";
+						aVal = a.copy.book?.title ?? "";
+						bVal = b.copy.book?.title ?? "";
 						break;
 					case "authors":
 						aVal =
-							a.loan.copy.book?.authors
+							a.copy.book?.authors
 								?.map((x) => `${x.firstName} ${x.lastName}`)
 								.join(", ") ?? "";
 						bVal =
-							b.loan.copy.book?.authors
+							b.copy.book?.authors
 								?.map((x) => `${x.firstName} ${x.lastName}`)
 								.join(", ") ?? "";
 						break;
-					case "createdAt":
-						aVal = new Date(a.createdAt).getTime();
-						bVal = new Date(b.createdAt).getTime();
+					case "reservedAt":
+						aVal = new Date(a.reservedAt).getTime();
+						bVal = new Date(b.reservedAt).getTime();
+						break;
+					case "expiresAt":
+						aVal = new Date(a.expiresAt).getTime();
+						bVal = new Date(b.expiresAt).getTime();
 						break;
 					default:
-						aVal = a[sortConfig.key as keyof FeeType];
-						bVal = b[sortConfig.key as keyof FeeType];
+						aVal = a[sortConfig.key as keyof CartItemResponse];
+						bVal = b[sortConfig.key as keyof CartItemResponse];
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
@@ -109,23 +109,23 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 			});
 		}
 
-		return data.filter((fee) => {
-			const title = fee.loan.copy.book?.title ?? "";
+		return data.filter((item) => {
+			const title = item.copy.book?.title ?? "";
 			return title.toLowerCase().includes(search.toLowerCase());
 		});
-	}, [fees, filter, sortConfig, search]);
+	}, [items, sortConfig, search]);
 
 	// ============================
 	// Render
 	// ============================
 
 	if (loading) {
-		return <div className="alert alert-info py-2">Loading fees...</div>;
+		return <div className="alert alert-info py-2">Loading cart items...</div>;
 	}
 
 	return (
 		<div>
-			<SearchBar search={search} setSearch={setSearch} placeholder="Search Fee by title" />
+			<SearchBar search={search} setSearch={setSearch} placeholder="Search by title" />
 
 			<div className="d-flex justify-content-end mb-3">
 				<button
@@ -133,7 +133,6 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 					disabled={!isFiltered}
 					onClick={() => {
 						setSearch("");
-						setFilter("ALL");
 						setSortConfig(null);
 					}}
 				>
@@ -151,33 +150,19 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 						</th>
 
 						<th onClick={() => requestSort("authors")}>
-							Author {getSortIcon("authors")}
+							Authors {getSortIcon("authors")}
 						</th>
 
-						<th onClick={() => requestSort("createdAt")}>
-							Fee issue date {getSortIcon("createdAt")}
+						<th onClick={() => requestSort("inventoryCode")}>
+							Inventory Code {getSortIcon("inventoryCode")}
 						</th>
 
-						<th onClick={() => requestSort("amount")}>
-							Amount {getSortIcon("amount")}
+						<th onClick={() => requestSort("reservedAt")}>
+							Reservation Date {getSortIcon("reservedAt")}
 						</th>
 
-						<th className="text-start" style={{ width: "5%" }}>
-							<div className="d-flex align-items-center gap-2">
-								<span>Status</span>
-
-								<select
-									className="form-select form-select-sm py-0"
-									style={{ width: "auto" }}
-									value={filter}
-									onChange={(e) => setFilter(e.target.value as any)}
-								>
-									<option value="ALL">All</option>
-									<option value="PAID">Paid</option>
-									<option value="UNPAID">Unpaid</option>
-									<option value="CANCELLED">Cancelled</option>
-								</select>
-							</div>
+						<th onClick={() => requestSort("expiresAt")}>
+							Expiration Date {getSortIcon("expiresAt")}
 						</th>
 
 						<th>Action</th>
@@ -185,23 +170,23 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 				</thead>
 
 				<tbody>
-					{processedFees.map((fee, index) => {
-						const book = fee.loan.copy.book;
+					{processedItems.map((item, index) => {
+						const book = item.copy.book;
 						const title = book?.title ?? "Unknown book";
 						const authors =
 							book?.authors?.map((a) => `${a.firstName} ${a.lastName}`).join(", ") ??
 							"Unknown author";
 
 						return (
-							<tr key={fee.id}>
+							<tr key={item.id}>
 								<td>{index + 1}</td>
 								<td>{title}</td>
 								<td>{authors}</td>
-								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
-								<td>{fee.amount.toFixed(2)} zł</td>
-								<td>{fee.status}</td>
+								<td>{item.copy.inventoryCode}</td>
+								<td>{new Date(item.reservedAt).toLocaleDateString()}</td>
+								<td>{new Date(item.expiresAt).toLocaleDateString()}</td>
 								<td>
-									<Link to={`/fee/${fee.id}`}>View</Link>
+									<Link to={`/cart/${item.id}`}>View</Link>
 								</td>
 							</tr>
 						);
@@ -209,9 +194,9 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 				</tbody>
 			</table>
 
-			<TableAlert count={processedFees.length} message="No fees found." />
+			<TableAlert count={processedItems.length} message="No cart items found." />
 		</div>
 	);
 };
 
-export default FeeItemsTable;
+export default CartItemsTable;

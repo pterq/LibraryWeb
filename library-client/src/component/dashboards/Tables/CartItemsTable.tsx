@@ -1,18 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { AuthorType, CartType, BookType, BookPhysicalResponse } from "../../../types/DbTypes";
+import type {
+	AuthorType,
+	CartItemResponse,
+	BookType,
+	BookPhysicalResponse,
+} from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import apiCarts from "../../../api/apiCarts";
 import TableAlert from "../../common/TableAlert";
 
-const getReservationCopy = (reservation: CartType) => reservation.bookPhysical ?? reservation.copy;
+const getReservationCopy = (reservation: CartItemResponse) =>
+	reservation.bookPhysical ?? reservation.copy;
 
 const formatReservationDate = (value: Date | string) => new Date(value).toLocaleString();
 
 const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
-	const [reservations, setReservations] = useState<CartType[] | null>(null);
+	const [reservations, setReservations] = useState<CartItemResponse[] | null>(null);
 
 	useEffect(() => {
 		apiCarts
@@ -27,13 +33,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	//=====================================================
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof CartType;
+		key: keyof CartItemResponse;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof CartType) => {
+	const requestSort = (key: keyof CartItemResponse) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -43,13 +49,13 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof CartType) => {
+	const getSortIcon = (key: keyof CartItemResponse) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const shoppingCarts = useMemo(() => {
-		let data: CartType[] = [...(reservations ?? [])];
+		let data: CartItemResponse[] = [...(reservations ?? [])];
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
 			data = data.filter((reservation) => reservation.user.id === selectedUserId);
@@ -179,7 +185,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			</div>
 
 			{/* Shopping carts table */}
-			<table className="table table-striped table-hover shadow text-center">
+			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
 						<th scope="col" onClick={() => requestSort("id")}>
