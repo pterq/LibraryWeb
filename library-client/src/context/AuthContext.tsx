@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { UserRoleType, LoginResponse } from "../types/DbTypes";
+import type { UserRoleType, LoginUserResponse } from "../types/DbTypes";
 
 type AuthUserDataField = "firstName" | "lastName" | "email" | "phone";
 
@@ -14,7 +14,7 @@ interface AuthContextType {
 	tokenExpiresAt: string | null;
 	phone: string | null;
 
-	login: (authData: LoginResponse) => void;
+	login: (authData: LoginUserResponse) => void;
 	logout: (showManualToast?: boolean) => void;
 	updateUserData: (field: AuthUserDataField, value: string) => void;
 	setHasFees: (hasFees: boolean) => void;
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		role,
 		hasFees,
 		tokenExpiresAt,
-	}: LoginResponse) => {
+	}: LoginUserResponse) => {
 		const nextHasFees =
 			typeof hasFees === "boolean" ? hasFees : localStorage.getItem("hasFees") === "true";
 

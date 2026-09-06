@@ -1,12 +1,8 @@
 import { useMemo, useState } from "react";
 import apiUsers from "../../../../api/apiUsers";
 import { useAuth } from "../../../../context/AuthContext";
-import type {
-	UserType,
-	RegisterResponse,
-	RegisterForm,
-	EmptyRegisterForm,
-} from "../../../../types/DbTypes";
+import type { UserType, EmptyRegisterUserForm } from "../../../../types/DbTypes";
+import RegisterForm from "../../../common/RegisterForm";
 
 type Props = {
 	onBack: () => void;
@@ -16,7 +12,7 @@ type Props = {
 
 const USER_ROLES: UserType["role"][] = ["ADMIN", "LIBRARIAN", "USER"];
 
-const EMPTY_FORM: EmptyRegisterForm = {
+const EMPTY_FORM: EmptyRegisterUserForm = {
 	firstName: "",
 	lastName: "",
 	email: "",
@@ -26,9 +22,10 @@ const EMPTY_FORM: EmptyRegisterForm = {
 };
 
 const AddUser = ({ onBack, onReload, showMessage }: Props) => {
-	const [formData, setFormData] = useState<EmptyRegisterForm>(EMPTY_FORM);
-	const [isLoading, setIsLoading] = useState(false);
+	const [formData, setFormData] = useState(EMPTY_FORM);
+	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const auth = useAuth();
 
@@ -76,117 +73,22 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 	};
 
 	return (
-		<div className="container py-3">
-			<div className="d-flex gap-2 mb-3">
-				<button className="btn btn-secondary" onClick={onBack}>
-					Back
-				</button>
-			</div>
+		<>
+			<button className="btn btn-secondary" onClick={onBack}>
+				Back
+			</button>
 
-			<h2>Add User</h2>
-
-			{error && <p className="text-danger">{error}</p>}
-
-			<form onSubmit={handleSubmit} className="mt-3">
-				<div className="mb-3">
-					<label className="form-label">First Name</label>
-					<input
-						type="text"
-						name="firstName"
-						className="form-control"
-						value={formData.firstName}
-						onChange={handleChange}
-						disabled={isLoading}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Last Name</label>
-					<input
-						type="text"
-						name="lastName"
-						className="form-control"
-						value={formData.lastName}
-						onChange={handleChange}
-						disabled={isLoading}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Email</label>
-					<input
-						type="email"
-						name="email"
-						className="form-control"
-						value={formData.email}
-						onChange={handleChange}
-						disabled={isLoading}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Password</label>
-					<input
-						type="password"
-						name="password"
-						className="form-control"
-						value={formData.password}
-						onChange={handleChange}
-						disabled={isLoading}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Confirm Password</label>
-					<input
-						type="password"
-						name="password2"
-						className="form-control"
-						value={formData.password2}
-						onChange={handleChange}
-						disabled={isLoading}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Phone</label>
-					<input
-						type="text"
-						name="phone"
-						className="form-control"
-						value={formData.phone}
-						onChange={handleChange}
-						disabled={isLoading}
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Role</label>
-					<select
-						name="role"
-						className="form-select"
-						value={formData}
-						onChange={handleChange}
-						disabled={isLoading}
-					>
-						{USER_ROLES.filter((role) => allowedRoles.includes(role)).map((role) => (
-							<option key={role} value={role}>
-								{role}
-							</option>
-						))}
-					</select>
-				</div>
-
-				<button type="submit" className="btn btn-primary" disabled={isLoading}>
-					Create User
-				</button>
-			</form>
-		</div>
+			<RegisterForm
+				form={formData}
+				setForm={setFormData}
+				onSubmit={handleSubmit}
+				showPassword={showPassword}
+				setShowPassword={setShowPassword}
+				error={error}
+				isLoading={isLoading}
+				title="Add User"
+			/>
+		</>
 	);
 };
 

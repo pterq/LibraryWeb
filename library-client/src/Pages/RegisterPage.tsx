@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import type { EmptyRegisterForm, RegisterForm, RegisterResponse } from "../types/DbTypes";
+import RegisterForm from "../component/common/RegisterForm";
+
+import type { EmptyRegisterUserForm, RegisterUserResponse } from "../types/DbTypes";
 
 interface BackendError {
 	message?: string;
@@ -10,20 +12,20 @@ interface BackendError {
 	details?: string;
 }
 
-const RegisterPage: React.FC = () => {
+const RegisterPage = () => {
+	const [form, setForm] = useState<EmptyRegisterUserForm>({
+		firstName: "",
+		lastName: "",
+		email: "",
+		password: "",
+		password2: "",
+		phone: "",
+	});
+
 	const navigate = useNavigate();
 	const { login } = useAuth();
 
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-
-	const [form, setForm] = useState<EmptyRegisterForm>({
-		firstName: "",
-		lastName: "",
-		email: "",
-		phone: "",
-		password: "",
-		password2: "",
-	});
 
 	const [message, setMessage] = useState<string>("");
 
@@ -43,7 +45,7 @@ const RegisterPage: React.FC = () => {
 		}
 
 		try {
-			const response = await axios.post<RegisterResponse>(
+			const response = await axios.post<RegisterUserResponse>(
 				`${import.meta.env.VITE_BACKEND_URL}/register`,
 				form,
 			);
@@ -95,115 +97,17 @@ const RegisterPage: React.FC = () => {
 	};
 
 	return (
-		<div className="container mt-5" style={{ maxWidth: "500px" }}>
-			<h2 className="mb-4 text-center">Register</h2>
-
-			<form onSubmit={handleSubmit}>
-				<div className="mb-3">
-					<label className="form-label">First Name</label>
-					<input
-						type="text"
-						name="firstName"
-						className="form-control"
-						value={form.firstName}
-						onChange={handleChange}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Last Name</label>
-					<input
-						type="text"
-						name="lastName"
-						className="form-control"
-						value={form.lastName}
-						onChange={handleChange}
-						required
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Email</label>
-					<input
-						type="email"
-						name="email"
-						className="form-control"
-						value={form.email}
-						onChange={handleChange}
-						required
-					/>
-				</div>
-
-				{/* Telefon opcjonalny */}
-				<div className="mb-3">
-					<label className="form-label">Phone</label>
-					<input
-						type="tel"
-						name="phone"
-						className="form-control"
-						value={form.phone}
-						onChange={handleChange}
-						placeholder="Optional"
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label className="form-label">Password</label>
-
-					<div className="input-group">
-						<input
-							type={showPassword ? "text" : "password"}
-							name="password"
-							className="form-control"
-							value={form.password}
-							onChange={handleChange}
-							required
-						/>
-
-						<button
-							type="button"
-							className="btn btn-outline-secondary"
-							onClick={() => setShowPassword((prev) => !prev)}
-						>
-							<i className={showPassword ? "bi bi-eye" : "bi bi-eye-slash"}></i>
-						</button>
-					</div>
-				</div>
-				<div className="mb-3">
-					<label className="form-label">Repeat Password</label>
-
-					<div className="input-group">
-						<input
-							type={showPassword ? "text" : "password"}
-							name="password2"
-							className="form-control"
-							value={form.password2}
-							onChange={handleChange}
-							required
-						/>
-
-						<button
-							type="button"
-							className="btn btn-outline-secondary"
-							onClick={() => setShowPassword((prev) => !prev)}
-						>
-							<i className={showPassword ? "bi bi-eye" : "bi bi-eye-slash"}></i>
-						</button>
-					</div>
-				</div>
-
-				<button type="submit" className="btn btn-primary w-100">
-					Zarejestruj się
-				</button>
-			</form>
-
-			<div className="text-center mt-3">
-				<Link to="/login">Masz już konto? Zaloguj się</Link>
-			</div>
-
-			{message && <p className="mt-3 text-center">{message}</p>}
-		</div>
+		<>
+			<RegisterForm
+				form={form}
+				setForm={setForm}
+				onSubmit={handleSubmit}
+				showPassword={showPassword}
+				setShowPassword={setShowPassword}
+				error={message}
+				title="Register"
+			/>
+		</>
 	);
 };
 

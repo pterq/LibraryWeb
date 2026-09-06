@@ -146,18 +146,21 @@ export interface BookPhysicalForm {
 	status: BookPhysicalStatusType;
 }
 
-export interface RegisterForm {
+export interface RegisterUserForm {
 	firstName: string;
 	lastName: string;
 	email: string;
 	phone: string;
 	password: string;
 }
-export interface EmptyRegisterForm extends RegisterForm {
+
+export interface EmptyRegisterUserForm extends RegisterUserForm {
 	password2: string;
 }
 
-export interface RegisterResponse {
+export interface AdminRegisterForm extends RegisterUserForm {}
+
+export interface RegisterUserResponse {
 	userId: number;
 	firstName: string;
 	lastName: string;
@@ -170,12 +173,12 @@ export interface RegisterResponse {
 	tokenExpiresAt: string;
 }
 
-export interface LoginForm {
+export interface LoginUserForm {
 	email: string;
 	password: string;
 }
 
-export interface LoginResponse {
+export interface LoginUserResponse {
 	userId: number;
 	email: string;
 	firstName: string;

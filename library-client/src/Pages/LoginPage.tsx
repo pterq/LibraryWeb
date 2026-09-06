@@ -3,13 +3,13 @@ import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-import type { LoginForm, LoginResponse } from "../types/DbTypes";
+import type { LoginUserForm, LoginUserResponse } from "../types/DbTypes";
 
 const LoginPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
 
-	const [form, setForm] = useState<LoginForm>({
+	const [form, setForm] = useState<LoginUserForm>({
 		email: "",
 		password: "",
 	});
@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
 		e.preventDefault();
 
 		try {
-			const response = await axios.post<LoginResponse>(
+			const response = await axios.post<LoginUserResponse>(
 				`${import.meta.env.VITE_BACKEND_URL}/login`,
 				form,
 			);
