@@ -182,28 +182,11 @@ const BooksDashboard = () => {
 			});
 	};
 
-	// const handleDelete = async (id: number) => {
-	// 	try {
-	// 		await apiAuthors.deleteAuthorById(id);
-	// 		showMessage("Author has been deleted.");
-	// 		reloadAuthors();
-	// 	} catch (err) {
-	// 		console.error(err);
-	// 	}
-	// };
-
 	// -----------------------------
 	// RENDER CRUD
 	// -----------------------------
 	if (crud.mode === "view") {
-		return (
-			<ViewBook
-				id={crud.id}
-				onBack={() => setCrud({ mode: "dashboard" })}
-				onReload={reloadBooks}
-				showMessage={showMessage}
-			/>
-		);
+		return <ViewBook bookId={crud.id} onBack={() => setCrud({ mode: "dashboard" })} />;
 	}
 
 	if (crud.mode === "edit") {

@@ -2,25 +2,11 @@ import { useEffect, useState } from "react";
 import apiBooks from "../../../../api/apiBooks";
 import type { BookType } from "../../../../types/DbTypes";
 
-type ApiBook = {
-	id: number;
-	title?: string;
-	description?: string;
-	imageUrl?: string | null;
-	coverImageUrl?: string | null;
-	isbn?: string;
-	publishedYear?: number;
-	categories?: BookType["categories"];
-	authors?: BookType["authors"];
-};
-
 const BOOK_PLACEHOLDER_IMAGE = "/src/assets/book-placeholder.jpg";
 
 type Props = {
-	id: number;
+	bookId: number;
 	onBack: () => void;
-	onReload: () => void;
-	showMessage: (text: string) => void;
 };
 
 const EMPTY_BOOK: BookType = {
@@ -34,7 +20,7 @@ const EMPTY_BOOK: BookType = {
 	authors: [],
 };
 
-const ViewBook = ({ id, onBack, onReload, showMessage }: Props) => {
+const ViewBook = ({ bookId, onBack }: Props) => {
 	const [data, setData] = useState<BookType>(EMPTY_BOOK);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -47,10 +33,10 @@ const ViewBook = ({ id, onBack, onReload, showMessage }: Props) => {
 			setError(null);
 
 			try {
-				const book = (await apiBooks.getBookById(id)) as ApiBook;
+				const book = await apiBooks.getBookById(bookId);
 				if (!active) return;
 
-				const resolvedCoverUrl = (book.imageUrl ?? book.coverImageUrl ?? "").trim();
+				const resolvedCoverUrl = (book.imageUrl ?? book.imageUrl ?? "").trim();
 
 				setData({
 					id: book.id,
@@ -69,75 +55,64 @@ const ViewBook = ({ id, onBack, onReload, showMessage }: Props) => {
 			}
 		};
 
-		void load();
+		load();
 
 		return () => {
 			active = false;
 		};
-	}, [id]);
+	}, [bookId]);
 
 	const authorNames =
 		data.authors.length > 0
-			? data.authors.map((author) => `${author.firstName} ${author.lastName}`).join(", ")
+			? data.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")
 			: "-";
 
 	const categoryNames =
-		data.categories.length > 0
-			? data.categories.map((category) => category.name).join(", ")
-			: "-";
+		data.categories.length > 0 ? data.categories.map((c) => c.name).join(", ") : "-";
 
 	const displayCover = data.imageUrl?.trim() ? data.imageUrl : BOOK_PLACEHOLDER_IMAGE;
 
 	return (
-		<div className="container py-3">
-			<div className="d-flex gap-2 mb-3">
-				<button
-					className="btn btn-secondary"
-					onClick={() => {
-						onBack();
-						onReload();
-						//showMessage("Returned from book view.");
-					}}
-				>
-					Back
-				</button>
-			</div>
+		<div className="card mb-3">
+			<div className="card-body">
+				{isLoading && <p>Loading book...</p>}
+				{error && <p className="text-danger">{error}</p>}
 
-			<h2>View Book</h2>
+				{!isLoading && !error && (
+					<div className="d-flex gap-3">
+						<img
+							src={displayCover}
+							alt={data.title || "Book cover"}
+							style={{ width: "120px", height: "180px", objectFit: "cover" }}
+							className="border rounded"
+							onError={(e) => (e.currentTarget.src = BOOK_PLACEHOLDER_IMAGE)}
+						/>
 
-			{isLoading && <p>Loading...</p>}
-			{error && <p className="text-danger">{error}</p>}
+						<div>
+							<h5>Book information</h5>
 
-			<div className="mt-3">
-				<img
-					src={displayCover}
-					alt={data.title || "Book cover"}
-					style={{ width: "150px", height: "220px", objectFit: "cover" }}
-					className="mb-3"
-					onError={(event) => {
-						event.currentTarget.src = BOOK_PLACEHOLDER_IMAGE;
-					}}
-				/>
-
-				<p>
-					<strong>Title:</strong> {data.title || "-"}
-				</p>
-				<p>
-					<strong>ISBN:</strong> {data.isbn || "-"}
-				</p>
-				<p>
-					<strong>Published Year:</strong> {data.publishedYear || "-"}
-				</p>
-				<p>
-					<strong>Authors:</strong> {authorNames}
-				</p>
-				<p>
-					<strong>Categories:</strong> {categoryNames}
-				</p>
-				<p>
-					<strong>Description:</strong>
-				</p>
-				<p>{data.description || "-"}</p>
+							<p>
+								<strong>Title:</strong> {data.title || "-"}
+							</p>
+							<p>
+								<strong>Authors:</strong> {authorNames}
+							</p>
+							<p>
+								<strong>ISBN:</strong> {data.isbn || "-"}
+							</p>
+							<p>
+								<strong>Published year:</strong> {data.publishedYear || "-"}
+							</p>
+							<p>
+								<strong>Categories:</strong> {categoryNames}
+							</p>
+							<p>
+								<strong>Description:</strong>
+							</p>
+							<p>{data.description || "-"}</p>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

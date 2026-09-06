@@ -136,7 +136,7 @@ const BooksPhysicalDashboard = () => {
 	if (crud.mode === "edit") {
 		return (
 			<EditPhysicalBook
-				id={crud.id}
+				bookId={crud.id}
 				onBack={() => setCrud({ mode: "dashboard" })}
 				onReload={reloadBooksPhysical}
 				showMessage={showMessage}

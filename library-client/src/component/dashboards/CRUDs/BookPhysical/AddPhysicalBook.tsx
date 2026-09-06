@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import apiBooksPhysical from "../../../../api/apiBooksPhysical";
 import apiBooks from "../../../../api/apiBooks";
-import type { BookPhysicalStatusType, BookType, BookPhysicalForm } from "../../../../types/DbTypes";
+import type { BookType } from "../../../../types/DbTypes";
+import ViewBook from "../Book/ViewBook";
 
 type Props = {
 	onBack: () => void;
@@ -25,12 +26,13 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 	const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
 
 	const [booksLoading, setBooksLoading] = useState(false);
-	const [bookOptions, setBookOptions] = useState<any[]>([]);
-	const [selectedBook, setSelectedBook] = useState<any | null>(null);
+	const [bookOptions, setBookOptions] = useState<BookType[]>([]);
+	const [selectedBook, setSelectedBook] = useState<BookType | null>(null);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	// LOAD BOOKS
 	useEffect(() => {
 		let active = true;
 
@@ -40,19 +42,7 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 				const books = await apiBooks.getBooks();
 				if (!active) return;
 
-				const mapped = books.map((b: any) => ({
-					id: b.id,
-					title: b.title,
-					authorsLabel: b.authors
-						?.map((a: any) => `${a.firstName} ${a.lastName}`)
-						.join(", "),
-					publishedYear: b.publishedYear,
-					coverImageUrl: b.coverImageUrl,
-					description: b.description,
-					isbn: b.isbn,
-				}));
-
-				setBookOptions(mapped);
+				setBookOptions(books);
 			} catch {
 				setError("Failed to load books.");
 			} finally {
@@ -66,6 +56,7 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 		};
 	}, []);
 
+	// SELECTED BOOK PREVIEW
 	useEffect(() => {
 		const found = bookOptions.find((b) => String(b.id) === formData.bookId);
 		setSelectedBook(found || null);
@@ -82,24 +73,17 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 		setError(null);
 
 		try {
-			await apiBooksPhysical
-				.addBookCopy({
-					bookId: Number(formData.bookId),
-					inventoryCode: formData.inventoryCode,
-					status: formData.status,
-				})
-				.then(() => {
-					// Success handler if needed
-				})
-				.catch((error) => {
-					setError("Failed to create physical book.");
-					console.error(error);
-				});
+			await apiBooksPhysical.addBookCopy({
+				bookId: Number(formData.bookId),
+				inventoryCode: formData.inventoryCode,
+				status: formData.status,
+			});
 
 			onReload();
 			showMessage("Physical book has been added.");
 			onBack();
-		} catch {
+		} catch (err) {
+			console.error(err);
 			setError("Failed to create physical book.");
 		} finally {
 			setIsLoading(false);
@@ -134,8 +118,11 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 							<option value="NO_BOOK_ID">No BookID</option>
 							{bookOptions.map((book) => (
 								<option key={book.id} value={String(book.id)}>
-									{book.title} - {book.authorsLabel} - {book.publishedYear ?? "-"}{" "}
-									(ID: {book.id})
+									{book.title} –{" "}
+									{book.authors
+										.map((a) => `${a.firstName} ${a.lastName}`)
+										.join(", ")}{" "}
+									– {book.publishedYear ?? "-"} (ID: {book.id})
 								</option>
 							))}
 						</select>
@@ -143,44 +130,7 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 				</div>
 
 				{/* BOOK PREVIEW */}
-				{selectedBook && (
-					<div className="card mb-3">
-						<div className="card-body">
-							<div className="d-flex gap-3">
-								<img
-									src={
-										selectedBook.coverImageUrl ??
-										"/src/assets/book-placeholder.jpg"
-									}
-									alt={selectedBook.title}
-									className="img-fluid border rounded"
-									style={{ width: "120px", height: "180px", objectFit: "cover" }}
-								/>
-
-								<div>
-									<h5>Book information</h5>
-									<p>
-										<strong>Title:</strong> {selectedBook.title}
-									</p>
-									<p>
-										<strong>Authors:</strong> {selectedBook.authorsLabel}
-									</p>
-									<p>
-										<strong>ISBN:</strong> {selectedBook.isbn || "-"}
-									</p>
-									<p>
-										<strong>Published year:</strong>{" "}
-										{selectedBook.publishedYear ?? "-"}
-									</p>
-									<p>
-										<strong>Description:</strong>{" "}
-										{selectedBook.description || "No description."}
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
+				{selectedBook && <ViewBook bookId={selectedBook.id} onBack={() => {}} />}
 
 				{/* INVENTORY CODE */}
 				<div className="mb-3">
@@ -206,8 +156,6 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 						required
 					>
 						<option value="AVAILABLE">AVAILABLE</option>
-						<option value="BORROWED">BORROWED</option>
-						<option value="RESERVED">RESERVED</option>
 					</select>
 				</div>
 

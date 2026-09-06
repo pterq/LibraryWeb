@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import apiBooksPhysical from "../../../../api/apiBooksPhysical";
 import apiBooks from "../../../../api/apiBooks";
 import type { BookPhysicalStatusType, BookType } from "../../../../types/DbTypes";
+import ViewBook from "../Book/ViewBook";
 
 type Props = {
-	id: number;
+	bookId: number;
 	onBack: () => void;
 	onReload: () => void;
 	showMessage: (text: string) => void;
@@ -22,7 +23,7 @@ const EMPTY_FORM: FormData = {
 	status: "AVAILABLE",
 };
 
-const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
+const EditPhysicalBook = ({ bookId, onBack, onReload, showMessage }: Props) => {
 	const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
 	const [originalFormData, setOriginalFormData] = useState<FormData>(EMPTY_FORM);
 
@@ -40,7 +41,7 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 		const loadCopy = async () => {
 			setIsLoading(true);
 			try {
-				const copy = await apiBooksPhysical.getBookCopyById(id);
+				const copy = await apiBooksPhysical.getBookCopyById(bookId);
 				if (!active) return;
 
 				const next: FormData = {
@@ -48,6 +49,8 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 					inventoryCode: copy.inventoryCode ?? "",
 					status: copy.status ?? "AVAILABLE",
 				};
+
+				console.log("Loaded copy:", copy);
 
 				setFormData(next);
 				setOriginalFormData(next);
@@ -62,7 +65,7 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 		return () => {
 			active = false;
 		};
-	}, [id]);
+	}, [bookId]);
 
 	// LOAD BOOK OPTIONS
 	useEffect(() => {
@@ -85,6 +88,8 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 					description: b.description,
 					isbn: b.isbn,
 				}));
+
+				console.log("Mapped books:", mapped);
 
 				setBookOptions(mapped);
 			} catch {
@@ -118,7 +123,7 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 
 		try {
 			await apiBooksPhysical
-				.updateBookCopyById(id, {
+				.updateBookCopyById(bookId, {
 					bookId: Number(formData.bookId),
 					inventoryCode: formData.inventoryCode,
 					status: formData.status,
@@ -127,7 +132,7 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 					// Success handler if needed
 				})
 				.catch((error) => {
-					setError("Failed to create physical book.");
+					setError("Failed to update physical book.");
 					console.error(error);
 				});
 
@@ -141,19 +146,11 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 		}
 	};
 
-	const handleCancel = () => {
-		setFormData(originalFormData);
-		onBack();
-	};
-
 	return (
 		<div className="container py-3">
 			<div className="d-flex gap-2 mb-3">
 				<button className="btn btn-secondary" onClick={onBack}>
 					Back
-				</button>
-				<button className="btn btn-warning" onClick={handleCancel}>
-					Cancel
 				</button>
 			</div>
 
@@ -189,43 +186,8 @@ const EditPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 				</div>
 
 				{/* BOOK PREVIEW */}
-				{selectedBook && (
-					<div className="card mb-3">
-						<div className="card-body">
-							<div className="d-flex gap-3">
-								<img
-									src={
-										selectedBook.coverImageUrl ??
-										"/src/assets/book-placeholder.jpg"
-									}
-									alt={selectedBook.title}
-									className="img-fluid border rounded"
-									style={{ width: "120px", height: "180px", objectFit: "cover" }}
-								/>
-
-								<div>
-									<h5>Book information</h5>
-									<p>
-										<strong>Title:</strong> {selectedBook.title}
-									</p>
-									<p>
-										<strong>Authors:</strong> {selectedBook.authorsLabel}
-									</p>
-									<p>
-										<strong>ISBN:</strong> {selectedBook.isbn || "-"}
-									</p>
-									<p>
-										<strong>Published year:</strong>{" "}
-										{selectedBook.publishedYear ?? "-"}
-									</p>
-									<p>
-										<strong>Description:</strong>{" "}
-										{selectedBook.description || "No description."}
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
+				{!booksLoading && selectedBook && (
+					<ViewBook bookId={selectedBook.id} onBack={() => {}} />
 				)}
 
 				{/* INVENTORY CODE */}
