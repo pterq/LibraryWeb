@@ -4,6 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import type { RegisterForm, RegisterResponse } from "../types/DbTypes";
 
+interface BackendError {
+	message?: string;
+	error?: string;
+	details?: string;
+}
+
 const RegisterPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
@@ -14,6 +20,7 @@ const RegisterPage: React.FC = () => {
 		firstName: "",
 		lastName: "",
 		email: "",
+		phone: "",
 		password: "",
 	});
 
@@ -29,8 +36,6 @@ const RegisterPage: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		console.log("Register data:", form);
-
 		try {
 			const response = await axios.post<RegisterResponse>(
 				`${import.meta.env.VITE_BACKEND_URL}/register`,
@@ -44,46 +49,42 @@ const RegisterPage: React.FC = () => {
 				lastName: response.data.lastName,
 				email: response.data.email,
 				role: response.data.role,
-				tokenExpiresAt: response.data.tokenExpiresAt, // <── DODANE
+				tokenExpiresAt: response.data.tokenExpiresAt,
+				phone: response.data.phone,
 			});
-
-			console.log("Register response:", response.data);
 
 			setMessage("Registered successfully");
 			navigate("/", { replace: true });
 		} catch (error) {
-			const err = error as AxiosError;
+			const err = error as AxiosError<BackendError>;
 
 			if (!err.response) {
 				setMessage("Server not responding — check your connection.");
 				return;
 			}
 
-			// Backend może zwrócić różne formaty błędów
 			const backendMessage =
-				(err.response.data as any)?.message ||
-				(err.response.data as any)?.error ||
-				(err.response.data as any)?.details ||
+				err.response.data?.message ||
+				err.response.data?.error ||
+				err.response.data?.details ||
 				null;
 
-			// Obsługa typowych błędów rejestracji
-			if (err.response.status === 409) {
-				setMessage(backendMessage || "Email already exists.");
-				return;
-			}
+			switch (err.response.status) {
+				case 409:
+					setMessage(backendMessage || "Email already exists.");
+					break;
 
-			if (err.response.status === 400) {
-				setMessage(backendMessage || "Invalid registration data.");
-				return;
-			}
+				case 400:
+					setMessage(backendMessage || "Invalid registration data.");
+					break;
 
-			if (err.response.status === 500) {
-				setMessage("Server error — try again later.");
-				return;
-			}
+				case 500:
+					setMessage("Server error — try again later.");
+					break;
 
-			// Fallback
-			setMessage(backendMessage || "Registration failed.");
+				default:
+					setMessage(backendMessage || "Registration failed.");
+			}
 		}
 	};
 
@@ -125,6 +126,19 @@ const RegisterPage: React.FC = () => {
 						value={form.email}
 						onChange={handleChange}
 						required
+					/>
+				</div>
+
+				{/* Telefon opcjonalny */}
+				<div className="mb-3">
+					<label className="form-label">Phone</label>
+					<input
+						type="tel"
+						name="phone"
+						className="form-control"
+						value={form.phone}
+						onChange={handleChange}
+						placeholder="Optional"
 					/>
 				</div>
 

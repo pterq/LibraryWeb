@@ -15,7 +15,7 @@ import BookCardPage from "./Pages/BookCardPage";
 
 import UserBooksPage from "./Pages/UserBooksPage";
 import MyFeesPage from "./Pages/MyFeesPage";
-import UserSettingsPage from "./Pages/LoginPage";
+import MySettingsPage from "./Pages/MySettingsPage";
 import CartPanel from "./Pages/CartPanel";
 import FeeCard from "./component/fees/FeeCard";
 import UserBookCard from "./component/books/UserBookCard";
@@ -94,7 +94,7 @@ function App() {
 							path="/settings"
 							element={
 								<ProtectedRoute>
-									<UserSettingsPage />
+									<MySettingsPage />
 								</ProtectedRoute>
 							}
 						/>

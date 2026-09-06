@@ -3,21 +3,7 @@ import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-interface LoginForm {
-	email: string;
-	password: string;
-}
-
-interface LoginResponse {
-	userId: number;
-	email: string;
-	firstName: string;
-	lastName: string;
-	role: string;
-	accessToken: string;
-	tokenType: string;
-	tokenExpiresAt: string;
-}
+import type { LoginForm, LoginResponse } from "../types/DbTypes";
 
 const LoginPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -55,6 +41,7 @@ const LoginPage: React.FC = () => {
 				email: response.data.email,
 				role: response.data.role,
 				tokenExpiresAt: response.data.tokenExpiresAt,
+				phone: response.data.phone,
 			});
 
 			setMessage("Logged in successfully");

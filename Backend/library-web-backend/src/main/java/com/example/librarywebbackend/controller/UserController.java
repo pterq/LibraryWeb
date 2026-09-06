@@ -48,4 +48,7 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    //@PutMapping("changePassword/{id}/{password}")
+
 }

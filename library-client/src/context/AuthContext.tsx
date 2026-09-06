@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { UserRoleType } from "../types/DbTypes";
 
-type AuthUserDataField = "firstName" | "lastName" | "email";
+type AuthUserDataField = "firstName" | "lastName" | "email" | "phone";
 
 interface AuthContextType {
 	token: string | null;
@@ -12,6 +12,7 @@ interface AuthContextType {
 	email: string | null;
 	hasFees: boolean | null;
 	tokenExpiresAt: string | null;
+	phone: string | null;
 
 	login: (authData: AuthLoginData) => void;
 	logout: (showManualToast?: boolean) => void;
@@ -29,6 +30,7 @@ interface AuthLoginData {
 	role: string;
 	hasFees?: boolean | null;
 	tokenExpiresAt?: string | null;
+	phone: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -58,6 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				? true
 				: null,
 	);
+	const [phone, setPhone] = useState<string | null>(localStorage.getItem("phone"));
 
 	const [tokenExpiresAt, setTokenExpiresAtState] = useState<string | null>(
 		localStorage.getItem("tokenExpiresAt"),
@@ -121,7 +124,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			setLastName(value);
 			return;
 		}
-		setEmail(value);
+
+		if (field === "email") {
+			setEmail(value);
+			return;
+		}
+		setPhone(value);
 	};
 
 	const login = ({
@@ -133,6 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		role,
 		hasFees,
 		tokenExpiresAt,
+		phone,
 	}: AuthLoginData) => {
 		const nextHasFees =
 			typeof hasFees === "boolean" ? hasFees : localStorage.getItem("hasFees") === "true";
@@ -142,6 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		updateUserData("firstName", firstName);
 		updateUserData("lastName", lastName);
 		updateUserData("email", email);
+		updateUserData("phone", phone);
+		setPhone(phone);
 
 		const nextRole = parseUserRole(role);
 		if (!nextRole) throw new Error(`Unsupported user role: ${role}`);
@@ -170,6 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		localStorage.removeItem("role");
 		localStorage.removeItem("hasFees");
 		localStorage.removeItem("tokenExpiresAt");
+		localStorage.removeItem("phone");
 
 		setToken(null);
 		setRole(null);
@@ -190,6 +202,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				firstName,
 				lastName,
 				email,
+				phone,
 				hasFees,
 				tokenExpiresAt,
 				login,

@@ -15,7 +15,7 @@ type UserFormData = {
 	email: string;
 	password: string;
 	confirmPassword: string;
-	phone?: string;
+	phone: string;
 };
 
 const USER_ROLES: UserType["role"][] = ["ADMIN", "LIBRARIAN", "USER"];
@@ -62,7 +62,6 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 
 		try {
 			await apiUsers.registerUser({
-				id: 0,
 				firstName: formData.firstName,
 				lastName: formData.lastName,
 				email: formData.email,

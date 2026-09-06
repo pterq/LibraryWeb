@@ -51,7 +51,6 @@ export interface LoanType {
 
 //===========================================================================
 export interface UserType {
-	//token: string;
 	id: number;
 	firstName: string;
 	lastName: string;
@@ -151,6 +150,7 @@ export interface RegisterForm {
 	firstName: string;
 	lastName: string;
 	email: string;
+	phone: string;
 	password: string;
 }
 
@@ -173,12 +173,25 @@ export interface LoginForm {
 }
 
 export interface LoginResponse {
-	id: number;
+	userId: number;
 	email: string;
 	firstName: string;
 	lastName: string;
-	role: UserRoleType;
+	role: string;
 	accessToken: string;
-	//tokenExpiresAt: string;
+	tokenType: string;
+	tokenExpiresAt: string;
+	phone: string;
+}
+
+export interface UserForm {}
+
+export interface UserResponse {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+	phone: string | null;
+	role: UserRoleType;
 	hasFee: boolean;
 }

@@ -1,12 +1,5 @@
 import axiosClient from "./axiosClient";
-import type {
-	UserType,
-	UserRoleType,
-	LoginForm,
-	LoginResponse,
-	RegisterForm,
-	RegisterResponse,
-} from "../types/DbTypes";
+import type { UserType, UserRoleType, LoginForm, LoginResponse } from "../types/DbTypes";
 
 //endpoints
 const USER_ENDPOINT = "/user";
