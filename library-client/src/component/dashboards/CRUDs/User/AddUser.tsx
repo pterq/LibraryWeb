@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
 import apiUsers from "../../../../api/apiUsers";
 import { useAuth } from "../../../../context/AuthContext";
-import type { UserType, RegisterForm, RegisterResponse } from "../../../../types/DbTypes";
+import type {
+	UserType,
+	RegisterResponse,
+	RegisterForm,
+	EmptyRegisterForm,
+} from "../../../../types/DbTypes";
 
 type Props = {
 	onBack: () => void;
@@ -9,28 +14,19 @@ type Props = {
 	showMessage: (text: string) => void;
 };
 
-type UserFormData = {
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-	confirmPassword: string;
-	phone: string;
-};
-
 const USER_ROLES: UserType["role"][] = ["ADMIN", "LIBRARIAN", "USER"];
 
-const EMPTY_FORM: UserFormData = {
+const EMPTY_FORM: EmptyRegisterForm = {
 	firstName: "",
 	lastName: "",
 	email: "",
 	password: "",
-	confirmPassword: "",
+	password2: "",
 	phone: "",
 };
 
 const AddUser = ({ onBack, onReload, showMessage }: Props) => {
-	const [formData, setFormData] = useState<UserFormData>(EMPTY_FORM);
+	const [formData, setFormData] = useState<EmptyRegisterForm>(EMPTY_FORM);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +48,7 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (formData.password !== formData.confirmPassword) {
+		if (formData.password !== formData.password2) {
 			setError("Passwords do not match.");
 			return;
 		}
@@ -66,7 +62,7 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 				lastName: formData.lastName,
 				email: formData.email,
 				password: formData.password,
-				phone: formData.phone.trim() || null,
+				phone: formData.phone.trim(),
 			});
 
 			onReload();
@@ -148,9 +144,9 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 					<label className="form-label">Confirm Password</label>
 					<input
 						type="password"
-						name="confirmPassword"
+						name="password2"
 						className="form-control"
-						value={formData.confirmPassword}
+						value={formData.password2}
 						onChange={handleChange}
 						disabled={isLoading}
 						required
@@ -174,7 +170,7 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 					<select
 						name="role"
 						className="form-select"
-						value={formData.role}
+						value={formData}
 						onChange={handleChange}
 						disabled={isLoading}
 					>

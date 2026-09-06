@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { UserRoleType } from "../types/DbTypes";
+import type { UserRoleType, LoginResponse } from "../types/DbTypes";
 
 type AuthUserDataField = "firstName" | "lastName" | "email" | "phone";
 
@@ -14,23 +14,11 @@ interface AuthContextType {
 	tokenExpiresAt: string | null;
 	phone: string | null;
 
-	login: (authData: AuthLoginData) => void;
+	login: (authData: LoginResponse) => void;
 	logout: (showManualToast?: boolean) => void;
 	updateUserData: (field: AuthUserDataField, value: string) => void;
 	setHasFees: (hasFees: boolean) => void;
 	setTokenExpiresAt: (value: string | null) => void;
-}
-
-interface AuthLoginData {
-	userId: number;
-	accessToken: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	role: string;
-	hasFees?: boolean | null;
-	tokenExpiresAt?: string | null;
-	phone: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -113,8 +101,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setTokenExpiresAtState(value);
 	};
 
-	const updateUserData = (field: AuthUserDataField, value: string) => {
-		localStorage.setItem(field, value);
+	const updateUserData = (field: AuthUserDataField, value: string | null) => {
+		if (value === null) {
+			localStorage.removeItem(field);
+		} else {
+			localStorage.setItem(field, value);
+		}
 
 		if (field === "firstName") {
 			setFirstName(value);
@@ -124,11 +116,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			setLastName(value);
 			return;
 		}
-
 		if (field === "email") {
 			setEmail(value);
 			return;
 		}
+
 		setPhone(value);
 	};
 
@@ -138,11 +130,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		firstName,
 		lastName,
 		email,
+		phone,
 		role,
 		hasFees,
 		tokenExpiresAt,
-		phone,
-	}: AuthLoginData) => {
+	}: LoginResponse) => {
 		const nextHasFees =
 			typeof hasFees === "boolean" ? hasFees : localStorage.getItem("hasFees") === "true";
 

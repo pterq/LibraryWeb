@@ -1,5 +1,11 @@
 import axiosClient from "./axiosClient";
-import type { UserType, UserRoleType, LoginForm, LoginResponse } from "../types/DbTypes";
+import type {
+	UserType,
+	UserRoleType,
+	LoginForm,
+	LoginResponse,
+	RegisterForm,
+} from "../types/DbTypes";
 
 //endpoints
 const USER_ENDPOINT = "/user";
@@ -77,10 +83,10 @@ export const deleteUserById = async (id: number) => {
 	}
 };
 
-export const registerUser = async (user: BackendUserType) => {
+export const registerUser = async (user: RegisterForm) => {
 	try {
-		const response = await axiosClient.post<BackendUserType>(`${USER_ENDPOINT}/register`, user);
-		return normalizeUser(response.data);
+		const response = await axiosClient.post<LoginResponse>(`${USER_ENDPOINT}/register`, user);
+		return response.data;
 	} catch (error) {
 		console.error("Failed to register user:", error);
 		throw error;

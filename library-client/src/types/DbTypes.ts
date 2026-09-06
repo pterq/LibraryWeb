@@ -153,6 +153,9 @@ export interface RegisterForm {
 	phone: string;
 	password: string;
 }
+export interface EmptyRegisterForm extends RegisterForm {
+	password2: string;
+}
 
 export interface RegisterResponse {
 	userId: number;
@@ -178,10 +181,11 @@ export interface LoginResponse {
 	firstName: string;
 	lastName: string;
 	role: string;
+	hasFees?: boolean;
 	accessToken: string;
-	tokenType: string;
+	//tokenType: string;
 	tokenExpiresAt: string;
-	phone: string;
+	phone: string | null;
 }
 
 export interface UserForm {}
