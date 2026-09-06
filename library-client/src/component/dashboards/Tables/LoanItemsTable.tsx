@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { LoanType } from "../../../types/DbTypes";
+import type { LoanResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -8,14 +8,14 @@ import apiLoans from "../../../api/apiLoans";
 import TableAlert from "../../common/TableAlert";
 
 const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
-	const [loans, setLoans] = useState<LoanType[]>([]);
+	const [loans, setLoans] = useState<LoanResponse[]>([]);
 
 	useEffect(() => {
 		apiLoans
 			.getLoans()
 			.then((data) => {
 				setLoans(data);
-				console.log("Fetched loans:", data);
+				console.log("Fetched Loan Items:", data);
 			})
 			.catch(console.error);
 	}, []);
@@ -23,16 +23,16 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	const selectedUserId = userId ?? null;
 
 	const [search, setSearch] = useState("");
-	const [filter, setFilter] = useState<"ALL" | LoanType["status"]>("ALL");
+	const [filter, setFilter] = useState<"ALL" | LoanResponse["status"]>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof LoanType;
+		key: keyof LoanResponse;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: keyof LoanType) => {
+	const requestSort = (key: keyof LoanResponse) => {
 		if (key === "status") return;
 
 		let direction: "asc" | "desc" = "asc";
@@ -44,7 +44,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof LoanType) => {
+	const getSortIcon = (key: keyof LoanResponse) => {
 		if (key === "status") return "";
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
@@ -104,8 +104,8 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = new Date(b.returnDate).getTime();
 						break;
 					default:
-						aVal = a[sortConfig.key as keyof LoanType] as string | number;
-						bVal = b[sortConfig.key as keyof LoanType] as string | number;
+						aVal = a[sortConfig.key as keyof LoanResponse] as string | number;
+						bVal = b[sortConfig.key as keyof LoanResponse] as string | number;
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
@@ -183,7 +183,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 									style={{ width: "auto" }}
 									value={filter}
 									onChange={(e) =>
-										setFilter(e.target.value as "ALL" | LoanType["status"])
+										setFilter(e.target.value as "ALL" | LoanResponse["status"])
 									}
 								>
 									<option value="ALL">All</option>

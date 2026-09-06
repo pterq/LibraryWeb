@@ -39,7 +39,7 @@ export interface CategoryType {
 }
 
 //============================================================================
-export interface LoanType {
+export interface LoanResponse {
 	id: number;
 	copy: BookPhysicalType;
 	loanDate: Date;
@@ -65,14 +65,15 @@ export interface UserDtoType {
 	firstName: string;
 	lastName: string;
 	email: string;
+	phone: string;
 }
 
 //===========================================================================
 export type FeeType = {
+	id: number;
+	loan: LoanResponse;
 	amount: number;
 	createdAt: Date;
-	id: number;
-	loan: LoanType;
 	paidAt: Date | null;
 	status: FeeStatusType;
 	user: UserType;

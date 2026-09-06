@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../api/axiosClient";
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
 import { MockData } from "../../../../types/MockData";
-import type { LoanType, UserType } from "../../../../types/DbTypes";
+import type { LoanResponse, UserType } from "../../../../types/DbTypes";
 import ReturnButton from "../../../common/ReturnButton";
 import { useAuth } from "../../../../context/AuthContext";
 
@@ -67,7 +67,7 @@ const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">)
 	return `${fullName || "Unknown user"} (ID: ${user.id})`;
 };
 
-const getLoanLabel = (loan: LoanType): string => {
+const getLoanLabel = (loan: LoanResponse): string => {
 	const userName = `${loan.user.firstName} ${loan.user.lastName}`.trim();
 	const bookTitle = loan.copy?.book?.title ?? "Unknown book";
 	return `Loan #${loan.id} - ${userName || "Unknown user"} - ${bookTitle}`;
@@ -162,7 +162,7 @@ const FeeItemPageViewEditAdd = () => {
 
 			try {
 				const response = await axiosClient.get("/loans");
-				const loans = extractArrayFromResponse<LoanType>(response.data);
+				const loans = extractArrayFromResponse<LoanResponse>(response.data);
 
 				if (!loans.length) {
 					setLoanOptions(loadLoansFromMockData());

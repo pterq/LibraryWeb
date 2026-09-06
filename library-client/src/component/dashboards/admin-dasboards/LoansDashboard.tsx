@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { LoanType, LoanCountType, UserDtoType } from "../../../types/DbTypes";
+import type { LoanResponse, LoanCountType, UserDtoType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -15,7 +15,7 @@ const LoansDashboard = () => {
 			.getLoansWithCounts()
 			.then((data) => {
 				setLoansWithCount(data);
-				console.log("Fetched loans with count:", data);
+				console.log("Fetched loans with counts:", data);
 			})
 			.catch(console.error);
 	}, []);

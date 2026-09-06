@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { LoanType, AuthorType } from "../../../../../types/DbTypes";
+import type { LoanResponse, AuthorType } from "../../../../../types/DbTypes";
 import SearchBar from "../../../../common/SearchBar";
 import TableAlert from "../../../../common/TableAlert";
 import apiLoans from "../../../../../api/apiLoans";
 
-type LoanExtended = LoanType & {
+type LoanExtended = LoanResponse & {
 	authors: AuthorType[];
 };
 
 const LoanItemsTable = ({ userId }: { userId: number }) => {
-	const [loans, setLoans] = useState<LoanType[]>([]);
+	const [loans, setLoans] = useState<LoanResponse[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -95,8 +95,8 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 						break;
 
 					default:
-						aVal = a[sortConfig.key as keyof LoanType];
-						bVal = b[sortConfig.key as keyof LoanType];
+						aVal = a[sortConfig.key as keyof LoanResponse];
+						bVal = b[sortConfig.key as keyof LoanResponse];
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {

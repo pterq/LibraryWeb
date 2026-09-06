@@ -1,5 +1,5 @@
 import { MockData } from "../../types/MockData";
-import type { LoanType } from "../../types/DbTypes";
+import type { LoanResponse } from "../../types/DbTypes";
 import { useParams } from "react-router-dom";
 import ImageFrame from "../common/ImageFrame";
 
@@ -7,7 +7,7 @@ const loans = MockData.mockLoans;
 
 const UserBookCard = () => {
 	const { id } = useParams<{ id: string }>();
-	const loan: LoanType | undefined = loans.find((f) => f.id === parseInt(id || "", 10));
+	const loan: LoanResponse | undefined = loans.find((f) => f.id === parseInt(id || "", 10));
 
 	if (!loan) {
 		return <div>Loan not found</div>;

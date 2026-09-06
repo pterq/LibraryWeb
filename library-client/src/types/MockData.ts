@@ -5,7 +5,7 @@ import type {
 	BookType,
 	BookPhysicalType,
 	CategoryType,
-	LoanType,
+	LoanResponse,
 	FeeType,
 	CartType,
 	CategoryCountType,
@@ -76,7 +76,7 @@ const mockCategories: CategoryType[] = [
 	{ id: 8, name: "Security" },
 ];
 
-const mockLoan: LoanType = {
+const mockLoan: LoanResponse = {
 	id: 1,
 	copy: mockBookPhysical,
 	loanDate: new Date("2026-08-30T04:42:43.95786"),
@@ -149,7 +149,7 @@ const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 15 }, (_, i) 
 	status: i % 3 === 0 ? "AVAILABLE" : i % 3 === 1 ? "BORROWED" : "RESERVED",
 }));
 
-const mockLoans: LoanType[] = Array.from({ length: 15 }, (_, i) => ({
+const mockLoans: LoanResponse[] = Array.from({ length: 15 }, (_, i) => ({
 	...mockLoan,
 	id: i + 1,
 	user: mockUsers[(i * 3) % mockUsers.length],

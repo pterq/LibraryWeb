@@ -1,22 +1,5 @@
 import axiosClient from "./axiosClient";
-import type {
-	UserType,
-	UserRoleType,
-	AuthorType,
-	AuthorForm,
-	BookType,
-	BookPhysicalType,
-	CategoryType,
-	LoanType,
-	CartType,
-	FeeType,
-	LoanStatusType,
-	FeesWithCountsType,
-	CartCountType,
-	CategoriesWithCountsType,
-	CategoryForm,
-	LoanCountType,
-} from "../types/DbTypes";
+import type { LoanResponse, LoanStatusType, LoanCountType } from "../types/DbTypes";
 
 //endpoints
 const LOAN_ENDPOINT = "/loans";
@@ -26,7 +9,7 @@ const LOAN_ENDPOINT = "/loans";
 
 export const getLoans = async () => {
 	try {
-		const response = await axiosClient.get<LoanType[]>(LOAN_ENDPOINT);
+		const response = await axiosClient.get<LoanResponse[]>(LOAN_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch loans:", error);
@@ -36,7 +19,7 @@ export const getLoans = async () => {
 
 export const getLoansByLoanStatus = async (status: LoanStatusType) => {
 	try {
-		const response = await axiosClient.get<LoanType[]>(`${LOAN_ENDPOINT}/status/${status}`);
+		const response = await axiosClient.get<LoanResponse[]>(`${LOAN_ENDPOINT}/status/${status}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch loans with status ${status}:`, error);
@@ -46,7 +29,9 @@ export const getLoansByLoanStatus = async (status: LoanStatusType) => {
 
 export const getLoansByUserId = async (userId: number) => {
 	try {
-		const response = await axiosClient.get<LoanType[]>(`${LOAN_ENDPOINT}/userBooks/${userId}`);
+		const response = await axiosClient.get<LoanResponse[]>(
+			`${LOAN_ENDPOINT}/userBooks/${userId}`,
+		);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch loans for user with id ${userId}:`, error);
@@ -54,9 +39,9 @@ export const getLoansByUserId = async (userId: number) => {
 	}
 };
 
-export const addLoan = async (loan: LoanType) => {
+export const addLoan = async (loan: LoanResponse) => {
 	try {
-		const response = await axiosClient.post<LoanType>(LOAN_ENDPOINT, loan);
+		const response = await axiosClient.post<LoanResponse>(LOAN_ENDPOINT, loan);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add loan:", error);
@@ -64,9 +49,9 @@ export const addLoan = async (loan: LoanType) => {
 	}
 };
 
-export const updateLoanById = async (id: number, loan: LoanType) => {
+export const updateLoanById = async (id: number, loan: LoanResponse) => {
 	try {
-		const response = await axiosClient.put<LoanType>(`${LOAN_ENDPOINT}/${id}`, loan);
+		const response = await axiosClient.put<LoanResponse>(`${LOAN_ENDPOINT}/${id}`, loan);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to update loan with id ${id}:`, error);

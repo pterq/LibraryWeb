@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
-import type { BookPhysicalType, LoanType, UserType } from "../../../../types/DbTypes";
+import type { BookPhysicalType, LoanResponse, UserType } from "../../../../types/DbTypes";
 import ReturnButton from "../../../common/ReturnButton";
 import { idFromLink, actionFromLink, type PageAction } from "../../../../context/DataFromLink";
 import { MockData } from "../../../../types/MockData";
@@ -13,7 +13,7 @@ type LoanItemFormData = {
 	loanDate: string;
 	dueDate: string;
 	returnDate: string;
-	status: LoanType["status"];
+	status: LoanResponse["status"];
 };
 
 type UserOption = {
@@ -26,7 +26,7 @@ type CopyOption = {
 	label: string;
 };
 
-const LOAN_STATUSES: LoanType["status"][] = ["BORROWED", "RETURNED", "OVERDUE"];
+const LOAN_STATUSES: LoanResponse["status"][] = ["BORROWED", "RETURNED", "OVERDUE"];
 
 const EMPTY_FORM: LoanItemFormData = {
 	userId: "",
@@ -46,11 +46,11 @@ const formatDateTimeLocal = (value: Date | string | null | undefined) => {
 	return localDate.toISOString().slice(0, 16);
 };
 
-const normalizeLoanStatus = (status?: string | null): LoanType["status"] => {
+const normalizeLoanStatus = (status?: string | null): LoanResponse["status"] => {
 	const normalized = status?.toUpperCase();
 
 	if (normalized === "BORROWED" || normalized === "RETURNED" || normalized === "OVERDUE") {
-		return normalized as LoanType["status"];
+		return normalized as LoanResponse["status"];
 	}
 
 	if (normalized === "ACTIVE") {
