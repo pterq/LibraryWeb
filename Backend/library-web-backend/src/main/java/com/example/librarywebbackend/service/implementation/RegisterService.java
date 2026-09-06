@@ -54,7 +54,7 @@ public class RegisterService implements IRegisterService {
                 user.getEmail(),
                 user.getPhone(),
                 user.getRole(),
-                user.getCreatedAt(),
+                false,
                 tokenData.accessToken(),
                 "Bearer",
                 tokenData.tokenExpiresAt()

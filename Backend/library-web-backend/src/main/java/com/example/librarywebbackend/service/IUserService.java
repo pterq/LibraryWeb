@@ -1,6 +1,8 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.*;
 import com.example.librarywebbackend.entity.User;
+
 
 import java.util.List;
 
@@ -8,11 +10,13 @@ public interface IUserService {
 
     List<User> getAllUsers();
 
-    User getUserById(Long id);
+    User getUserByUserId(Long id);
 
-    User createUser(User user);
+    UserResponseDTO updateUserByUserId(Long id, UserRequestDTO dto);
 
-    User updateUser(Long id, User user);
+    void deleteUserByUserId(Long id);
 
-    void deleteUser(Long id);
+    RegisterResponseDTO createUser(RegisterRequestDTO request);
+
+    LoginResponseDTO login(LoginRequestDTO request);
 }

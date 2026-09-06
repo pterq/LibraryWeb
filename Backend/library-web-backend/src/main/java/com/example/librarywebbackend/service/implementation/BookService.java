@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.BookCreateDTO;
+import com.example.librarywebbackend.dto.BookRequestDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.Category;
@@ -64,7 +64,7 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book createBook(BookCreateDTO dto) {
+    public Book createBook(BookRequestDTO dto) {
 
         Book book = new Book();
         book.setTitle(dto.getTitle());
@@ -85,7 +85,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public Book updateBook(Long id, BookCreateDTO dto) {
+    public Book updateBookByBookId(Long id, BookRequestDTO dto) {
 
         return bookRepository.findById(id)
                 .map(book -> {
@@ -106,7 +106,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public void deleteBook(Long id) {
+    public void deleteBookByBookId(Long id) {
 
         if (bookCopyRepository.existsByBook_Id(id)) {
             throw new BookHasCopiesException("Cannot delete book with physical copies");

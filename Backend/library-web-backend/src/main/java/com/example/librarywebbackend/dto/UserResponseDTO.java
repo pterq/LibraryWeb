@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
-@Getter
 @AllArgsConstructor
-public class RegisterResponseDTO {
-
+@Getter
+public class UserResponseDTO {
     private Long userId;
     private String firstName;
     private String lastName;
@@ -18,7 +16,4 @@ public class RegisterResponseDTO {
     private String phone;
     private UserRole role;
     private boolean hasFee;
-    private String accessToken;
-    private String tokenType;
-    private Instant tokenExpiresAt;
 }

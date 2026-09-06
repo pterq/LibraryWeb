@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.repository;
 
 import com.example.librarywebbackend.entity.Category;
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.CategoryWithCountResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,5 +14,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("select new com.example.librarywebbackend.dto.CategoryWithCountDTO(c.id, c.name, coalesce(count(b.id), 0)) " +
             "from Category c left join c.books b group by c.id, c.name order by c.name")
-    List<CategoryWithCountDTO> findCategoriesWithCount();
+    List<CategoryWithCountResponseDTO> findCategoriesWithCount();
 }

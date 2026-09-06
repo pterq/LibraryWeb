@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.mapper;
 
-import com.example.librarywebbackend.dto.AuthorDto;
-import com.example.librarywebbackend.dto.BookDto;
-import com.example.librarywebbackend.dto.CategoryDto;
+import com.example.librarywebbackend.dto.AuthorResponseDTO;
+import com.example.librarywebbackend.dto.BookResponseDTO;
+import com.example.librarywebbackend.dto.CategoryResponseDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.entity.Book;
 import org.springframework.stereotype.Component;
@@ -12,11 +12,11 @@ import java.util.List;
 @Component
 public class BookMapper {
 
-    public BookDto toDto(Book book) {
+    public BookResponseDTO toDto(Book book) {
         if (book == null) return null;
 
         // 🔵 Autorzy
-        List<AuthorDto> authors = book.getAuthors() == null
+        List<AuthorResponseDTO> authors = book.getAuthors() == null
                 ? List.of()
                 : book.getAuthors()
                 .stream()
@@ -24,14 +24,14 @@ public class BookMapper {
                 .toList();
 
         // 🟢 Kategorie (lista!)
-        List<CategoryDto> categories = book.getCategories() == null
+        List<CategoryResponseDTO> categories = book.getCategories() == null
                 ? List.of()
                 : book.getCategories()
                 .stream()
-                .map(cat -> new CategoryDto(cat.getId(), cat.getName()))
+                .map(cat -> new CategoryResponseDTO(cat.getId(), cat.getName()))
                 .toList();
 
-        return new BookDto(
+        return new BookResponseDTO(
                 book.getId(),
                 book.getTitle(),
                 book.getDescription(),
@@ -43,8 +43,8 @@ public class BookMapper {
         );
     }
 
-    private AuthorDto toAuthorDto(Author author) {
-        return new AuthorDto(
+    private AuthorResponseDTO toAuthorDto(Author author) {
+        return new AuthorResponseDTO(
                 author.getId(),
                 author.getFirstName(),
                 author.getLastName(),

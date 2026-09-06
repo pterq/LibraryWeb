@@ -8,13 +8,13 @@ public interface IAuthorService {
 
     List<Author> getAllAuthors();
 
-    Author getAuthorById(Long id);
+    Author getAutorByAuthorId(Long id);
 
     Author createAuthor(Author author);
 
-    Author updateAuthor(Long id, Author updated);
+    Author updateAuthorByAuthorId(Long id, Author updated);
 
-    void deleteAuthor(Long id);
+    void deleteAuthorByAuthorId(Long id);
 
-    List<Author> searchAuthors(String query);
+    //List<Author> searchAuthors(String query);
 }

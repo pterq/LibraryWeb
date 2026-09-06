@@ -32,7 +32,6 @@ public class Book {
     @Column(length = 1024)
     private String imageUrl;
 
-    //WIELE AUTORÓW
     @ManyToMany
     @JoinTable(
             name = "book_authors",
@@ -41,7 +40,6 @@ public class Book {
     )
     private List<Author> authors = new ArrayList<>();
 
-    //WIELE KATEGORII
     @ManyToMany
     @JoinTable(
             name = "book_categories",
@@ -49,4 +47,10 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private List<Category> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<BookPhyscial> copies = new ArrayList<>();
+
+
 }
+

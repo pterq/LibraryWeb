@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.dto;
 
-public record AuthorDto(
+public record AuthorResponseDTO(
         Long id,
         String firstName,
         String lastName,

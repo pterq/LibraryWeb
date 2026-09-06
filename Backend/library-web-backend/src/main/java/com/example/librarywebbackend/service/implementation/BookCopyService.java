@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.BookCopyResponseDTO;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.repository.BookCopyRepository;
@@ -23,19 +24,26 @@ public class BookCopyService implements IBookCopyService {
     }
 
     @Override
-    public BookPhyscial getCopyById(Long id) {
+    public BookPhyscial getCopyByCopyId(Long id) {
         return bookCopyRepository.findById(id)
                 .orElse(null);
     }
 
     @Override
-    public BookPhyscial createCopy(BookPhyscial copy) {
+    public BookCopyResponseDTO createCopy(BookPhyscial copy) {
         copy.setStatus(CopyStatus.AVAILABLE);
-        return bookCopyRepository.save(copy);
+        BookPhyscial saved = bookCopyRepository.save(copy);
+
+        return new BookCopyResponseDTO(
+                saved.getBook().getId(),
+                saved.getInventoryCode(),
+                saved.getStatus().name()
+        );
     }
 
+
     @Override
-    public BookPhyscial updateCopy(Long id, BookPhyscial updated) {
+    public BookPhyscial updateCopyByCopyId(Long id, BookPhyscial updated) {
         return bookCopyRepository.findById(id)
                 .map(copy -> {
                     copy.setBook(updated.getBook());
@@ -47,7 +55,7 @@ public class BookCopyService implements IBookCopyService {
     }
 
     @Override
-    public BookPhyscial updateStatus(Long id, CopyStatus status) {
+    public BookPhyscial updateCopyStatusByCopyId(Long id, CopyStatus status) {
         return bookCopyRepository.findById(id)
                 .map(copy -> {
                     copy.setStatus(status);
@@ -57,7 +65,7 @@ public class BookCopyService implements IBookCopyService {
     }
 
     @Override
-    public void deleteCopy(Long id) {
+    public void deleteCopyByCopyId(Long id) {
         bookCopyRepository.deleteById(id);
     }
 }

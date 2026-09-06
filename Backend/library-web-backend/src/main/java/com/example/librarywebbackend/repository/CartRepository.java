@@ -24,4 +24,11 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     order by count(c) desc
 """)
     List<Object[]> countCartsByUserRaw();
+
+    @Query("""
+    select c from Cart c
+    where c.user.id = :userId
+    """)
+    List<Cart> findByUserId(Long userId);
+
 }

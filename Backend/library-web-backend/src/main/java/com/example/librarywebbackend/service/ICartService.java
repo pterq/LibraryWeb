@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.CartRequestDTO;
+import com.example.librarywebbackend.dto.CartItemsResponseDTO;
 import com.example.librarywebbackend.dto.CartWithCountDTO;
 import com.example.librarywebbackend.entity.Cart;
 
@@ -9,11 +11,13 @@ public interface ICartService {
 
     List<Cart> getAllCarts();
 
-    Cart getCartById(Long id);
+    Cart createCartItem(Cart cart);
 
-    Cart createCart(Cart cart);
+    CartItemsResponseDTO getCartItemsByUserId(Long id);
 
-    void deleteCart(Long id);
+    void deleteCartItemByCartItemId(Long id);
 
-    List<CartWithCountDTO> getCartCountsByUser();
+    CartItemsResponseDTO updateCartItemByCartItemId(Long id, CartRequestDTO dto);
+
+    List<CartWithCountDTO> getAllUsersCartItemCounts();
 }

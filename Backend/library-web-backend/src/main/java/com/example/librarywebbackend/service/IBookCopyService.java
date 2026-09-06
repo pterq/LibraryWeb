@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.BookCopyResponseDTO;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 
@@ -9,13 +10,13 @@ public interface IBookCopyService {
 
     List<BookPhyscial> getAllCopies();
 
-    BookPhyscial getCopyById(Long id);
+    BookPhyscial getCopyByCopyId(Long id);
 
-    BookPhyscial createCopy(BookPhyscial copy);
+    BookCopyResponseDTO createCopy(BookPhyscial copy);
 
-    BookPhyscial updateCopy(Long id, BookPhyscial updated);
+    BookPhyscial updateCopyByCopyId(Long id, BookPhyscial updated);
 
-    BookPhyscial updateStatus(Long id, CopyStatus status);
+    BookPhyscial updateCopyStatusByCopyId(Long id, CopyStatus status);
 
-    void deleteCopy(Long id);
+    void deleteCopyByCopyId(Long id);
 }

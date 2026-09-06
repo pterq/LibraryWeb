@@ -10,19 +10,19 @@ public interface IFeeService {
 
     List<Fee> getAllFees();
 
-    List<Fee> getFeesByStatus(FeeStatus status);
+    //List<Fee> getFeesByStatus(FeeStatus status);
 
-    List<Fee> getFeesByUserId(Long userId);
+    List<Fee> getUserFessByUserId(Long id);
 
-    Fee getFeeById(Long id);
+    Fee getFeeByFeeId(Long id);
 
     Fee createFee(Fee fee);
 
-    Fee payFee(Long id);
+    //Fee payFee(Long id);
 
-    Fee updateStatus(Long id, FeeStatus status);
+    Fee updateFeeStatus(Long id, FeeStatus status);
 
-    void deleteFee(Long id);
+    void deleteFeeByFeeId(Long id);
 
-    List<FeeWithCountDTO> getFeeCountsByUser();
+    List<FeeWithCountDTO> getAllUsersFeeCounts();
 }

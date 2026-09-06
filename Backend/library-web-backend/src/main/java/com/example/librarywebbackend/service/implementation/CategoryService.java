@@ -2,7 +2,7 @@ package com.example.librarywebbackend.service.implementation;
 
 
 import com.example.librarywebbackend.entity.Category;
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.CategoryWithCountResponseDTO;
 import com.example.librarywebbackend.repository.CategoryRepository;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.stereotype.Service;
@@ -24,12 +24,12 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public List<CategoryWithCountDTO> getCategoriesWithCount() {
+    public List<CategoryWithCountResponseDTO> getCategoriesWithBookCounts() {
         return categoryRepository.findCategoriesWithCount();
     }
 
     @Override
-    public Category getCategoryById(Long id) {
+    public Category getCategoryByCategoryId(Long id) {
         return categoryRepository.findById(id)
                 .orElse(null);
     }
@@ -45,7 +45,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public Category updateCategory(Long id, Category updated) {
+    public Category updateCategoryByCategoryId(Long id, Category updated) {
         return categoryRepository.findById(id)
                 .map(category -> {
                     String normalizedName = normalizeName(updated.getName());
@@ -59,7 +59,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void deleteCategory(Long id) {
+    public void deleteCategoryByCategoryId(Long id) {
         categoryRepository.deleteById(id);
     }
 

@@ -26,18 +26,19 @@ public class FeeService implements IFeeService {
         return feeRepository.findAll();
     }
 
+    /*
     @Override
     public List<Fee> getFeesByStatus(FeeStatus status) {
         return feeRepository.findByStatus(status);
     }
-
+    */
     @Override
-    public List<Fee> getFeesByUserId(Long userId) {
+    public List<Fee> getUserFessByUserId(Long userId) {
         return feeRepository.findByUserId(userId);
     }
 
     @Override
-    public Fee getFeeById(Long id) {
+    public Fee getFeeByFeeId(Long id) {
         return feeRepository.findById(id)
                 .orElse(null);
     }
@@ -48,7 +49,7 @@ public class FeeService implements IFeeService {
         fee.setStatus(FeeStatus.PENDING);
         return feeRepository.save(fee);
     }
-
+    /*
     @Override
     public Fee payFee(Long id) {
         return feeRepository.findById(id)
@@ -59,9 +60,10 @@ public class FeeService implements IFeeService {
                 })
                 .orElse(null);
     }
+    */
 
     @Override
-    public Fee updateStatus(Long id, FeeStatus status) {
+    public Fee updateFeeStatus(Long id, FeeStatus status) {
         return feeRepository.findById(id)
                 .map(fee -> {
                     fee.setStatus(status);
@@ -72,12 +74,12 @@ public class FeeService implements IFeeService {
     }
 
     @Override
-    public void deleteFee(Long id) {
+    public void deleteFeeByFeeId(Long id) {
         feeRepository.deleteById(id);
     }
 
     @Override
-    public List<FeeWithCountDTO> getFeeCountsByUser() {
+    public List<FeeWithCountDTO> getAllUsersFeeCounts() {
         return feeRepository.countFeesByUserRaw()
                 .stream()
                 .map(row -> new FeeWithCountDTO(

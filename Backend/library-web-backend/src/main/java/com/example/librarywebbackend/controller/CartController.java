@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.CartRequestDTO;
+import com.example.librarywebbackend.dto.CartItemsResponseDTO;
 import com.example.librarywebbackend.dto.CartWithCountDTO;
 import com.example.librarywebbackend.entity.Cart;
 import com.example.librarywebbackend.service.ICartService;
@@ -26,12 +28,12 @@ public class CartController {
 
     @GetMapping("/counts")
     public List<CartWithCountDTO> getCartCounts() {
-        return cartService.getCartCountsByUser();
+        return cartService.getAllUsersCartItemCounts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cart> getById(@PathVariable Long id) {
-        Cart cart = cartService.getCartById(id);
+    public ResponseEntity<CartItemsResponseDTO> getById(@PathVariable Long id) {
+        CartItemsResponseDTO cart = cartService.getCartItemsByUserId(id);
         return cart != null
                 ? ResponseEntity.ok(cart)
                 : ResponseEntity.notFound().build();
@@ -40,7 +42,7 @@ public class CartController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Cart cart) {
         try {
-            return ResponseEntity.ok(cartService.createCart(cart));
+            return ResponseEntity.ok(cartService.createCartItem(cart));
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
@@ -50,7 +52,15 @@ public class CartController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        cartService.deleteCart(id);
+        cartService.deleteCartItemByCartItemId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CartItemsResponseDTO> updateCartItemByCartItemId(@RequestParam Long id, @RequestBody CartRequestDTO dto) {
+        CartItemsResponseDTO updatedCart = cartService.updateCartItemByCartItemId(id, dto);
+        return updatedCart != null
+                ? ResponseEntity.ok(updatedCart)
+                : ResponseEntity.notFound().build();
     }
 }

@@ -1,6 +1,5 @@
 package com.example.librarywebbackend.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BookCreateDTO {
+public class BookRequestDTO {
     private String title;
     private String description;
     private String imageUrl;

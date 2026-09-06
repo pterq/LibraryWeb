@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.dto;
 
-public record CategoryDto(
+public record CategoryResponseDTO(
         Long id,
         String name
 ) {}

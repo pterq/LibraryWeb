@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.dto.BookCreateDTO;
+import com.example.librarywebbackend.dto.BookRequestDTO;
 import com.example.librarywebbackend.entity.Book;
 
 import java.util.List;
@@ -11,9 +11,9 @@ public interface IBookService {
 
     Book getBookById(Long id);
 
-    Book createBook(BookCreateDTO dto);
+    Book createBook(BookRequestDTO dto);
 
-    Book updateBook(Long id, BookCreateDTO dto);
+    Book updateBookByBookId(Long id, BookRequestDTO dto);
 
-    void deleteBook(Long id);
+    void deleteBookByBookId(Long id);
 }

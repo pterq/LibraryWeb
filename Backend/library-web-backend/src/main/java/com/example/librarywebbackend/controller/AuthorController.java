@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.AuthorDto;
+import com.example.librarywebbackend.dto.AuthorResponseDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.service.IAuthorService;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<AuthorDto> getAll() {
+    public List<AuthorResponseDTO> getAll() {
         return authorService.getAllAuthors()
                 .stream()
                 .map(this::toDto)
@@ -27,21 +27,21 @@ public class AuthorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorDto> getById(@PathVariable Long id) {
-        Author author = authorService.getAuthorById(id);
+    public ResponseEntity<AuthorResponseDTO> getById(@PathVariable Long id) {
+        Author author = authorService.getAutorByAuthorId(id);
         return author != null
                 ? ResponseEntity.ok(toDto(author))
                 : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public AuthorDto create(@RequestBody Author author) {
+    public AuthorResponseDTO create(@RequestBody Author author) {
         return toDto(authorService.createAuthor(author));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> update(@PathVariable Long id, @RequestBody Author updated) {
-        Author author = authorService.updateAuthor(id, updated);
+    public ResponseEntity<AuthorResponseDTO> update(@PathVariable Long id, @RequestBody Author updated) {
+        Author author = authorService.updateAuthorByAuthorId(id, updated);
         return author != null
                 ? ResponseEntity.ok(toDto(author))
                 : ResponseEntity.notFound().build();
@@ -49,10 +49,11 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        authorService.deleteAuthor(id);
+        authorService.deleteAuthorByAuthorId(id);
         return ResponseEntity.noContent().build();
     }
 
+    /*
     @GetMapping("/search")
     public List<AuthorDto> search(@RequestParam String q) {
         return authorService.searchAuthors(q)
@@ -61,8 +62,10 @@ public class AuthorController {
                 .toList();
     }
 
-    private AuthorDto toDto(Author author) {
-        return new AuthorDto(
+     */
+
+    private AuthorResponseDTO toDto(Author author) {
+        return new AuthorResponseDTO(
                 author.getId(),
                 author.getFirstName(),
                 author.getLastName(),

@@ -6,8 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookCopyCreateRequest {
+public class BookCopyRequestDTO {
     private Long bookId;
     private String inventoryCode;
-
+    private String status;
 }
+

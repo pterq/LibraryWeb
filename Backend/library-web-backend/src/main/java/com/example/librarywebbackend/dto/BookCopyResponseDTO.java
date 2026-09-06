@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BookCopyDTO{
+public class BookCopyResponseDTO {
     private Long bookId;
     private String inventoryCode;
     private String status;

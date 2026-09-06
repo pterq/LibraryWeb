@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoanWithCountDTO {
 
-    private Long id;        // sztuczne ID
-    private UserDTO user;   // DTO użytkownika
+    private Long id;
+    private UserDTO user;
     private Long countLoans;
     private Long countBorrowed;
     private Long countReturned;

@@ -10,11 +10,13 @@ public interface ILoanService {
 
     List<Loan> getAllLoans();
 
-    List<Loan> getLoansByStatus(LoanStatus status);
+    //List<Loan> getLoansByStatus(LoanStatus status);
 
-    List<Loan> getLoansByUserId(Long userId);
+    List<Loan> getLoansByUserId(Long id);
 
-    Loan getLoanById(Long id);
+    Loan getLoanByLoanId(Long id);
+
+    //Loan updateLoanByLoanId(Long id);
 
     Loan borrowBook(Loan loan);
 

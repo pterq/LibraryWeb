@@ -25,10 +25,13 @@ public class LoanController {
         return loanService.getAllLoans();
     }
 
+    /*
     @GetMapping("/status/{status}")
     public List<Loan> getByStatus(@PathVariable LoanStatus status) {
         return loanService.getLoansByStatus(status);
     }
+
+     */
 
     @GetMapping("/userBooks/{userId}")
     public List<Loan> getLoansByUserId(@PathVariable Long userId) {
@@ -37,7 +40,7 @@ public class LoanController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Loan> getById(@PathVariable Long id) {
-        Loan loan = loanService.getLoanById(id);
+        Loan loan = loanService.getLoanByLoanId(id);
         return loan != null
                 ? ResponseEntity.ok(loan)
                 : ResponseEntity.notFound().build();

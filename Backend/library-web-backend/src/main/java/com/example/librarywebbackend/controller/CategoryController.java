@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.CategoryWithCountResponseDTO;
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.http.HttpStatus;
@@ -25,13 +25,13 @@ public class CategoryController {
     }
 
     @GetMapping("/counts")
-    public List<CategoryWithCountDTO> getCategoriesWithCount() {
-        return categoryService.getCategoriesWithCount();
+    public List<CategoryWithCountResponseDTO> getCategoriesWithCount() {
+        return categoryService.getCategoriesWithBookCounts();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Category> getById(@PathVariable Long id) {
-        Category category = categoryService.getCategoryById(id);
+        Category category = categoryService.getCategoryByCategoryId(id);
         return category != null
                 ? ResponseEntity.ok(category)
                 : ResponseEntity.notFound().build();
@@ -51,7 +51,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Category updated) {
         try {
-            Category category = categoryService.updateCategory(id, updated);
+            Category category = categoryService.updateCategoryByCategoryId(id, updated);
             return category != null
                     ? ResponseEntity.ok(category)
                     : ResponseEntity.notFound().build();
@@ -64,7 +64,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategoryByCategoryId(id);
         return ResponseEntity.noContent().build();
     }
 

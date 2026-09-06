@@ -26,22 +26,23 @@ public class FeeController {
 
     @GetMapping("/counts")
     public List<FeeWithCountDTO> getFeeCounts() {
-        return feeService.getFeeCountsByUser();
+        return feeService.getAllUsersFeeCounts();
     }
 
     @GetMapping("/userFees/{userId}")
     public List<Fee> getFeesByUserId(@PathVariable Long userId) {
-        return feeService.getFeesByUserId(userId);
+        return feeService.getUserFessByUserId(userId);
     }
 
+    /*
     @GetMapping("/status/{status}")
     public List<Fee> getByStatus(@PathVariable FeeStatus status) {
         return feeService.getFeesByStatus(status);
     }
-
+    */
     @GetMapping("/{id}")
     public ResponseEntity<Fee> getById(@PathVariable Long id) {
-        Fee fee = feeService.getFeeById(id);
+        Fee fee = feeService.getFeeByFeeId(id);
         return fee != null
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();
@@ -52,6 +53,7 @@ public class FeeController {
         return feeService.createFee(fee);
     }
 
+    /*
     @PostMapping("/pay/{id}")
     public ResponseEntity<Fee> pay(@PathVariable Long id) {
         Fee fee = feeService.payFee(id);
@@ -59,10 +61,10 @@ public class FeeController {
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();
     }
-
+    */
     @PatchMapping("/{id}/{status}")
     public ResponseEntity<Fee> updateStatus(@PathVariable Long id, @PathVariable FeeStatus status) {
-        Fee fee = feeService.updateStatus(id, status);
+        Fee fee = feeService.updateFeeStatus(id, status);
         return fee != null
                 ? ResponseEntity.ok(fee)
                 : ResponseEntity.notFound().build();
@@ -70,7 +72,7 @@ public class FeeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        feeService.deleteFee(id);
+        feeService.deleteFeeByFeeId(id);
         return ResponseEntity.noContent().build();
     }
 }

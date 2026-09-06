@@ -22,7 +22,7 @@ public class AuthorService implements IAuthorService {
     }
 
     @Override
-    public Author getAuthorById(Long id) {
+    public Author getAutorByAuthorId(Long id) {
         return authorRepository.findById(id)
                 .orElse(null);
     }
@@ -33,7 +33,7 @@ public class AuthorService implements IAuthorService {
     }
 
     @Override
-    public Author updateAuthor(Long id, Author updated) {
+    public Author updateAuthorByAuthorId(Long id, Author updated) {
         return authorRepository.findById(id)
                 .map(author -> {
                     author.setFirstName(updated.getFirstName());
@@ -45,7 +45,7 @@ public class AuthorService implements IAuthorService {
     }
 
     @Override
-    public void deleteAuthor(Long id) {
+    public void deleteAuthorByAuthorId(Long id) {
 
         if (!authorRepository.existsById(id)) {
             throw new RuntimeException("Author not found");
@@ -60,9 +60,11 @@ public class AuthorService implements IAuthorService {
         authorRepository.deleteById(id);
     }
 
-
+    /*
     @Override
     public List<Author> searchAuthors(String query) {
         return authorRepository.searchByName(query);
     }
+    */
+
 }

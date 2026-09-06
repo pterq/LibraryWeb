@@ -2,14 +2,14 @@ package com.example.librarywebbackend.dto;
 
 import java.util.List;
 
-public record BookDto(
+public record BookResponseDTO(
         Long id,
         String title,
         String description,
         String imageUrl,
         String isbn,
         Integer publishedYear,
-        List<CategoryDto> categories,
-        List<AuthorDto> authors
+        List<CategoryResponseDTO> categories,
+        List<AuthorResponseDTO> authors
 ) {}
 

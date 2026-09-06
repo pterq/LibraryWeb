@@ -40,18 +40,21 @@ public class LoanService implements ILoanService {
         return loanRepository.findAll();
     }
 
+    /*
     @Override
     public List<Loan> getLoansByStatus(LoanStatus status) {
         return loanRepository.findByStatus(status);
     }
 
+     */
+
     @Override
-    public List<Loan> getLoansByUserId(Long userId) {
-        return loanRepository.findByUserId(userId);
+    public List<Loan> getLoansByUserId(Long id) {
+        return loanRepository.findByUserId(id);
     }
 
     @Override
-    public Loan getLoanById(Long id) {
+    public Loan getLoanByLoanId(Long id) {
         return loanRepository.findById(id)
                 .orElse(null);
     }

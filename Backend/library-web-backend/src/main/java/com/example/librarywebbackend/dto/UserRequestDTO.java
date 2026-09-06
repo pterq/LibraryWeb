@@ -3,22 +3,17 @@ package com.example.librarywebbackend.dto;
 import com.example.librarywebbackend.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @AllArgsConstructor
-public class RegisterResponseDTO {
-
-    private Long userId;
+public class UserRequestDTO {
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
     private UserRole role;
-    private boolean hasFee;
-    private String accessToken;
-    private String tokenType;
-    private Instant tokenExpiresAt;
 }

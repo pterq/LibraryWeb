@@ -1,5 +1,7 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.CartRequestDTO;
+import com.example.librarywebbackend.dto.CartItemsResponseDTO;
 import com.example.librarywebbackend.dto.CartWithCountDTO;
 import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.BookPhyscial;
@@ -40,13 +42,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Cart getCartById(Long id) {
-        return cartRepository.findById(id)
-                .orElse(null);
-    }
-
-    @Override
-    public Cart createCart(Cart cart) {
+    public Cart createCartItem(Cart cart) {
         if (cart.getUser() == null || cart.getUser().getId() == null) {
             throw new IllegalArgumentException("User id is required");
         }
@@ -78,15 +74,71 @@ public class CartService implements ICartService {
         return cartRepository.save(cart);
     }
 
+    @Override
+    public CartItemsResponseDTO getCartItemsByUserId(Long id) {
+        List<Cart> carts = cartRepository.findByUserId(id);
+
+        if (carts.isEmpty()) {
+            throw new IllegalArgumentException("No cart items found for user");
+        }
+
+        Cart firstCart = carts.get(0);
+        return new CartItemsResponseDTO(
+                firstCart.getId(),
+                firstCart.getUser().getId(),
+                firstCart.getCopy().getId(),
+                firstCart.getReservedAt(),
+                firstCart.getExpiresAt()
+        );
+    }
+
+    @Override
+    public CartItemsResponseDTO updateCartItemByCartItemId(Long id, CartRequestDTO dto) {
+
+        Cart existingCart = cartRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            existingCart.setUser(user);
+        }
+
+        if (dto.getCopyId() != null) {
+            BookPhyscial copy = bookCopyRepository.findById(dto.getCopyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
+            existingCart.setCopy(copy);
+        }
+
+        if (dto.getReservedAt() != null) {
+            existingCart.setReservedAt(dto.getReservedAt());
+        }
+
+        if (dto.getExpiresAt() != null) {
+            existingCart.setExpiresAt(dto.getExpiresAt());
+        }
+
+        existingCart = cartRepository.save(existingCart);
+
+        return new CartItemsResponseDTO(
+                existingCart.getId(),
+                existingCart.getUser().getId(),
+                existingCart.getCopy().getId(),
+                existingCart.getReservedAt(),
+                existingCart.getExpiresAt()
+        );
+    }
+
+
 
 
     @Override
-    public void deleteCart(Long id) {
+    public void deleteCartItemByCartItemId(Long id) {
         cartRepository.deleteById(id);
     }
 
     @Override
-    public List<CartWithCountDTO> getCartCountsByUser() {
+    public List<CartWithCountDTO> getAllUsersCartItemCounts() {
         return cartRepository.countCartsByUserRaw()
                 .stream()
                 .map(row -> new CartWithCountDTO(
