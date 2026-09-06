@@ -3,7 +3,7 @@ import type {
 	AuthorType,
 	AuthorsType,
 	BookType,
-	BookPhysicalType,
+	BookPhysicalResponse,
 	CategoryType,
 	LoanResponse,
 	FeeType,
@@ -53,8 +53,8 @@ const mockBook: BookType = {
 		"https://images-na.ssl-images-amazon.com/images/I/41xShlnTZTL._SX374_BO1,204,203,200_.jpg",
 };
 
-const mockBookPhysical: BookPhysicalType = {
-	id: 1,
+const mockBookPhysical: BookPhysicalResponse = {
+	copyId: 1,
 	inventoryCode: "INV-2026-0021",
 	status: "AVAILABLE",
 	book: mockBook,
@@ -99,7 +99,7 @@ const mockFee: FeeType = {
 const mockReservation: CartType = {
 	id: 1,
 	user: mockUser,
-	copy: mockBookPhysical.id,
+	copy: mockBookPhysical.copyId,
 	reservedAt: new Date("2026-08-30T04:42:43.95786"),
 	expiresAt: new Date("2026-09-13T10:00:00"),
 	bookPhysical: mockBookPhysical,
@@ -142,7 +142,7 @@ const mockBooks: BookType[] = Array.from({ length: 15 }, (_, i) => ({
 	coverImageUrl: `https://books.google.com/books/content?id=NwxLAQAAIAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api`,
 }));
 
-const mockBookPhysicals: BookPhysicalType[] = Array.from({ length: 15 }, (_, i) => ({
+const mockBookPhysicals: BookPhysicalResponse[] = Array.from({ length: 15 }, (_, i) => ({
 	book: mockBooks[i],
 	id: i + 1,
 	inventoryCode: `INV-2026-00${i + 1}`,
@@ -172,7 +172,7 @@ const mockReservations: ReservastionsType = {
 	reservations: Array.from({ length: 15 }, (_, i) => ({
 		id: i + 1,
 		user: mockUsers[(i * 3) % mockUsers.length],
-		copyId: mockBookPhysicals[i].id,
+		copyId: mockBookPhysicals[i].copyId,
 		reservedAt: new Date(
 			new Date("2026-08-30T04:42:43.95786").getTime() + i * 24 * 60 * 60 * 1000,
 		),

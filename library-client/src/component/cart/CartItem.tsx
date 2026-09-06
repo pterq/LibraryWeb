@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import type {
 	CartType,
-	BookPhysicalType,
+	BookPhysicalResponse,
 	BookType,
 	AuthorType,
 	AuthorsType,

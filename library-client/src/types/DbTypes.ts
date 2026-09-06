@@ -25,8 +25,8 @@ export interface BookType {
 }
 
 //============================================================================
-export interface BookPhysicalType {
-	id: number;
+export interface BookPhysicalResponse {
+	copyId: number;
 	inventoryCode: string;
 	status: BookPhysicalStatusType;
 	book: BookType;
@@ -41,7 +41,7 @@ export interface CategoryType {
 //============================================================================
 export interface LoanResponse {
 	id: number;
-	copy: BookPhysicalType;
+	copy: BookPhysicalResponse;
 	loanDate: Date;
 	returnDate: Date;
 	dueDate: Date;
@@ -84,10 +84,10 @@ export type FeeType = {
 export interface CartType {
 	id: number;
 	user: UserType;
-	copy: BookPhysicalType;
+	copy: BookPhysicalResponse;
 	reservedAt: Date;
 	expiresAt: Date;
-	bookPhysical: BookPhysicalType;
+	bookPhysical: BookPhysicalResponse;
 }
 
 //============================================================================

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { AuthorType, CartType, BookType, BookPhysicalType } from "../../../types/DbTypes";
+import type { AuthorType, CartType, BookType, BookPhysicalResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import apiCarts from "../../../api/apiCarts";
@@ -75,7 +75,7 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					String(shoppingCart.id).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
 					String(shoppingCart.user.id).includes(lowerSearch) ||
-					String(bookCopy.id).includes(lowerSearch) ||
+					String(bookCopy.copyId).includes(lowerSearch) ||
 					bookCopy.book.title.toLowerCase().includes(lowerSearch) ||
 					authors.includes(lowerSearch) ||
 					bookCopy.inventoryCode.toLowerCase().includes(lowerSearch)
@@ -101,8 +101,8 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					case "bookPhysical": {
 						const aCopy = getReservationCopy(a);
 						const bCopy = getReservationCopy(b);
-						aVal = aCopy?.id ?? "";
-						bVal = bCopy?.id ?? "";
+						aVal = aCopy?.copyId ?? "";
+						bVal = bCopy?.copyId ?? "";
 						break;
 					}
 					case "bookPhysical":
@@ -221,12 +221,12 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 								{cartItem.user.lastName}
 							</td>
 							<td>
-								({getReservationCopy(cartItem)?.id ?? "-"}){" "}
+								({getReservationCopy(cartItem)?.copyId ?? "-"}){" "}
 								{getReservationCopy(cartItem)?.book.title ?? "-"}
 							</td>
 
 							<td>
-								({getReservationCopy(cartItem)?.id ?? "-"}){" "}
+								({getReservationCopy(cartItem)?.copyId ?? "-"}){" "}
 								{getReservationCopy(cartItem)?.inventoryCode ?? "-"}
 							</td>
 							<td>{formatReservationDate(cartItem.reservedAt)}</td>

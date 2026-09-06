@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { BookPhysicalType, BookPhysicalForm } from "../types/DbTypes";
+import type { BookPhysicalResponse, BookPhysicalForm } from "../types/DbTypes";
 
 //endpoints
 const BOOK_COPY_ENDPOINT = "/copies";
@@ -9,7 +9,7 @@ const BOOK_COPY_ENDPOINT = "/copies";
 
 const getBookCopies = async () => {
 	try {
-		const response = await axiosClient.get<BookPhysicalType[]>(BOOK_COPY_ENDPOINT);
+		const response = await axiosClient.get<BookPhysicalResponse[]>(BOOK_COPY_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch book copies:", error);
@@ -19,7 +19,7 @@ const getBookCopies = async () => {
 
 const addBookCopy = async (bookCopy: BookPhysicalForm) => {
 	try {
-		const response = await axiosClient.post<BookPhysicalType>(BOOK_COPY_ENDPOINT, bookCopy);
+		const response = await axiosClient.post<BookPhysicalResponse>(BOOK_COPY_ENDPOINT, bookCopy);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add book copy:", error);
@@ -29,7 +29,7 @@ const addBookCopy = async (bookCopy: BookPhysicalForm) => {
 
 const getBookCopyById = async (id: number) => {
 	try {
-		const response = await axiosClient.get<BookPhysicalType>(`${BOOK_COPY_ENDPOINT}/${id}`);
+		const response = await axiosClient.get<BookPhysicalResponse>(`${BOOK_COPY_ENDPOINT}/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch book copy with id ${id}:`, error);
@@ -39,7 +39,7 @@ const getBookCopyById = async (id: number) => {
 
 const updateBookCopyById = async (id: number, bookCopy: BookPhysicalForm) => {
 	try {
-		const response = await axiosClient.put<BookPhysicalType>(
+		const response = await axiosClient.put<BookPhysicalResponse>(
 			`${BOOK_COPY_ENDPOINT}/${id}`,
 			bookCopy,
 		);

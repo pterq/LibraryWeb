@@ -3,9 +3,11 @@ package com.example.librarywebbackend.service.implementation;
 import com.example.librarywebbackend.dto.BookCopyCreateRequest;
 import com.example.librarywebbackend.dto.BookCopyRequestDTO;
 import com.example.librarywebbackend.dto.BookCopyResponseDTO;
+import com.example.librarywebbackend.dto.BookResponseDTO;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
+import com.example.librarywebbackend.mapper.BookMapper;
 import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.BookRepository;
 import com.example.librarywebbackend.service.IBookCopyService;
@@ -20,11 +22,14 @@ public class BookCopyService implements IBookCopyService {
 
     private final BookCopyRepository bookCopyRepository;
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     public BookCopyService(BookCopyRepository bookCopyRepository,
-                           BookRepository bookRepository) {
+                           BookRepository bookRepository,
+                           BookMapper bookMapper) {
         this.bookCopyRepository = bookCopyRepository;
         this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
     }
 
     @Override
@@ -71,7 +76,8 @@ public class BookCopyService implements IBookCopyService {
                     copy.setInventoryCode(req.getInventoryCode());
                     copy.setStatus(CopyStatus.valueOf(req.getStatus()));
 
-                    return toDTO(bookCopyRepository.save(copy));
+                    BookPhyscial saved = bookCopyRepository.save(copy);
+                    return toDTO(saved);
                 })
                 .orElse(null);
     }
@@ -82,7 +88,8 @@ public class BookCopyService implements IBookCopyService {
         return bookCopyRepository.findById(id)
                 .map(copy -> {
                     copy.setStatus(status);
-                    return toDTO(bookCopyRepository.save(copy));
+                    BookPhyscial saved = bookCopyRepository.save(copy);
+                    return toDTO(saved);
                 })
                 .orElse(null);
     }
@@ -93,8 +100,12 @@ public class BookCopyService implements IBookCopyService {
     }
 
     private BookCopyResponseDTO toDTO(BookPhyscial copy) {
+
+        BookResponseDTO bookDto = bookMapper.toDto(copy.getBook());
+
         return new BookCopyResponseDTO(
-                copy.getBook().getId(),
+                copy.getId(),
+                bookDto,
                 copy.getInventoryCode(),
                 copy.getStatus().name()
         );

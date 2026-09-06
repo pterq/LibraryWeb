@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import axiosClient from "../../../../api/axiosClient";
-import type { BookPhysicalType, CartType, UserType } from "../../../../types/DbTypes";
+import type { BookPhysicalResponse, CartType, UserType } from "../../../../types/DbTypes";
 import { MockData } from "../../../../types/MockData";
 
 import { actionFromLink, idFromLink, type PageAction } from "../../../../context/DataFromLink";
@@ -62,10 +62,12 @@ const getUserLabel = (user: Pick<UserType, "userId" | "firstName" | "lastName">)
 	return `${fullName || "Unknown user"} (ID: ${user.id})`;
 };
 
-const getCopyLabel = (copy: Pick<BookPhysicalType, "id" | "inventoryCode" | "status" | "book">) => {
+const getCopyLabel = (
+	copy: Pick<BookPhysicalResponse, "id" | "inventoryCode" | "status" | "book">,
+) => {
 	const bookTitle = copy.book?.title ?? "Unknown book";
 	const inventoryCode = copy.inventoryCode ?? "No inventory code";
-	return `Copy #${copy.id} - ${bookTitle} - ${inventoryCode} (${copy.status})`;
+	return `Copy #${copy.copyId} - ${bookTitle} - ${inventoryCode} (${copy.status})`;
 };
 
 const loadUsersFromMockData = (): UserOption[] =>
@@ -76,7 +78,7 @@ const loadUsersFromMockData = (): UserOption[] =>
 
 const loadCopiesFromMockData = (): CopyOption[] =>
 	MockData.mockBookPhysicals.map((copy) => ({
-		id: Number(copy.id),
+		id: Number(copy.copyId),
 		label: getCopyLabel(copy),
 	}));
 
@@ -143,7 +145,7 @@ const CartItemPageViewEditAdd = () => {
 
 			try {
 				const response = await axiosClient.get("/copies");
-				const copies = extractArrayFromResponse<BookPhysicalType>(response.data);
+				const copies = extractArrayFromResponse<BookPhysicalResponse>(response.data);
 
 				if (!copies.length) {
 					setCopyOptions(loadCopiesFromMockData());
@@ -152,7 +154,7 @@ const CartItemPageViewEditAdd = () => {
 
 				setCopyOptions(
 					copies.map((copy) => ({
-						id: Number(copy.id ?? 0),
+						id: Number(copy.copyId ?? 0),
 						label: getCopyLabel(copy),
 					})),
 				);

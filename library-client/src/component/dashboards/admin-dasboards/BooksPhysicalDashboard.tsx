@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import type { BookPhysicalType } from "../../../types/DbTypes";
+import type { BookPhysicalResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import TableAlert from "../../common/TableAlert";
@@ -21,9 +21,9 @@ type CrudState =
 const BooksPhysicalDashboard = () => {
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 
-	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalType[]>([]);
+	const [booksPhysical, setBooksPhysical] = useState<BookPhysicalResponse[]>([]);
 	const [search, setSearch] = useState("");
-	const [filterStatus, setFilterStatus] = useState<"ALL" | BookPhysicalType["status"]>("ALL");
+	const [filterStatus, setFilterStatus] = useState<"ALL" | BookPhysicalResponse["status"]>("ALL");
 	const [message, setMessage] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -33,7 +33,10 @@ const BooksPhysicalDashboard = () => {
 	const reloadBooksPhysical = () => {
 		apiBooksPhysical
 			.getBookCopies()
-			.then((data) => setBooksPhysical(data))
+			.then((data) => {
+				setBooksPhysical(data);
+				console.log("Fetched Books Physical:", data);
+			})
 			.catch(console.error);
 	};
 
@@ -43,13 +46,13 @@ const BooksPhysicalDashboard = () => {
 	};
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof BookPhysicalType;
+		key: keyof BookPhysicalResponse;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filterStatus !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: keyof BookPhysicalType) => {
+	const requestSort = (key: keyof BookPhysicalResponse) => {
 		let direction: "asc" | "desc" = "asc";
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
 			direction = "desc";
@@ -57,7 +60,7 @@ const BooksPhysicalDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof BookPhysicalType) => {
+	const getSortIcon = (key: keyof BookPhysicalResponse) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -90,8 +93,8 @@ const BooksPhysicalDashboard = () => {
 
 				switch (sortConfig.key) {
 					case "id":
-						aVal = a.id;
-						bVal = b.id;
+						aVal = a.copyId;
+						bVal = b.copyId;
 						break;
 					case "inventoryCode":
 						aVal = a.inventoryCode;
@@ -228,7 +231,9 @@ const BooksPhysicalDashboard = () => {
 									value={filterStatus}
 									onChange={(e) =>
 										setFilterStatus(
-											e.target.value as "ALL" | BookPhysicalType["status"],
+											e.target.value as
+												| "ALL"
+												| BookPhysicalResponse["status"],
 										)
 									}
 								>
@@ -248,7 +253,7 @@ const BooksPhysicalDashboard = () => {
 
 				<tbody>
 					{physicalBooks.map((copy, index) => (
-						<tr key={copy.id}>
+						<tr key={copy.copyId}>
 							<td>
 								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
 									? physicalBooks.length - index
@@ -256,7 +261,7 @@ const BooksPhysicalDashboard = () => {
 							</td>
 
 							<td>
-								({copy.id}) {copy.inventoryCode}
+								({copy.copyId}) {copy.inventoryCode}
 							</td>
 
 							<td>
@@ -272,22 +277,22 @@ const BooksPhysicalDashboard = () => {
 							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"
-									onClick={() => setCrud({ mode: "view", id: copy.id })}
+									onClick={() => setCrud({ mode: "view", id: copy.copyId })}
 								>
 									View
 								</button>
 
 								<button
 									className="btn btn-sm btn-warning me-2"
-									onClick={() => setCrud({ mode: "edit", id: copy.id })}
+									onClick={() => setCrud({ mode: "edit", id: copy.copyId })}
 								>
 									Edit
 								</button>
 								<DeleteButton
-									id={copy.id}
+									id={copy.copyId}
 									name={`(${copy.book?.id ?? "?"}) ${copy.book?.title ?? "Unknown"}`}
 									entityName="physical book"
-									onDelete={() => handleDelete(copy.id)}
+									onDelete={() => handleDelete(copy.copyId)}
 								/>
 							</td>
 						</tr>

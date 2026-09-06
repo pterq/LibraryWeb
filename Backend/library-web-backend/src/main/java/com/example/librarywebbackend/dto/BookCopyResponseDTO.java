@@ -1,14 +1,14 @@
 package com.example.librarywebbackend.dto;
 
+import com.example.librarywebbackend.entity.Book;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class BookCopyResponseDTO {
-    private Long bookId;
-    private String inventoryCode;
-    private String status;
-}
+
+public record BookCopyResponseDTO(
+        Long copyId,
+        BookResponseDTO book,
+        String inventoryCode,
+        String status
+) {}

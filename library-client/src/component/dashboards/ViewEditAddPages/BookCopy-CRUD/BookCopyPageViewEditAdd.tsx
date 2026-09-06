@@ -94,7 +94,7 @@ const BookCopyPageViewEditAdd = () => {
 
 	const mockBookCopy =
 		linkId != null
-			? MockData.mockBookPhysicals.find((copy) => Number(copy.id) === Number(linkId))
+			? MockData.mockBookPhysicals.find((copy) => Number(copy.copyId) === Number(linkId))
 			: undefined;
 
 	useEffect(() => {

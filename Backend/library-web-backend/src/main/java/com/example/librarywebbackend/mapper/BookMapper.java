@@ -38,7 +38,7 @@ public class BookMapper {
                 book.getImageUrl(),
                 book.getIsbn(),
                 book.getPublishedYear(),
-                categories,   // 🔥 tu przekazujesz listę kategorii
+                categories,
                 authors
         );
     }
