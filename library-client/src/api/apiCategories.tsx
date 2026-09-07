@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { CategoryType, CategoriesWithCountsType, CategoryForm } from "../types/DbTypes";
+import type { CategoryType, CategoriesWithCountsResponse, CategoryForm } from "../types/DbTypes";
 
 //endpoints
 const CATEGORIES_ENDPOINT = "/categories";
@@ -62,7 +62,7 @@ export const deleteCategoryById = async (id: number) => {
 
 export const getCategoriesWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<CategoriesWithCountsType[]>(
+		const response = await axiosClient.get<CategoriesWithCountsResponse[]>(
 			`${CATEGORIES_ENDPOINT}/counts`,
 		);
 		return response.data;

@@ -91,10 +91,10 @@ export interface CartItemResponse {
 }
 
 //============================================================================
-export interface CategoriesWithCountsType {
+export interface CategoriesWithCountsResponse {
 	id: number;
 	name: string;
-	countBooks: number;
+	bookCount: number;
 }
 
 export interface FeesWithCountsType {

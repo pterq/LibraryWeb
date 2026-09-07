@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.CategoryWithCountResponseDTO;
+import com.example.librarywebbackend.dto.CategoryWithCountDTO;
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class CategoryController {
     }
 
     @GetMapping("/counts")
-    public List<CategoryWithCountResponseDTO> getCategoriesWithCount() {
+    public List<CategoryWithCountDTO> getCategoriesWithCount() {
         return categoryService.getCategoriesWithBookCounts();
     }
 

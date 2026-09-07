@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.service;
 
 import com.example.librarywebbackend.entity.Category;
-import com.example.librarywebbackend.dto.CategoryWithCountResponseDTO;
+import com.example.librarywebbackend.dto.CategoryWithCountDTO;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public interface ICategoryService {
 
     List<Category> getAllCategories();
 
-    List<CategoryWithCountResponseDTO> getCategoriesWithBookCounts();
+    List<CategoryWithCountDTO> getCategoriesWithBookCounts();
 
     Category getCategoryByCategoryId(Long id);
 

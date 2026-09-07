@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CategoryWithCountResponseDTO {
+public class CategoryWithCountDTO {
 
     private Long id;
     private String name;

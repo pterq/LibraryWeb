@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { CategoriesWithCountsType } from "../../../types/DbTypes";
+import type { CategoriesWithCountsResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import DeleteButton from "../admin-components/DeleteButton";
@@ -19,7 +19,9 @@ type CrudState =
 
 const CategoriesDashboard = () => {
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
-	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsType[]>([]);
+	const [categoriesWithCount, setCategoriesWithCount] = useState<CategoriesWithCountsResponse[]>(
+		[],
+	);
 	const [message, setMessage] = useState<string | null>(null);
 	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
@@ -46,13 +48,13 @@ const CategoriesDashboard = () => {
 	const [search, setSearch] = useState("");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof CategoriesWithCountsType;
+		key: keyof CategoriesWithCountsResponse;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof CategoriesWithCountsType) => {
+	const requestSort = (key: keyof CategoriesWithCountsResponse) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -62,7 +64,7 @@ const CategoriesDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof CategoriesWithCountsType) => {
+	const getSortIcon = (key: keyof CategoriesWithCountsResponse) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -117,9 +119,9 @@ const CategoriesDashboard = () => {
 						aVal = a.name;
 						bVal = b.name;
 						break;
-					case "countBooks":
-						aVal = a.countBooks ?? 0;
-						bVal = b.countBooks ?? 0;
+					case "bookCount":
+						aVal = a.bookCount ?? 0;
+						bVal = b.bookCount ?? 0;
 						break;
 					default:
 						aVal = a[sortConfig.key];
@@ -229,8 +231,8 @@ const CategoriesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("name")}>
 							Name {getSortIcon("name")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countBooks")}>
-							Number of books {getSortIcon("countBooks")}
+						<th scope="col" onClick={() => requestSort("bookCount")}>
+							Number of books {getSortIcon("bookCount")}
 						</th>
 						<th scope="col" style={{ width: "160px" }}>
 							Actions
@@ -247,7 +249,7 @@ const CategoriesDashboard = () => {
 							</td>
 							<td>{categoryWithCount.id}</td>
 							<td>{categoryWithCount.name}</td>
-							<td>{categoryWithCount.countBooks ?? 0}</td>
+							<td>{categoryWithCount.bookCount ?? 0}</td>
 
 							<td className="text-nowrap">
 								<button
