@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service;
 
+import com.example.librarywebbackend.dto.LoanResponseDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 
@@ -9,7 +10,7 @@ public interface ILoanService {
 
     List<Loan> getAllLoans();
 
-    List<Loan> getLoansByUserId(Long id);
+    List<LoanResponseDTO> getLoansByUserId(Long id);
 
     Loan getLoanByLoanId(Long id);
 

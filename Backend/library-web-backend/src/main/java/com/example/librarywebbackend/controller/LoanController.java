@@ -39,9 +39,10 @@ public class LoanController {
 
 
     @GetMapping("/userBooks/{userId}")
-    public List<Loan> getLoansByUserId(@PathVariable Long userId) {
+    public List<LoanResponseDTO> getLoansByUserId(@PathVariable Long userId) {
         return loanService.getLoansByUserId(userId);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Loan> getById(@PathVariable Long id) {

@@ -20,9 +20,13 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 		apiLoans
 			.getLoansByUserId(userId)
 			.then((data) => {
-				setLoans(data);
+				// usuwa rekordy RESERVED
+				const filtered = data.filter((loan) => loan.status !== "RESERVED");
+
+				setLoans(filtered);
 				setLoading(false);
-				console.log("Fetched User loans:", data);
+
+				console.log("Fetched User loans (filtered):", filtered);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -177,49 +181,42 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 				</thead>
 
 				<tbody>
-					{processedLoans.map((loan, index) => {
-						const book = loan.copy.book;
+					{processedLoans.map((loan, index) => (
+						<tr key={loan.loanId}>
+							<td>
+								{sortConfig?.key === "loanId" && sortConfig?.direction === "desc"
+									? processedLoans.length - index
+									: index + 1}
+							</td>
 
-						const title = book?.title ?? "Unknown book";
+							<td>{loan.copy.book.title}</td>
 
-						const authors = book?.authors?.length
-							? book.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")
-							: "Unknown author";
+							<td>
+								{loan.copy.book.authors
+									.map((author) => author.firstName + " " + author.lastName)
+									.join(", ")}
+							</td>
 
-						return (
-							<tr key={loan.loanId}>
-								<td>
-									{sortConfig?.key === "loanId" &&
-									sortConfig?.direction === "desc"
-										? processedLoans.length - index
-										: index + 1}
-								</td>
+							<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
 
-								<td>{title}</td>
+							<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
 
-								<td>{authors}</td>
+							<td>
+								{loan.loanDate ? new Date(loan.loanDate).toLocaleDateString() : "-"}
+							</td>
+							<td>
+								{loan.returnDate
+									? new Date(loan.returnDate).toLocaleDateString()
+									: "-"}
+							</td>
 
-								<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
+							<td>{loan.status}</td>
 
-								<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
-
-								<td>
-									{loan.loanDate
-										? new Date(loan.loanDate).toLocaleDateString()
-										: "-"}
-								</td>
-								<td>
-									{loan.returnDate
-										? new Date(loan.returnDate).toLocaleDateString()
-										: "-"}
-								</td>
-
-								<td>
-									<Link to={`/user-loan/${loan.loanId}`}>View</Link>
-								</td>
-							</tr>
-						);
-					})}
+							<td>
+								<Link to={`/user-loan/${loan.loanId}`}>View</Link>
+							</td>
+						</tr>
+					))}
 				</tbody>
 			</table>
 

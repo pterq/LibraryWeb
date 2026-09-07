@@ -1,8 +1,10 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.LoanResponseDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.entity.*;
+import com.example.librarywebbackend.mapper.LoanMapper;
 import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
@@ -29,15 +31,20 @@ public class LoanService implements ILoanService {
     private final UserRepository userRepository;
     private final IFeeService feeService;
 
+    private final LoanMapper loanMapper;
+
     public LoanService(LoanRepository loanRepository,
                        BookCopyRepository bookCopyRepository,
                        UserRepository userRepository,
-                       IFeeService feeService) {
+                       IFeeService feeService,
+                       LoanMapper loanMapper) {
         this.loanRepository = loanRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.userRepository = userRepository;
         this.feeService = feeService;
+        this.loanMapper = loanMapper;
     }
+
 
     // ------------------------------------------------------------
     // GETTERS
@@ -49,9 +56,14 @@ public class LoanService implements ILoanService {
     }
 
     @Override
-    public List<Loan> getLoansByUserId(Long id) {
-        return loanRepository.findByUserId(id);
+    public List<LoanResponseDTO> getLoansByUserId(Long id) {
+        return loanRepository.findByUserId(id)
+                .stream()
+                .map(loanMapper::toDto)
+                .toList();
     }
+
+
 
     @Override
     public Loan getLoanByLoanId(Long id) {
