@@ -12,7 +12,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
 
     @Query("""
-    SELECT 
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY COUNT(c.id) DESC) AS id,
         u.id AS userId,
         u.firstName,
         u.lastName,
@@ -23,7 +24,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     LEFT JOIN Cart c ON c.user.id = u.id
     GROUP BY u.id, u.firstName, u.lastName, u.email, u.phone
     ORDER BY countCarts DESC
-""")
+    """)
     List<Object[]> countCartsByUserRaw();
 
 
