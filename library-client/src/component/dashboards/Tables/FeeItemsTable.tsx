@@ -22,7 +22,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 	}, []);
 
 	const [search, setSearch] = useState("");
-	const [filter, setFilter] = useState<"ALL" | "PAID" | "UNPAID" | "CANCELLED">("ALL");
+	const [filter, setFilter] = useState<"ALL" | "PAID" | "PENDING" | "CANCELLED">("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof FeeType;

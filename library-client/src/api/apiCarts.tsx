@@ -3,7 +3,7 @@ import type {
 	CartItemResponse,
 	CartCountResponse,
 	CartItemForm,
-	CartItemCreateForm,
+	LoanAddToCartForm,
 } from "../types/DbTypes";
 
 //endpoints
@@ -22,7 +22,7 @@ export const getAllCartItems = async () => {
 	}
 };
 
-export const createCartItem = async (cartItem: CartItemCreateForm) => {
+export const createCartItem = async (cartItem: LoanAddToCartForm) => {
 	try {
 		const response = await axiosClient.post<CartItemResponse>(RESERVATION_ENDPOINT, cartItem);
 		return response.data;

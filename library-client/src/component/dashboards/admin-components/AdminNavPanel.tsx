@@ -16,8 +16,6 @@ const navItems = [
 	{ id: "loanItems", label: "Loan Items" },
 	{ id: "fees", label: "Fees" },
 	{ id: "feeItems", label: "Fee Items" },
-	{ id: "carts", label: "Carts" },
-	{ id: "cartItems", label: "Cart Items" },
 ];
 
 // ID sekcji, przed którymi ma być separator

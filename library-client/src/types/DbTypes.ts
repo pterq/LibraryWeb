@@ -1,6 +1,6 @@
 export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN";
 export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
-export type LoanStatusType = "BORROWED" | "RETURNED" | "OVERDUE";
+export type LoanStatusType = "RESERVED" | "BORROWED" | "RETURNED" | "OVERDUE";
 export type FeeStatusType = "PAID" | "PENDING" | "CANCELLED";
 
 //============================================================================
@@ -42,9 +42,11 @@ export interface CategoryType {
 export interface LoanResponse {
 	id: number;
 	copy: BookPhysicalResponse;
+	reservedAt: Date;
+	expiresAt: Date;
 	loanDate: Date;
-	returnDate: Date;
 	dueDate: Date;
+	returnDate: Date;
 	status: LoanStatusType;
 	user: UserType;
 }
@@ -79,16 +81,6 @@ export type FeeType = {
 	user: UserType;
 };
 
-//===========================================================================
-
-export interface CartItemResponse {
-	cartId: number;
-	user: UserResponse;
-	bookCopy: BookPhysicalResponse;
-	reservedAt: Date;
-	expiresAt: Date;
-}
-
 //============================================================================
 export interface CategoriesWithCountsResponse {
 	id: number;
@@ -96,7 +88,7 @@ export interface CategoriesWithCountsResponse {
 	bookCount: number;
 }
 
-export interface FeesWithCountsType {
+export interface FeesCountType {
 	id: number;
 	user: UserType;
 	countFees: number;
@@ -109,15 +101,10 @@ export interface LoanCountType {
 	id: number;
 	user: UserDtoType;
 	countLoans: number;
+	countReserved: number;
 	countBorrowed: number;
 	countReturned: number;
 	countOverdue: number;
-}
-
-export interface CartCountResponse {
-	id: number;
-	user: UserDtoType;
-	countCartItems: number;
 }
 
 //============================================================================
@@ -207,10 +194,10 @@ export interface CartItemForm {
 	userId: number;
 	copyId: number;
 	reservedAt: string;
-	expiresAt: string;
+	//expiresAt: string;
 }
 
-export interface CartItemCreateForm {
+export interface LoanAddToCartForm {
 	userId: number;
 	bookId: number;
 }

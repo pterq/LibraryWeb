@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +22,9 @@ public class Loan {
 
     @ManyToOne
     private BookPhyscial copy;
+
+    private LocalDateTime reservedAt;
+    private LocalDateTime expiresAt;
 
     private LocalDateTime loanDate;
     private LocalDateTime dueDate;

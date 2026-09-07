@@ -129,7 +129,6 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 				<div className="mt-4">
 					{activeTab === "loans" && <UserLoansView userId={id} />}
 					{activeTab === "fees" && <UserFeesView userId={id} />}
-					{activeTab === "cart" && <UserCartTable userId={id} />}
 				</div>
 			</div>
 		</div>

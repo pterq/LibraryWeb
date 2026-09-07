@@ -5,6 +5,7 @@ import com.example.librarywebbackend.dto.FeeResponseDTO;
 import com.example.librarywebbackend.dto.FeeWithCountDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
+import com.example.librarywebbackend.entity.Loan;
 
 import java.util.List;
 
@@ -23,4 +24,8 @@ public interface IFeeService {
     void deleteFeeByFeeId(Long id);
 
     List<FeeWithCountDTO> getAllUsersFeeCounts();
+
+    FeeResponseDTO createOverdueFee(Loan loan);
+
+
 }

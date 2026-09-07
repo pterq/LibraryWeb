@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { FeesWithCountsType, FeeType, UserType } from "../../../types/DbTypes";
+import type { FeesCountType, FeeType, UserType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 
@@ -8,7 +8,7 @@ import apiFees from "../../../api/apiFees";
 import TableAlert from "../../common/TableAlert";
 
 const FeesDashboard = () => {
-	const [feesWithCount, setFeesWithCount] = useState<FeesWithCountsType[]>([]);
+	const [feesWithCount, setFeesWithCount] = useState<FeesCountType[]>([]);
 
 	useEffect(() => {
 		apiFees
@@ -23,13 +23,13 @@ const FeesDashboard = () => {
 
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof FeesWithCountsType;
+		key: keyof FeesCountType;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof FeesWithCountsType) => {
+	const requestSort = (key: keyof FeesCountType) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -39,13 +39,13 @@ const FeesDashboard = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof FeesWithCountsType) => {
+	const getSortIcon = (key: keyof FeesCountType) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
 	const filteredAndSortedFees = useMemo(() => {
-		let data: FeesWithCountsType[] = [...feesWithCount];
+		let data: FeesCountType[] = [...feesWithCount];
 
 		if (search.trim()) {
 			const searchTerm = search.toLowerCase();

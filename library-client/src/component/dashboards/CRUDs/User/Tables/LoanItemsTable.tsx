@@ -153,12 +153,19 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 						<th onClick={() => requestSort("authors")}>
 							Author {getSortIcon("authors")}
 						</th>
+						<th onClick={() => requestSort("reservedAt")}>
+							Reserved At {getSortIcon("reservedAt")}
+						</th>
+						<th onClick={() => requestSort("expiresAt")}>
+							Expires At {getSortIcon("expiresAt")}
+						</th>
 						<th onClick={() => requestSort("loanDate")}>
 							Loan Date {getSortIcon("loanDate")}
 						</th>
 						<th onClick={() => requestSort("returnDate")}>
 							Return Date {getSortIcon("returnDate")}
 						</th>
+
 						<th className="text-start" style={{ width: "5%" }}>
 							<div className="d-flex align-items-center gap-2">
 								<span>Status</span>

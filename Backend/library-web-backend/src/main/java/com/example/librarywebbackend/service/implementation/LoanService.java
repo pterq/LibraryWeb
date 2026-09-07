@@ -1,19 +1,17 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.UserDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
-import com.example.librarywebbackend.entity.BookPhyscial;
-import com.example.librarywebbackend.entity.CopyStatus;
-import com.example.librarywebbackend.entity.Loan;
-import com.example.librarywebbackend.entity.LoanStatus;
-import com.example.librarywebbackend.entity.User;
+import com.example.librarywebbackend.dto.UserDTO;
+import com.example.librarywebbackend.entity.*;
 import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.ILoanService;
+import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,30 +21,32 @@ public class LoanService implements ILoanService {
     @Value("${return-after-days}")
     private int returnAfterDays;
 
+    @Value("${overdue-fee-per-day}")
+    private BigDecimal overdueFeePerDay;
+
     private final LoanRepository loanRepository;
     private final BookCopyRepository bookCopyRepository;
     private final UserRepository userRepository;
+    private final IFeeService feeService;
 
     public LoanService(LoanRepository loanRepository,
                        BookCopyRepository bookCopyRepository,
-                       UserRepository userRepository) {
+                       UserRepository userRepository,
+                       IFeeService feeService) {
         this.loanRepository = loanRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.userRepository = userRepository;
+        this.feeService = feeService;
     }
+
+    // ------------------------------------------------------------
+    // GETTERS
+    // ------------------------------------------------------------
 
     @Override
     public List<Loan> getAllLoans() {
         return loanRepository.findAll();
     }
-
-    /*
-    @Override
-    public List<Loan> getLoansByStatus(LoanStatus status) {
-        return loanRepository.findByStatus(status);
-    }
-
-     */
 
     @Override
     public List<Loan> getLoansByUserId(Long id) {
@@ -55,44 +55,71 @@ public class LoanService implements ILoanService {
 
     @Override
     public Loan getLoanByLoanId(Long id) {
-        return loanRepository.findById(id)
-                .orElse(null);
+        return loanRepository.findById(id).orElse(null);
     }
 
+    // ------------------------------------------------------------
+    // RESERVE BOOK
+    // ------------------------------------------------------------
+
     @Override
-    public Loan borrowBook(Loan loan) {
-        if (loan.getUser() == null || loan.getUser().getId() == null) {
-            throw new IllegalArgumentException("User id is required");
-        }
+    public Loan reserveBook(Long userId, Long copyId) {
 
-        if (loan.getCopy() == null || loan.getCopy().getId() == null) {
-            throw new IllegalArgumentException("Copy id is required");
-        }
-
-        User user = userRepository.findById(loan.getUser().getId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookPhyscial copy = bookCopyRepository.findById(loan.getCopy().getId())
+        BookPhyscial copy = bookCopyRepository.findById(copyId)
                 .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
 
         if (copy.getStatus() != CopyStatus.AVAILABLE) {
             throw new IllegalStateException("Copy is not available");
         }
 
-        // zmiana statusu kopii
+        copy.setStatus(CopyStatus.RESERVED);
+        bookCopyRepository.save(copy);
+
+        Loan loan = new Loan();
+        loan.setUser(user);
+        loan.setCopy(copy);
+        loan.setReservedAt(LocalDateTime.now());
+        loan.setExpiresAt(LocalDateTime.now().plusHours(2));
+        loan.setStatus(LoanStatus.RESERVED);
+
+        return loanRepository.save(loan);
+    }
+
+    // ------------------------------------------------------------
+    // BORROW BOOK
+    // ------------------------------------------------------------
+
+    @Override
+    public Loan borrowBook(Long userId, Long copyId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        BookPhyscial copy = bookCopyRepository.findById(copyId)
+                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
+
+        if (copy.getStatus() != CopyStatus.RESERVED && copy.getStatus() != CopyStatus.AVAILABLE)
+            throw new IllegalStateException("Copy must be reserved or available");
+
         copy.setStatus(CopyStatus.BORROWED);
         bookCopyRepository.save(copy);
 
-        // ustawienie dat wypożyczenia
+        Loan loan = new Loan();
         loan.setUser(user);
         loan.setCopy(copy);
         loan.setLoanDate(LocalDateTime.now());
-        loan.setReturnDate(LocalDateTime.now().plusDays(returnAfterDays));
+        loan.setDueDate(LocalDateTime.now().plusDays(returnAfterDays));
         loan.setStatus(LoanStatus.ACTIVE);
 
         return loanRepository.save(loan);
     }
 
+    // ------------------------------------------------------------
+    // RETURN BOOK
+    // ------------------------------------------------------------
 
     @Override
     public Loan returnBook(Long id) {
@@ -101,12 +128,9 @@ public class LoanService implements ILoanService {
                 .map(loan -> {
 
                     BookPhyscial copy = loan.getCopy();
-
-                    // zmiana statusu kopii
                     copy.setStatus(CopyStatus.AVAILABLE);
                     bookCopyRepository.save(copy);
 
-                    // ustawienie daty zwrotu
                     loan.setReturnDate(LocalDateTime.now());
                     loan.setStatus(LoanStatus.RETURNED);
 
@@ -115,37 +139,85 @@ public class LoanService implements ILoanService {
                 .orElse(null);
     }
 
+    // ------------------------------------------------------------
+    // DELETE LOAN
+    // ------------------------------------------------------------
+
     @Override
     public void deleteLoan(Long id) {
         loanRepository.deleteById(id);
     }
 
-
+    // ------------------------------------------------------------
+    // STATISTICS
+    // ------------------------------------------------------------
 
     @Override
     public List<LoanWithCountDTO> getLoanCountsByUser() {
         return loanRepository.countLoansByUserRaw()
                 .stream()
                 .map(row -> new LoanWithCountDTO(
-                        ((Number) row[0]).longValue(), // userId jako id
+                        ((Number) row[0]).longValue(),
                         new UserDTO(
-                                ((Number) row[0]).longValue(), // userId (Long)
-                                (String) row[1],               // firstName
-                                (String) row[2],               // lastName
-                                (String) row[3],               // email
-                                (String) row[4]                // phone
+                                ((Number) row[0]).longValue(),
+                                (String) row[1],
+                                (String) row[2],
+                                (String) row[3],
+                                (String) row[4]
                         ),
                         ((Number) row[5]).longValue(), // countLoans
-                        ((Number) row[6]).longValue(), // countBorrowed
-                        ((Number) row[7]).longValue(), // countReturned
-                        ((Number) row[8]).longValue()  // countOverdue
+                        ((Number) row[6]).longValue(), // countReserved
+                        ((Number) row[7]).longValue(), // countBorrowed
+                        ((Number) row[8]).longValue(), // countReturned
+                        ((Number) row[9]).longValue()  // countOverdue
                 ))
                 .toList();
     }
 
 
+    // ------------------------------------------------------------
+    // EXPIRE RESERVED LOANS
+    // ------------------------------------------------------------
 
+    @Override
+    public void expireReservations() {
 
+        List<Loan> expired = loanRepository.findByStatusAndExpiresAtBefore(
+                LoanStatus.RESERVED,
+                LocalDateTime.now()
+        );
 
+        for (Loan loan : expired) {
 
+            BookPhyscial copy = loan.getCopy();
+
+            if (copy.getStatus() == CopyStatus.RESERVED) {
+                copy.setStatus(CopyStatus.AVAILABLE);
+                bookCopyRepository.save(copy);
+            }
+
+            loanRepository.delete(loan);
+        }
+    }
+
+    // ------------------------------------------------------------
+    // MARK OVERDUE LOANS
+    // ------------------------------------------------------------
+
+    @Override
+    public void markOverdueLoans() {
+
+        List<Loan> overdue = loanRepository.findByStatusAndDueDateBefore(
+                LoanStatus.ACTIVE,
+                LocalDateTime.now()
+        );
+
+        for (Loan loan : overdue) {
+
+            loan.setStatus(LoanStatus.OVERDUE);
+            loanRepository.save(loan);
+
+            feeService.createOverdueFee(loan);
+        }
+    }
 }

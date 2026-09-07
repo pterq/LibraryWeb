@@ -1,10 +1,8 @@
 package com.example.librarywebbackend.scheduler;
 
-import com.example.librarywebbackend.entity.BookPhyscial;
-import com.example.librarywebbackend.entity.CopyStatus;
-import com.example.librarywebbackend.entity.Cart;
+import com.example.librarywebbackend.entity.*;
 import com.example.librarywebbackend.repository.BookCopyRepository;
-import com.example.librarywebbackend.repository.CartRepository;
+import com.example.librarywebbackend.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,32 +15,31 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CartExpirationScheduler {
+public class LoanExpirationScheduler {
 
-    private final CartRepository cartRepository;
+    private final LoanRepository loanRepository;
     private final BookCopyRepository bookCopyRepository;
 
-    /**
-     * Uruchamiane co minutę.
-     * Sprawdza koszyki, które wygasły i zwalnia egzemplarze.
-     */
     @Scheduled(fixedRate = 60_000)
     @Transactional
-    public void expireCarts() {
+    public void expireReservations() {
 
         LocalDateTime now = LocalDateTime.now();
 
-        List<Cart> expired = cartRepository.findByExpiresAtBefore(now);
+        List<Loan> expired = loanRepository.findByStatusAndExpiresAtBefore(
+                LoanStatus.RESERVED,
+                now
+        );
 
         if (expired.isEmpty()) {
             return;
         }
 
-        log.info("Wygasłe koszyki: {}", expired.size());
+        log.info("Wygasłe rezerwacje: {}", expired.size());
 
-        for (Cart cart : expired) {
+        for (Loan loan : expired) {
 
-            BookPhyscial copy = cart.getCopy();
+            BookPhyscial copy = loan.getCopy();
 
             // zwolnienie egzemplarza
             if (copy.getStatus() == CopyStatus.RESERVED) {
@@ -50,10 +47,10 @@ public class CartExpirationScheduler {
                 bookCopyRepository.save(copy);
             }
 
-            // jeśli masz pole status w Cart, możesz ustawić:
-            // cart.setStatus(CartStatus.EXPIRED);
-
-            cartRepository.delete(cart);
+            // usunięcie rezerwacji
+            loanRepository.delete(loan);
         }
     }
 }
+
+

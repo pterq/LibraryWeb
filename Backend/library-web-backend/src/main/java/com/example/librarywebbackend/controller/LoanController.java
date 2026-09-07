@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.LoanStatusChangeRequestDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
-import com.example.librarywebbackend.entity.LoanStatus;
 import com.example.librarywebbackend.service.ILoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +20,14 @@ public class LoanController {
         this.loanService = loanService;
     }
 
+    // ------------------------------------------------------------
+    // GETTERS
+    // ------------------------------------------------------------
+
     @GetMapping
     public List<Loan> getAll() {
         return loanService.getAllLoans();
     }
-
-    /*
-    @GetMapping("/status/{status}")
-    public List<Loan> getByStatus(@PathVariable LoanStatus status) {
-        return loanService.getLoansByStatus(status);
-    }
-
-     */
 
     @GetMapping("/userBooks/{userId}")
     public List<Loan> getLoansByUserId(@PathVariable Long userId) {
@@ -51,10 +47,16 @@ public class LoanController {
         return loanService.getLoanCountsByUser();
     }
 
-    @PostMapping("/borrow")
-    public ResponseEntity<?> borrow(@RequestBody Loan loan) {
+    // ------------------------------------------------------------
+    // RESERVE BOOK
+    // ------------------------------------------------------------
+
+    @PostMapping("/reserve")
+    public ResponseEntity<?> reserve(@RequestBody LoanStatusChangeRequestDTO dto) {
         try {
-            return ResponseEntity.ok(loanService.borrowBook(loan));
+            return ResponseEntity.ok(
+                    loanService.reserveBook(dto.getUserId(), dto.getCopyId())
+            );
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
@@ -62,13 +64,38 @@ public class LoanController {
         }
     }
 
-    @PostMapping("/return/{id}")
-    public ResponseEntity<Loan> returnBook(@PathVariable Long id) {
-        Loan loan = loanService.returnBook(id);
+    // ------------------------------------------------------------
+    // BORROW BOOK
+    // ------------------------------------------------------------
+
+    @PostMapping("/borrow")
+    public ResponseEntity<?> borrow(@RequestBody LoanStatusChangeRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(
+                    loanService.borrowBook(dto.getUserId(), dto.getCopyId())
+            );
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    // ------------------------------------------------------------
+    // RETURN BOOK
+    // ------------------------------------------------------------
+
+    @PostMapping("/return/{loanId}")
+    public ResponseEntity<?> returnBook(@PathVariable Long loanId) {
+        Loan loan = loanService.returnBook(loanId);
         return loan != null
                 ? ResponseEntity.ok(loan)
                 : ResponseEntity.notFound().build();
     }
+
+    // ------------------------------------------------------------
+    // DELETE LOAN
+    // ------------------------------------------------------------
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

@@ -80,6 +80,22 @@ const LoansDashboard = () => {
 						aVal = a.countLoans;
 						bVal = b.countLoans;
 						break;
+					case "countReserved":
+						aVal = a.countReserved;
+						bVal = b.countReserved;
+						break;
+					case "countBorrowed":
+						aVal = a.countBorrowed;
+						bVal = b.countBorrowed;
+						break;
+					case "countReturned":
+						aVal = a.countReturned;
+						bVal = b.countReturned;
+						break;
+					case "countOverdue":
+						aVal = a.countOverdue;
+						bVal = b.countOverdue;
+						break;
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
@@ -128,6 +144,9 @@ const LoansDashboard = () => {
 						<th scope="col" onClick={() => requestSort("countLoans")}>
 							Total Loans {getSortIcon("countLoans")}
 						</th>
+						<th scope="col" onClick={() => requestSort("countReserved")}>
+							Reserved {getSortIcon("countReserved")}
+						</th>
 						<th scope="col" onClick={() => requestSort("countBorrowed")}>
 							Borrowed {getSortIcon("countBorrowed")}
 						</th>
@@ -151,6 +170,7 @@ const LoansDashboard = () => {
 							</td>
 							<td>{`(${loan.user.id}) ${loan.user.firstName} ${loan.user.lastName}`}</td>
 							<td>{loan.countLoans}</td>
+							<td>{loan.countReserved}</td>
 							<td>{loan.countBorrowed}</td>
 							<td>{loan.countReturned}</td>
 							<td>{loan.countOverdue}</td>

@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { FeeType, FeesWithCountsType } from "../types/DbTypes";
+import type { FeeType, FeesCountType } from "../types/DbTypes";
 
 const FEE_ENDPOINT = "/fees";
 
@@ -78,7 +78,7 @@ export const updateFeeStatusById = async (id: number, status: string) => {
 
 export const getFeesWithCounts = async () => {
 	try {
-		const response = await axiosClient.get<FeesWithCountsType[]>(`${FEE_ENDPOINT}/counts`);
+		const response = await axiosClient.get<FeesCountType[]>(`${FEE_ENDPOINT}/counts`);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch fees with counts:", error);
