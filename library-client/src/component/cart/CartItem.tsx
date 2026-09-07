@@ -1,12 +1,6 @@
 import { Link } from "react-router-dom";
 
-import type {
-	CartItemResponse,
-	BookPhysicalResponse,
-	BookType,
-	AuthorType,
-	AuthorsType,
-} from "../../types/DbTypes";
+import type { CartItemResponse, AuthorType } from "../../types/DbTypes";
 
 const CartItem = ({ item }: { item: CartItemResponse }) => {
 	const calculateDaysLeft = (expiresAt: Date): number => {
@@ -18,7 +12,7 @@ const CartItem = ({ item }: { item: CartItemResponse }) => {
 
 	const handleRemoveFromCart = () => {
 		// Implement the logic to remove the item from the cart
-		console.log(`Removing item with ID: ${item.id} from cart`);
+		console.log(`Removing item with ID: ${item.cartId} from cart`);
 	};
 
 	return (
@@ -26,10 +20,14 @@ const CartItem = ({ item }: { item: CartItemResponse }) => {
 			<div className="d-flex align-items-center">
 				{/* LEFT: Cover (1/3) */}
 				<div style={{ flex: "1" }}>
-					<Link to={`/book/${item.bookPhysical.book.id}`}>
+					<Link to={`/book/${item.bookCopy.book.id}`}>
 						<img
-							src={item.bookPhysical.book.imageUrl}
-							alt={item.bookPhysical.book.title}
+							src={
+								item.bookCopy.book.imageUrl
+									? item.bookCopy.book.imageUrl
+									: "../../assets/default-book-cover.jpg"
+							}
+							alt={item.bookCopy.book.title}
 							className="img-fluid img-thumbnail"
 						/>
 					</Link>
@@ -37,10 +35,10 @@ const CartItem = ({ item }: { item: CartItemResponse }) => {
 
 				{/* MIDDLE: Details (2/3) */}
 				<div style={{ flex: "2" }} className="ms-3">
-					<h4>{item.bookPhysical.book.title}</h4>
+					<h4>{item.bookCopy.book.title}</h4>
 					<div>
 						by{" "}
-						{item.bookPhysical.book.authors.authors
+						{item.bookCopy.book.authors
 							.map((author: AuthorType) => `${author.firstName} ${author.lastName}`)
 							.join(", ")}
 					</div>

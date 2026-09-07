@@ -1,9 +1,6 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.CartItemRequestDTO;
-import com.example.librarywebbackend.dto.CartItemsResponseDTO;
-import com.example.librarywebbackend.dto.CartWithCountDTO;
-import com.example.librarywebbackend.dto.UserDTO;
+import com.example.librarywebbackend.dto.*;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.entity.Cart;
@@ -43,13 +40,7 @@ public class CartService implements ICartService {
     public List<CartItemsResponseDTO> getAllCartItems() {
         return cartRepository.findAll()
                 .stream()
-                .map(cart -> new CartItemsResponseDTO(
-                        cart.getId(),
-                        cart.getUser().getId(),
-                        cart.getCopy().getId(),
-                        cart.getReservedAt(),
-                        cart.getExpiresAt()
-                ))
+                .map(this::mapToCartItemsResponseDTO)
                 .toList();
     }
 
@@ -57,68 +48,58 @@ public class CartService implements ICartService {
     // CREATE CART ITEM
     // ------------------------------------------------------------
     @Override
-    public CartItemsResponseDTO createCartItem(CartItemRequestDTO dto) {
+    public CartItemsResponseDTO createCartItem(CartItemCreateRequestDTO dto) {
 
         if (dto.getUserId() == null) {
             throw new IllegalArgumentException("User id is required");
         }
 
-        if (dto.getCopyId() == null) {
-            throw new IllegalArgumentException("Copy id is required");
+        if (dto.getBookId() == null) {
+            throw new IllegalArgumentException("Book id is required");
         }
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookPhyscial copy = bookCopyRepository.findById(dto.getCopyId())
-                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
+        List<BookPhyscial> copies = bookCopyRepository.findByBook_Id(dto.getBookId());
 
-        if (copy.getStatus() != CopyStatus.AVAILABLE) {
-            throw new IllegalStateException("Copy is not available for reservation");
+        if (copies.isEmpty()) {
+            throw new IllegalArgumentException("No copies found for this book");
         }
 
-        // zmiana statusu kopii
-        copy.setStatus(CopyStatus.RESERVED);
-        bookCopyRepository.save(copy);
+        BookPhyscial availableCopy = copies.stream()
+                .filter(c -> c.getStatus() == CopyStatus.AVAILABLE)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No available copies"));
 
-        // tworzymy nowy Cart
+        availableCopy.setStatus(CopyStatus.RESERVED);
+        bookCopyRepository.save(availableCopy);
+
         Cart cart = new Cart();
         cart.setUser(user);
-        cart.setCopy(copy);
+        cart.setCopy(availableCopy);
         cart.setReservedAt(LocalDateTime.now());
         cart.setExpiresAt(LocalDateTime.now().plusDays(reservationExpiresAfterDays));
 
         Cart saved = cartRepository.save(cart);
 
-        return new CartItemsResponseDTO(
-                saved.getId(),
-                saved.getUser().getId(),
-                saved.getCopy().getId(),
-                saved.getReservedAt(),
-                saved.getExpiresAt()
-        );
+        return mapToCartItemsResponseDTO(saved);
     }
 
     // ------------------------------------------------------------
     // GET CART ITEMS BY USER ID
     // ------------------------------------------------------------
     @Override
-    public CartItemsResponseDTO getCartItemsByUserId(Long id) {
+    public List<CartItemsResponseDTO> getCartItemsByUserId(Long id) {
         List<Cart> carts = cartRepository.findByUserId(id);
 
         if (carts.isEmpty()) {
             throw new IllegalArgumentException("No cart items found for user");
         }
 
-        Cart cart = carts.get(0);
-
-        return new CartItemsResponseDTO(
-                cart.getId(),
-                cart.getUser().getId(),
-                cart.getCopy().getId(),
-                cart.getReservedAt(),
-                cart.getExpiresAt()
-        );
+        return carts.stream()
+                .map(this::mapToCartItemsResponseDTO)
+                .toList();
     }
 
     // ------------------------------------------------------------
@@ -152,13 +133,7 @@ public class CartService implements ICartService {
 
         Cart saved = cartRepository.save(existingCart);
 
-        return new CartItemsResponseDTO(
-                saved.getId(),
-                saved.getUser().getId(),
-                saved.getCopy().getId(),
-                saved.getReservedAt(),
-                saved.getExpiresAt()
-        );
+        return mapToCartItemsResponseDTO(saved);
     }
 
     // ------------------------------------------------------------
@@ -177,16 +152,82 @@ public class CartService implements ICartService {
         return cartRepository.countCartsByUserRaw()
                 .stream()
                 .map(row -> new CartWithCountDTO(
-                        ((Number) row[0]).longValue(), // id
+                        ((Number) row[0]).longValue(),
                         new UserDTO(
-                                ((Number) row[1]).longValue(), // userId
-                                (String) row[2],               // firstName
-                                (String) row[3],               // lastName
-                                (String) row[4],               // email
-                                (String) row[5]                // phone
+                                ((Number) row[1]).longValue(),
+                                (String) row[2],
+                                (String) row[3],
+                                (String) row[4],
+                                (String) row[5]
                         ),
-                        ((Number) row[6]).longValue()        // countCarts
+                        ((Number) row[6]).longValue()
                 ))
                 .toList();
     }
+
+    private CartItemsResponseDTO mapToCartItemsResponseDTO(Cart cart) {
+
+        BookPhyscial copy = cart.getCopy();
+        User user = cart.getUser();
+
+        // -----------------------------
+        // USER DTO
+        // -----------------------------
+        UserResponseDTO userDTO = new UserResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getRole(),
+                user.isHasFee()
+        );
+
+        // -----------------------------
+        // BOOK DTO
+        // -----------------------------
+        BookResponseDTO bookDTO = new BookResponseDTO(
+                copy.getBook().getId(),
+                copy.getBook().getTitle(),
+                copy.getBook().getDescription(),
+                copy.getBook().getImageUrl(),
+                copy.getBook().getIsbn(),
+                copy.getBook().getPublishedYear(),
+                copy.getBook().getCategories()
+                        .stream()
+                        .map(cat -> new CategoryResponseDTO(cat.getId(), cat.getName()))
+                        .toList(),
+                copy.getBook().getAuthors()
+                        .stream()
+                        .map(author -> new AuthorDTO(
+                                author.getId(),
+                                author.getFirstName(),
+                                author.getLastName(),
+                                author.getBiography()
+                        ))
+                        .toList()
+        );
+
+        // -----------------------------
+        // BOOK COPY DTO
+        // -----------------------------
+        BookCopyResponseDTO copyDTO = new BookCopyResponseDTO(
+                copy.getId(),
+                bookDTO,
+                copy.getInventoryCode(),
+                copy.getStatus().name()
+        );
+
+        // -----------------------------
+        // FINAL CART DTO
+        // -----------------------------
+        return new CartItemsResponseDTO(
+                cart.getId(),
+                userDTO,
+                copyDTO,
+                cart.getReservedAt(),
+                cart.getExpiresAt()
+        );
+    }
+
 }

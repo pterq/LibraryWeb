@@ -82,12 +82,11 @@ export type FeeType = {
 //===========================================================================
 
 export interface CartItemResponse {
-	id: number;
-	user: UserType;
-	copy: BookPhysicalResponse;
+	cartId: number;
+	user: UserResponse;
+	bookCopy: BookPhysicalResponse;
 	reservedAt: Date;
 	expiresAt: Date;
-	bookPhysical: BookPhysicalResponse;
 }
 
 //============================================================================
@@ -195,7 +194,7 @@ export interface LoginUserResponse {
 export interface UserForm {}
 
 export interface UserResponse {
-	id: number;
+	userId: number;
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -209,4 +208,9 @@ export interface CartItemForm {
 	copyId: number;
 	reservedAt: string;
 	expiresAt: string;
+}
+
+export interface CartItemCreateForm {
+	userId: number;
+	bookId: number;
 }

@@ -10,7 +10,6 @@ import TableAlert from "../../common/TableAlert";
 import ViewCartItem from "../CRUDs/CartItems/ViewCartItem";
 import EditCartItem from "../CRUDs/CartItems/EditCartItem";
 import AddCartItem from "../CRUDs/CartItems/AddCartItem";
-import ViewAuthor from "../CRUDs/Author/ViewAuthor";
 import DeleteButton from "../admin-components/DeleteButton";
 
 type CrudState =
@@ -19,15 +18,9 @@ type CrudState =
 	| { mode: "edit"; id: number }
 	| { mode: "add" };
 
-const getReservationCopy = (reservation: CartItemResponse) =>
-	reservation.bookPhysical ?? reservation.copy;
-
 const formatReservationDate = (value: Date | string) => new Date(value).toLocaleString();
 
 const CartItemsTable = () => {
-	//{ userId = null }: { userId?: number | null }
-	//const selectedUserId = userId ?? null;
-
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);
 	const [message, setMessage] = useState<string | null>(null);
@@ -47,16 +40,6 @@ const CartItemsTable = () => {
 			.catch(console.error);
 	};
 
-	// useEffect(() => {
-	// 	apiCarts
-	// 		.getAllCarts()
-	// 		.then((data) => {
-	// 			setCartItems(data);
-	// 			console.log("Fetched Cart Items:", data);
-	// 		})
-	// 		.catch(console.error);
-	// }, []);
-
 	const showMessage = (text: string, type: "success" | "danger" = "success") => {
 		setMessage(text);
 		setMessageType(type);
@@ -64,15 +47,28 @@ const CartItemsTable = () => {
 	};
 
 	//=====================================================
+	const formatDateTime = (value: string | Date) => {
+		const date = new Date(value);
+		return date.toLocaleString("pl-PL", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+		});
+	};
+
+	//=====================================================
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof CartItemResponse;
+		key: keyof CartItemResponse | "bookTitle" | "inventoryCode";
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || sortConfig !== null;
 
-	const requestSort = (key: keyof CartItemResponse) => {
+	const requestSort = (key: keyof CartItemResponse | "bookTitle" | "inventoryCode") => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -82,7 +78,7 @@ const CartItemsTable = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof CartItemResponse) => {
+	const getSortIcon = (key: keyof CartItemResponse | "bookTitle" | "inventoryCode") => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -92,34 +88,33 @@ const CartItemsTable = () => {
 
 		/*
 		if (selectedUserId !== null && selectedUserId !== undefined) {
-			data = data.filter((reservation) => reservation.user.id === selectedUserId);
+			data = data.filter((reservation) => reservation.user.userId === selectedUserId);
 		}
 		*/
 
 		if (search) {
 			const lowerSearch = search.toLowerCase();
 
-			data = data.filter((shoppingCart) => {
-				const bookCopy = getReservationCopy(shoppingCart);
-				if (!bookCopy) {
+			data = data.filter((cartItems) => {
+				if (!cartItems) {
 					return false;
 				}
 
 				const fullName =
-					`${shoppingCart.user.firstName} ${shoppingCart.user.lastName}`.toLowerCase();
-				const authors = (bookCopy.book.authors ?? [])
+					`${cartItems.user.firstName} ${cartItems.user.lastName}`.toLowerCase();
+				const authors = (cartItems.bookCopy.book.authors ?? [])
 					.map((author) => `${author.firstName} ${author.lastName}`)
 					.join(", ")
 					.toLowerCase();
 
 				return (
-					String(shoppingCart.id).includes(lowerSearch) ||
+					String(cartItems.cartId).includes(lowerSearch) ||
 					fullName.includes(lowerSearch) ||
-					String(shoppingCart.user.id).includes(lowerSearch) ||
-					String(bookCopy.copyId).includes(lowerSearch) ||
-					bookCopy.book.title.toLowerCase().includes(lowerSearch) ||
+					String(cartItems.user.userId).includes(lowerSearch) ||
+					String(cartItems.bookCopy.copyId).includes(lowerSearch) ||
+					cartItems.bookCopy.book.title.toLowerCase().includes(lowerSearch) ||
 					authors.includes(lowerSearch) ||
-					bookCopy.inventoryCode.toLowerCase().includes(lowerSearch)
+					cartItems.bookCopy.inventoryCode.toLowerCase().includes(lowerSearch)
 				);
 			});
 		}
@@ -130,48 +125,31 @@ const CartItemsTable = () => {
 				let bVal: string | number = "";
 
 				switch (sortConfig.key) {
-					case "id":
-						aVal = a.id;
-						bVal = b.id;
+					case "cartId":
+						aVal = a.cartId;
+						bVal = b.cartId;
 						break;
+
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
 						break;
-					case "copy":
-					case "bookPhysical": {
-						const aCopy = getReservationCopy(a);
-						const bCopy = getReservationCopy(b);
-						aVal = aCopy?.copyId ?? "";
-						bVal = bCopy?.copyId ?? "";
+
+					case "bookTitle":
+						aVal = a.bookCopy.book.title;
+						bVal = b.bookCopy.book.title;
 						break;
-					}
-					case "bookPhysical":
-						aVal = getReservationCopy(a)?.book.title ?? "";
-						bVal = getReservationCopy(b)?.book.title ?? "";
+
+					case "inventoryCode":
+						aVal = a.bookCopy.inventoryCode;
+						bVal = b.bookCopy.inventoryCode;
 						break;
-					case "bookPhysical":
-						aVal =
-							getReservationCopy(a)
-								?.book.authors?.map(
-									(author) => `${author.firstName} ${author.lastName}`,
-								)
-								.join(", ") ?? "";
-						bVal =
-							getReservationCopy(b)
-								?.book.authors?.map(
-									(author) => `${author.firstName} ${author.lastName}`,
-								)
-								.join(", ") ?? "";
-						break;
-					case "bookPhysical":
-						aVal = getReservationCopy(a)?.inventoryCode ?? "";
-						bVal = getReservationCopy(b)?.inventoryCode ?? "";
-						break;
+
 					case "reservedAt":
 						aVal = new Date(a.reservedAt).getTime();
 						bVal = new Date(b.reservedAt).getTime();
 						break;
+
 					case "expiresAt":
 						aVal = new Date(a.expiresAt).getTime();
 						bVal = new Date(b.expiresAt).getTime();
@@ -224,13 +202,13 @@ const CartItemsTable = () => {
 	}
 
 	const handleDelete = async (id: number) => {
-		const cartItemToDelete = cartItems.find((cartItem) => cartItem.id === id);
+		const cartItemToDelete = cartItems.find((cartItem) => cartItem.cartId === id);
 		const displayName = cartItemToDelete
-			? `(${cartItemToDelete.user.id}) ${cartItemToDelete.user.firstName} ${cartItemToDelete.user.lastName}`.trim()
+			? `(${cartItemToDelete.user.userId}) ${cartItemToDelete.user.firstName} ${cartItemToDelete.user.lastName}`.trim()
 			: "Unknown cart item";
 
 		try {
-			await apiCarts.deleteCartById(id);
+			await apiCarts.deleteCartItemByCartItemId(id);
 			showMessage(`Cart item "${displayName}" has been deleted.`);
 			reloadCartItems();
 		} catch (error) {
@@ -276,86 +254,91 @@ const CartItemsTable = () => {
 			</div>
 
 			{/* Shopping carts table */}
+			{/* Shopping carts table */}
 			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("id")}>
-							# {getSortIcon("id")}
+						<th scope="col" onClick={() => requestSort("cartId")}>
+							# {getSortIcon("cartId")}
 						</th>
-						{/*<th scope="col" onClick={() => requestSort("id")}>
-							Reservation ID {getSortIcon("id")}
-						</th>*/}
 
 						<th scope="col" onClick={() => requestSort("user")}>
 							(ID) User {getSortIcon("user")}
 						</th>
-						<th scope="col" onClick={() => requestSort("bookPhysical")}>
-							(ID) Book Title {getSortIcon("bookPhysical")}
+
+						<th scope="col" onClick={() => requestSort("bookTitle")}>
+							(ID) Book Title {getSortIcon("bookTitle")}
 						</th>
-						<th scope="col" onClick={() => requestSort("copy")}>
-							(ID) Inventory Code {getSortIcon("copy")}
+
+						<th scope="col" onClick={() => requestSort("inventoryCode")}>
+							(ID) Inventory Code {getSortIcon("inventoryCode")}
 						</th>
+
 						<th scope="col" onClick={() => requestSort("reservedAt")}>
 							Reserved At {getSortIcon("reservedAt")}
 						</th>
+
 						<th scope="col" onClick={() => requestSort("expiresAt")}>
 							Expires At {getSortIcon("expiresAt")}
 						</th>
+
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
+
 				<tbody>
-					{cartItems.map((cartItem, index) => (
-						<tr key={cartItem.id}>
+					{cartItemsData.map((cartItem, index) => (
+						<tr key={cartItem.cartId}>
 							<td>
-								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
-									? cartItems.length - index
+								{sortConfig?.key === "cartId" && sortConfig?.direction === "desc"
+									? cartItemsData.length - index
 									: index + 1}
-							</td>
-							{/*<td>{cartItem.id}</td>*/}
-							<td>
-								({cartItem.user.id}) {cartItem.user.firstName}{" "}
-								{cartItem.user.lastName}
-							</td>
-							<td>
-								({getReservationCopy(cartItem)?.copyId ?? "-"}){" "}
-								{getReservationCopy(cartItem)?.book.title ?? "-"}
 							</td>
 
 							<td>
-								({getReservationCopy(cartItem)?.copyId ?? "-"}){" "}
-								{getReservationCopy(cartItem)?.inventoryCode ?? "-"}
+								({cartItem.user.userId}) {cartItem.user.firstName}{" "}
+								{cartItem.user.lastName}
 							</td>
-							<td>{formatReservationDate(cartItem.reservedAt)}</td>
-							<td>{formatReservationDate(cartItem.expiresAt)}</td>
+
+							<td>
+								({cartItem.bookCopy.book.id}) {cartItem.bookCopy.book.title}
+							</td>
+
+							<td>
+								({cartItem.bookCopy.copyId}) {cartItem.bookCopy.inventoryCode}
+							</td>
+
+							<td>{formatDateTime(cartItem.reservedAt)}</td>
+							<td>{formatDateTime(cartItem.expiresAt)}</td>
 
 							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"
-									onClick={() => setCrud({ mode: "view", id: cartItem.id })}
+									onClick={() => setCrud({ mode: "view", id: cartItem.cartId })}
 								>
 									View
 								</button>
 
 								<button
 									className="btn btn-sm btn-warning me-2"
-									onClick={() => setCrud({ mode: "edit", id: cartItem.id })}
+									onClick={() => setCrud({ mode: "edit", id: cartItem.cartId })}
 								>
 									Edit
 								</button>
 
 								<DeleteButton
-									id={cartItem.id}
-									name={`(${cartItem.user.id}) ${cartItem.user.firstName} ${cartItem.user.lastName}`}
+									id={cartItem.cartId}
+									name={`(${cartItem.user.userId}) ${cartItem.user.firstName} ${cartItem.user.lastName}`}
 									entityName="cart item"
-									onDelete={() => handleDelete(cartItem.id)}
+									onDelete={() => handleDelete(cartItem.cartId)}
 								/>
 							</td>
 						</tr>
 					))}
 				</tbody>
 			</table>
-			<TableAlert count={cartItems.length} message="No items found." />
+
+			<TableAlert count={cartItemsData.length} message="No items found." />
 		</>
 	);
 };

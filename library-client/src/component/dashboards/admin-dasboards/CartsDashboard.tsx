@@ -12,7 +12,7 @@ const CartsDashboard = () => {
 
 	useEffect(() => {
 		apiCarts
-			.getCartsWithCounts()
+			.getAllUsersCartItemCounts()
 			.then((data) => {
 				setShoppingCartsWithCount(data);
 				console.log("Fetched shopping carts with count:", data);

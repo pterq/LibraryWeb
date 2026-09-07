@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import { data, Link } from "react-router-dom";
 import "./book-tile.css";
 import TileImage from "./TileImage";
-import type { BookType, AuthorType } from "../../types/DbTypes";
+import type { BookType, AuthorType, CartItemForm } from "../../types/DbTypes";
 import { useAuth } from "../../context/AuthContext";
 import apiCarts from "../../api/apiCarts";
 
@@ -17,7 +17,10 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 			window.location.href = "/login";
 			return;
 		}
-		apiCarts.deleteCartById(book.id);
+		apiCarts
+			.createCartItem({ userId, bookId: book.id })
+			.then((data) => console.log("Added to cart item to user cart:", data))
+			.catch(console.error);
 	};
 
 	return (

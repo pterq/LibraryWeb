@@ -1,5 +1,10 @@
 import axiosClient from "./axiosClient";
-import type { CartItemResponse, CartCountResponse, CartItemForm } from "../types/DbTypes";
+import type {
+	CartItemResponse,
+	CartCountResponse,
+	CartItemForm,
+	CartItemCreateForm,
+} from "../types/DbTypes";
 
 //endpoints
 const RESERVATION_ENDPOINT = "/carts";
@@ -17,7 +22,7 @@ export const getAllCartItems = async () => {
 	}
 };
 
-export const createCartItem = async (cartItem: CartItemForm) => {
+export const createCartItem = async (cartItem: CartItemCreateForm) => {
 	try {
 		const response = await axiosClient.post<CartItemResponse>(RESERVATION_ENDPOINT, cartItem);
 		return response.data;
@@ -29,7 +34,7 @@ export const createCartItem = async (cartItem: CartItemForm) => {
 
 export const getCartItemsByUserId = async (id: number) => {
 	try {
-		const response = await axiosClient.get<CartItemResponse>(`${RESERVATION_ENDPOINT}/${id}`);
+		const response = await axiosClient.get<CartItemResponse[]>(`${RESERVATION_ENDPOINT}/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch cart item with id ${id}:`, error);

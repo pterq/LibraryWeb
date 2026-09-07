@@ -36,7 +36,7 @@ const UserBookCard = () => {
 					</p>
 					<p>
 						<strong>Authors:</strong>{" "}
-						{loan.copy.book.authors.authors
+						{loan.copy.book.authors
 							.map(
 								(a: { firstName: string; lastName: string }) =>
 									`${a.firstName} ${a.lastName}`,

@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.CartItemCreateRequestDTO;
 import com.example.librarywebbackend.dto.CartItemRequestDTO;
 import com.example.librarywebbackend.dto.CartItemsResponseDTO;
 import com.example.librarywebbackend.dto.CartWithCountDTO;
@@ -31,13 +32,14 @@ public class CartController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CartItemsResponseDTO> getById(@PathVariable Long id) {
-        CartItemsResponseDTO cart = cartService.getCartItemsByUserId(id);
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<List<CartItemsResponseDTO>> getById(@PathVariable Long id) {
+        List<CartItemsResponseDTO> carts = cartService.getCartItemsByUserId(id);
+        return ResponseEntity.ok(carts);
     }
 
+
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CartItemRequestDTO dto) {
+    public ResponseEntity<?> create(@RequestBody CartItemCreateRequestDTO dto) {
         try {
             return ResponseEntity.ok(cartService.createCartItem(dto));
         } catch (IllegalStateException ex) {

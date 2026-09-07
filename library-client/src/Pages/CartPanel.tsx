@@ -13,6 +13,8 @@ const CartPanel = () => {
 	useEffect(() => {
 		if (userId == null) return;
 
+		console.log("User id:", userId);
+
 		apiCarts
 			.getCartItemsByUserId(userId)
 			.then((data) => {
@@ -21,23 +23,20 @@ const CartPanel = () => {
 			})
 			.catch(console.error);
 	}, [userId]);
-
-	const items: CartItemResponse[] = reservations ?? [];
-
 	return (
 		<div className="container">
 			<div className="d-flex justify-content-center mb-3">Items</div>
 
 			<div className="container mt-5 mb-5 p-3 bg-body-tertiary rounded">
-				{items.length === 0 ? (
+				{reservations.length === 0 ? (
 					<div className="text-center py-5">
 						<h5>No books in shopping cart</h5>
 						<p className="text-muted">Your cart items will appear here.</p>
 					</div>
 				) : (
 					<div className="row row-cols-1 g-1">
-						{items.map((item) => (
-							<div className="col" key={item.id}>
+						{reservations.map((item) => (
+							<div className="col" key={item.cartId}>
 								<CartItem item={item} />
 							</div>
 						))}

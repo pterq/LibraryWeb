@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CartItemsResponseDTO {
     private Long cartId;
-    private Long userId;
-    private Long copyId;
+    private UserResponseDTO user;
+    private BookCopyResponseDTO bookCopy;
     private LocalDateTime reservedAt;
     private LocalDateTime expiresAt;
 }

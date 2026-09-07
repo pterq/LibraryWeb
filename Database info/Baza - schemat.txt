@@ -80,7 +80,7 @@ Table books_physical {
 // LOANS - borrowed books history and status
 //////////////////////////////////////////////////////
 
-Table current_loans_status {
+Table loans {
   id integer [pk, increment]
   user_id integer [ref: > users.id]
   copy_id integer [ref: > books_physical.id]
@@ -94,7 +94,7 @@ Table current_loans_status {
 // RESERVATIONS - reservations/books in user's "shoping cart"
 //////////////////////////////////////////////////////
 
-Table reservations {
+Table cartItems {
   id integer [pk, increment]
   user_id integer [ref: > users.id]
   copy_id integer [ref: > books_physical.id]
@@ -109,7 +109,7 @@ Table reservations {
 Table fees {
   id integer [pk, increment]
   user_id integer [ref: > users.id]
-  loan_id integer [ref: > current_loans_status.id]
+  loan_id integer [ref: > loans.id]
   amount decimal(18,2) [not null]
   created_at datetime [not null]
   paid_at datetime
