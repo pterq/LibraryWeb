@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { LoanResponse, AuthorType } from "../../../../../types/DbTypes";
-import SearchBar from "../../../../common/SearchBar";
-import TableAlert from "../../../../common/TableAlert";
-import apiLoans from "../../../../../api/apiLoans";
+import type { LoanResponse, AuthorType } from "../../types/DbTypes";
+import SearchBar from "../../component/common/SearchBar";
+import TableAlert from "../../component/common/TableAlert";
+import apiLoans from "../../api/apiLoans";
 
 type LoanExtended = LoanResponse & {
 	authors: AuthorType[];
@@ -22,6 +22,7 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 			.then((data) => {
 				setLoans(data);
 				setLoading(false);
+				console.log("Fetched User loans:", data);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -83,17 +84,6 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 						aVal = a.copy.book?.title ?? "";
 						bVal = b.copy.book?.title ?? "";
 						break;
-
-					case "loanDate":
-						aVal = new Date(a.loanDate).getTime();
-						bVal = new Date(b.loanDate).getTime();
-						break;
-
-					case "returnDate":
-						aVal = new Date(a.returnDate).getTime();
-						bVal = new Date(b.returnDate).getTime();
-						break;
-
 					default:
 						aVal = a[sortConfig.key as keyof LoanResponse];
 						bVal = b[sortConfig.key as keyof LoanResponse];
@@ -146,7 +136,7 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
-						<th onClick={() => requestSort("id")}># {getSortIcon("id")}</th>
+						<th onClick={() => requestSort("loanId")}># {getSortIcon("loanId")}</th>
 						<th onClick={() => requestSort("copy")}>
 							Book Title {getSortIcon("copy")}
 						</th>
@@ -197,9 +187,10 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 							: "Unknown author";
 
 						return (
-							<tr key={loan.id}>
+							<tr key={loan.loanId}>
 								<td>
-									{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+									{sortConfig?.key === "loanId" &&
+									sortConfig?.direction === "desc"
 										? processedLoans.length - index
 										: index + 1}
 								</td>
@@ -208,14 +199,23 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 
 								<td>{authors}</td>
 
-								<td>{new Date(loan.loanDate).toLocaleDateString()}</td>
+								<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
 
-								<td>{new Date(loan.returnDate).toLocaleDateString()}</td>
-
-								<td>{loan.status}</td>
+								<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
 
 								<td>
-									<Link to={`/user-loan/${loan.id}`}>View</Link>
+									{loan.loanDate
+										? new Date(loan.loanDate).toLocaleDateString()
+										: "-"}
+								</td>
+								<td>
+									{loan.returnDate
+										? new Date(loan.returnDate).toLocaleDateString()
+										: "-"}
+								</td>
+
+								<td>
+									<Link to={`/user-loan/${loan.loanId}`}>View</Link>
 								</td>
 							</tr>
 						);

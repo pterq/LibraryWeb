@@ -1,18 +1,31 @@
 import { Link } from "react-router-dom";
 
-import type { CartItemResponse, AuthorType } from "../../types/DbTypes";
+import type { LoanResponse, AuthorType } from "../../types/DbTypes";
 
-const CartItem = ({ item }: { item: CartItemResponse }) => {
-	const calculateDaysLeft = (expiresAt: Date): number => {
-		const currentDate = new Date();
-		const expirationDate = new Date(expiresAt);
-		const timeDiff = expirationDate.getTime() - currentDate.getTime();
-		return Math.ceil(timeDiff / (1000 * 3600 * 24));
-	};
+const formatDate = (date: Date): string => {
+	const d = new Date(date);
+	const day = String(d.getDate()).padStart(2, "0");
+	const month = String(d.getMonth() + 1).padStart(2, "0");
+	const year = d.getFullYear();
+	return `${day}/${month}/${year}`;
+};
+
+const calculateDaysLeft = (expiresAt: Date): number => {
+	const currentDate = new Date();
+	const expirationDate = new Date(expiresAt);
+	const timeDiff = expirationDate.getTime() - currentDate.getTime();
+	return Math.ceil(timeDiff / (1000 * 3600 * 24));
+};
+
+const CartItem = ({ item }: { item: LoanResponse }) => {
+	//need book list for data in Cart
+	const getBooks = [];
 
 	const handleRemoveFromCart = () => {
 		// Implement the logic to remove the item from the cart
-		console.log(`Removing item with ID: ${item.cartId} from cart`);
+
+		//apiLoans delete
+		console.log(`Removing item with ID: ${item.id} from cart`);
 	};
 
 	return (

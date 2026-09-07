@@ -1,4 +1,4 @@
-import FeeItemsTable from "./Tables/FeeItemsTable";
+import FeeItemsTable from "../../../../Pages/Tables/FeeItemsTable";
 
 type Props = {
 	userId: number;

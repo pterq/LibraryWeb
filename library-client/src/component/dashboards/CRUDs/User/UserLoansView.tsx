@@ -1,4 +1,4 @@
-import LoanItemsTable from "./Tables/LoanItemsTable";
+import LoanItemsTable from "../../../../Pages/Tables/LoanItemsTable";
 
 type Props = {
 	userId: number;

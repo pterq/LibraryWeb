@@ -1,8 +1,10 @@
 package com.example.librarywebbackend.controller;
 
+import com.example.librarywebbackend.dto.LoanResponseDTO;
 import com.example.librarywebbackend.dto.LoanStatusChangeRequestDTO;
 import com.example.librarywebbackend.dto.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
+import com.example.librarywebbackend.mapper.LoanMapper;
 import com.example.librarywebbackend.service.ILoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +18,25 @@ public class LoanController {
 
     private final ILoanService loanService;
 
-    public LoanController(ILoanService loanService) {
+    public LoanController(ILoanService loanService, LoanMapper loanMapper) {
         this.loanService = loanService;
+        this.loanMapper = loanMapper;
     }
+
+    private final LoanMapper loanMapper;
 
     // ------------------------------------------------------------
     // GETTERS
     // ------------------------------------------------------------
 
     @GetMapping
-    public List<Loan> getAll() {
-        return loanService.getAllLoans();
+    public List<LoanResponseDTO> getAll() {
+        return loanService.getAllLoans()
+                .stream()
+                .map(loanMapper::toDto)
+                .toList();
     }
+
 
     @GetMapping("/userBooks/{userId}")
     public List<Loan> getLoansByUserId(@PathVariable Long userId) {
@@ -55,7 +64,7 @@ public class LoanController {
     public ResponseEntity<?> reserve(@RequestBody LoanStatusChangeRequestDTO dto) {
         try {
             return ResponseEntity.ok(
-                    loanService.reserveBook(dto.getUserId(), dto.getCopyId())
+                    loanService.reserveBook(dto.getUserId(), dto.getBookId())
             );
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
@@ -64,15 +73,16 @@ public class LoanController {
         }
     }
 
+
     // ------------------------------------------------------------
-    // BORROW BOOK
+    // BORROW BOOK (po loanId)
     // ------------------------------------------------------------
 
-    @PostMapping("/borrow")
-    public ResponseEntity<?> borrow(@RequestBody LoanStatusChangeRequestDTO dto) {
+    @PostMapping("/borrow/{loanId}")
+    public ResponseEntity<?> borrow(@PathVariable Long loanId) {
         try {
             return ResponseEntity.ok(
-                    loanService.borrowBook(dto.getUserId(), dto.getCopyId())
+                    loanService.borrowBook(loanId)
             );
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
@@ -103,3 +113,4 @@ public class LoanController {
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -50,7 +50,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		let data = [...fees];
 
 		if (selectedUserId !== null) {
-			data = data.filter((fee) => fee.user.id === selectedUserId);
+			data = data.filter((fee) => fee.user.userId === selectedUserId);
 		}
 
 		if (filter !== "ALL") {
@@ -64,7 +64,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				return (
 					fullName.includes(lowerSearch) ||
 					String(fee.id).includes(lowerSearch) ||
-					String(fee.loan.id).includes(lowerSearch)
+					String(fee.loan.loanId).includes(lowerSearch)
 				);
 			});
 		}
@@ -88,8 +88,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = b.amount;
 						break;
 					case "loan":
-						aVal = a.loan.id;
-						bVal = b.loan.id;
+						aVal = a.loan.loanId;
+						bVal = b.loan.loanId;
 						break;
 					case "createdAt":
 						aVal = new Date(a.createdAt).getTime();
@@ -100,8 +100,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = b.paidAt ? new Date(b.paidAt).getTime() : -Infinity;
 						break;
 					case "user":
-						aVal = a.user.id;
-						bVal = b.user.id;
+						aVal = a.user.userId;
+						bVal = b.user.userId;
 						break;
 				}
 
@@ -197,10 +197,10 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
-							<td>{`(${fee.user.id}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
+							<td>{`(${fee.user.userId}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
 							<td>{fee.amount.toFixed(2)} zł</td>
 							<td>
-								{`(${fee.loan.id}) ${fee.loan.copy.inventoryCode} (${fee.loan.copy.book.title} (${
+								{`(${fee.loan.loanId}) ${fee.loan.copy.inventoryCode} (${fee.loan.copy.book.title} (${
 									fee.loan.copy.book.authors?.length
 										? fee.loan.copy.book.authors
 												.map((a) => `${a.firstName} ${a.lastName}`)

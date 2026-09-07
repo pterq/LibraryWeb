@@ -82,7 +82,7 @@ const EditAuthor = ({ id, onBack, onReload, showMessage }: Props) => {
 	};
 
 	return (
-		<div className="container py-3">
+		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
 				<button className="btn btn-secondary" onClick={onBack}>
 					Back

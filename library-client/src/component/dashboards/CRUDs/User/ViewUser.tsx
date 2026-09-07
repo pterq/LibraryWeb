@@ -3,7 +3,6 @@ import apiUsers from "../../../../api/apiUsers";
 import type { UserType } from "../../../../types/DbTypes";
 import UserLoansView from "./UserLoansView";
 import UserFeesView from "./UserFeesView";
-import UserCartTable from "./UserCartTable";
 
 type Props = {
 	id: number;
@@ -13,6 +12,7 @@ type Props = {
 };
 
 const EMPTY: Omit<UserType, "id"> = {
+	userId: 0,
 	firstName: "",
 	lastName: "",
 	email: "",
@@ -41,6 +41,7 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 				if (!active) return;
 
 				setData({
+					userId: Number(id),
 					firstName: user.firstName ?? "",
 					lastName: user.lastName ?? "",
 					email: user.email ?? "",
@@ -62,7 +63,7 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 	}, [id]);
 
 	return (
-		<div className="container py-3">
+		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
 				<button
 					className="btn btn-secondary"
@@ -80,6 +81,9 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 			{error && <p className="text-danger">{error}</p>}
 
 			<div className="mt-3">
+				<p>
+					<strong>User ID:</strong> {data.userId}
+				</p>
 				<p>
 					<strong>First Name:</strong> {data.firstName}
 				</p>
@@ -115,14 +119,6 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 						}
 					>
 						Fees
-					</button>
-					<button
-						className={`btn ${activeTab === "cart" ? "btn-success" : "btn-outline-success"}`}
-						onClick={() =>
-							setActiveTab((current) => (current === "cart" ? null : "cart"))
-						}
-					>
-						Cart items
 					</button>
 				</div>
 

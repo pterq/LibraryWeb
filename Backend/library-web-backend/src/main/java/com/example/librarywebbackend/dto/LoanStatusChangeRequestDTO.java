@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class LoanStatusChangeRequestDTO {
     private Long userId;
-    private Long copyId;
+    private Long bookId;
 }

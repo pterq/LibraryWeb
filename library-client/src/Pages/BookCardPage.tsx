@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import ImageFrame from "../component/common/ImageFrame";
 import { useAuth } from "../context/AuthContext";
 import apiBooks from "../api/apiBooks";
-import apiCarts from "../api/apiCarts";
+import apiLoans from "../api/apiLoans";
 import { useEffect, useState } from "react";
 
 import type { BookType } from ".././/types/DbTypes";
@@ -15,7 +15,7 @@ const BookCardPage = () => {
 	const [bookData, setBookData] = useState<BookType | null>(null);
 
 	const handleAddToCart = () => {
-		console.log("Dodano do koszyka bookId:");
+		console.log("Puste dodanie do koszyka bookId:");
 
 		//sprawdź czy istnieje userId, jeśli nie to przekierowanie na stronę logowania
 		if (!userId) {

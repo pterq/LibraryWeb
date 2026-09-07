@@ -105,38 +105,39 @@ const NavBar = () => {
 										</li>
 									)}
 
-									{role !== "ADMIN" && role !== "LIBRARIAN" && (
-										<>
-											<li className="nav-item">
-												<Link className="nav-link active" to={"/my-books"}>
-													My Books
-												</Link>
-											</li>
+									{/*{role !== "ADMIN" && role !== "LIBRARIAN" && (*/}
 
-											<li className="nav-item">
-												<Link className="nav-link active" to={"/my-fees"}>
-													My Fees
-													{hasFees && (
-														<span className="badge rounded-pill bg-danger ms-2 align-middle">
-															1
-														</span>
-													)}
-												</Link>
-											</li>
+									<>
+										<li className="nav-item">
+											<Link className="nav-link active" to={"/my-books"}>
+												My Books
+											</Link>
+										</li>
 
-											<li className="nav-item">
-												<Link
-													className="nav-link active"
-													to={"#"}
-													role="button"
-													aria-controls="globalCartOffcanvas"
-													onClick={openCartOffcanvas}
-												>
-													Shopping Cart
-												</Link>
-											</li>
-										</>
-									)}
+										<li className="nav-item">
+											<Link className="nav-link active" to={"/my-fees"}>
+												My Fees
+												{hasFees && (
+													<span className="badge rounded-pill bg-danger ms-2 align-middle">
+														1
+													</span>
+												)}
+											</Link>
+										</li>
+
+										<li className="nav-item">
+											<Link
+												className="nav-link active"
+												to={"#"}
+												role="button"
+												aria-controls="globalCartOffcanvas"
+												onClick={openCartOffcanvas}
+											>
+												Shopping Cart
+											</Link>
+										</li>
+									</>
+									{/*)}*/}
 
 									{/* Dropdown */}
 									<li

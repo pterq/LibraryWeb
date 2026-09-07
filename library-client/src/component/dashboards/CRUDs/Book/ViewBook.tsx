@@ -73,46 +73,53 @@ const ViewBook = ({ bookId, onBack }: Props) => {
 	const displayCover = data.imageUrl?.trim() ? data.imageUrl : BOOK_PLACEHOLDER_IMAGE;
 
 	return (
-		<div className="card mb-3">
-			<div className="card-body">
-				{isLoading && <p>Loading book...</p>}
-				{error && <p className="text-danger">{error}</p>}
+		<div className="container-fluid py-3">
+			<div className="d-flex gap-2 mb-3">
+				<button className="btn btn-secondary" onClick={onBack}>
+					Back
+				</button>
+			</div>
+			<div className="card mb-3">
+				<div className="card-body">
+					{isLoading && <p>Loading book...</p>}
+					{error && <p className="text-danger">{error}</p>}
 
-				{!isLoading && !error && (
-					<div className="d-flex gap-3">
-						<img
-							src={displayCover}
-							alt={data.title || "Book cover"}
-							style={{ width: "120px", height: "180px", objectFit: "cover" }}
-							className="border rounded"
-							onError={(e) => (e.currentTarget.src = BOOK_PLACEHOLDER_IMAGE)}
-						/>
+					{!isLoading && !error && (
+						<div className="d-flex gap-3">
+							<img
+								src={displayCover}
+								alt={data.title || "Book cover"}
+								style={{ width: "120px", height: "180px", objectFit: "cover" }}
+								className="border rounded"
+								onError={(e) => (e.currentTarget.src = BOOK_PLACEHOLDER_IMAGE)}
+							/>
 
-						<div>
-							<h5>Book information</h5>
+							<div>
+								<h5>Book information</h5>
 
-							<p>
-								<strong>Title:</strong> {data.title || "-"}
-							</p>
-							<p>
-								<strong>Authors:</strong> {authorNames}
-							</p>
-							<p>
-								<strong>ISBN:</strong> {data.isbn || "-"}
-							</p>
-							<p>
-								<strong>Published year:</strong> {data.publishedYear || "-"}
-							</p>
-							<p>
-								<strong>Categories:</strong> {categoryNames}
-							</p>
-							<p>
-								<strong>Description:</strong>
-							</p>
-							<p>{data.description || "-"}</p>
+								<p>
+									<strong>Title:</strong> {data.title || "-"}
+								</p>
+								<p>
+									<strong>Authors:</strong> {authorNames}
+								</p>
+								<p>
+									<strong>ISBN:</strong> {data.isbn || "-"}
+								</p>
+								<p>
+									<strong>Published year:</strong> {data.publishedYear || "-"}
+								</p>
+								<p>
+									<strong>Categories:</strong> {categoryNames}
+								</p>
+								<p>
+									<strong>Description:</strong>
+								</p>
+								<p>{data.description || "-"}</p>
+							</div>
 						</div>
-					</div>
-				)}
+					)}
+				</div>
 			</div>
 		</div>
 	);

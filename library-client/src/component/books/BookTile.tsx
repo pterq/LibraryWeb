@@ -1,9 +1,9 @@
 import { data, Link } from "react-router-dom";
 import "./book-tile.css";
 import TileImage from "./TileImage";
-import type { BookType, AuthorType, CartItemForm } from "../../types/DbTypes";
+import type { BookType, AuthorType, LoanStatusChangeRequest } from "../../types/DbTypes";
 import { useAuth } from "../../context/AuthContext";
-import apiCarts from "../../api/apiCarts";
+import apiLoans from "../../api/apiLoans";
 
 interface BookTileProps {
 	book: BookType;
@@ -13,12 +13,16 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 	const { role, userId } = useAuth();
 
 	const handleAddToCart = () => {
+		//If users wants to add a book to cart they need to be logged in
 		if (!userId) {
 			window.location.href = "/login";
 			return;
 		}
-		apiCarts
-			.createCartItem({ userId, bookId: book.id })
+
+		console.log("Add to cart clicked: ", { userId, bookId: book.id });
+
+		apiLoans
+			.addLoanReserve({ userId, bookId: book.id })
 			.then((data) => console.log("Added to cart item to user cart:", data))
 			.catch(console.error);
 	};
@@ -52,14 +56,12 @@ const BookTile: React.FC<BookTileProps> = ({ book }) => {
 						Details
 					</Link>
 
-					{role !== "LIBRARIAN" && role !== "ADMIN" && (
-						<button
-							className="btn btn-secondary flex-shrink-0"
-							onClick={handleAddToCart}
-						>
-							<i className="bi bi-cart"></i>
-						</button>
-					)}
+					{/*{role !== "LIBRARIAN" && role !== "ADMIN" && (*/}
+
+					<button className="btn btn-secondary flex-shrink-0" onClick={handleAddToCart}>
+						<i className="bi bi-cart"></i>
+					</button>
+					{/*)}*/}
 				</div>
 			</div>
 		</div>

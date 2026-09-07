@@ -2,9 +2,8 @@ import type { FeeType } from "../../types/DbTypes";
 
 //get fee id from url params
 import { useParams } from "react-router-dom";
-import { MockData } from "../../types/MockData";
 
-const fees = MockData.mockFees;
+const fees: FeeType[] = [];
 
 const FeeCard = () => {
 	const { id } = useParams<{ id: string }>();
@@ -40,7 +39,10 @@ const FeeCard = () => {
 			{/* Add payment button or form here */}
 			{fee.status === "UNPAID" && (
 				<div className="d-flex align-items-center">
+					{/*
 					<button className="btn btn-primary">Pay Online</button>
+					*/}
+
 					<span className="ms-2">or pay in person at the library</span>
 				</div>
 			)}

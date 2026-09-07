@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class Loan {
     private User user;
 
     @ManyToOne
+    @JsonIgnoreProperties({"book"})
     private BookPhyscial copy;
 
     private LocalDateTime reservedAt;

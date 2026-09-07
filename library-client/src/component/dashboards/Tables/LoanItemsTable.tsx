@@ -63,7 +63,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
-			data = data.filter((element) => element.user.id === selectedUserId);
+			data = data.filter((element) => element.user.userId === selectedUserId);
 		}
 
 		if (search) {
@@ -79,10 +79,6 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				a.copy;
 
 				switch (sortConfig.key) {
-					case "id":
-						aVal = a.id;
-						bVal = b.id;
-						break;
 					case "user":
 						aVal = `${a.user.firstName} ${a.user.lastName}`;
 						bVal = `${b.user.firstName} ${b.user.lastName}`;
@@ -91,17 +87,13 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						aVal = a.copy.inventoryCode;
 						bVal = b.copy.inventoryCode;
 						break;
-					case "loanDate":
-						aVal = new Date(a.loanDate).getTime();
-						bVal = new Date(b.loanDate).getTime();
+					case "reservedAt":
+						aVal = new Date(a.reservedAt).getTime();
+						bVal = new Date(b.reservedAt).getTime();
 						break;
-					case "dueDate":
-						aVal = new Date(a.dueDate).getTime();
-						bVal = new Date(b.dueDate).getTime();
-						break;
-					case "returnDate":
-						aVal = new Date(a.returnDate).getTime();
-						bVal = new Date(b.returnDate).getTime();
+					case "expiresAt":
+						aVal = new Date(a.expiresAt).getTime();
+						bVal = new Date(b.expiresAt).getTime();
 						break;
 					default:
 						aVal = a[sortConfig.key as keyof LoanResponse] as string | number;
@@ -154,11 +146,11 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			<table className="table table-striped table-hover shadow">
 				<thead>
 					<tr>
-						<th scope="col" onClick={() => requestSort("id")}>
-							# {getSortIcon("id")}
+						<th scope="col" onClick={() => requestSort("loanId")}>
+							# {getSortIcon("loanId")}
 						</th>
-						<th scope="col" onClick={() => requestSort("id")}>
-							Loan ID {getSortIcon("id")}
+						<th scope="col" onClick={() => requestSort("loanId")}>
+							Loan ID {getSortIcon("loanId")}
 						</th>
 						<th scope="col" onClick={() => requestSort("user")}>
 							(ID) User {getSortIcon("user")}
@@ -166,6 +158,13 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<th scope="col" onClick={() => requestSort("copy")}>
 							(Inventory Code) Book {getSortIcon("copy")}
 						</th>
+						<th scope="col" onClick={() => requestSort("reservedAt")}>
+							Reservation Date {getSortIcon("reservedAt")}
+						</th>
+						<th scope="col" onClick={() => requestSort("expiresAt")}>
+							Expire Date {getSortIcon("expiresAt")}
+						</th>
+
 						<th scope="col" onClick={() => requestSort("loanDate")}>
 							Loan Date {getSortIcon("loanDate")}
 						</th>
@@ -200,28 +199,38 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				</thead>
 				<tbody>
 					{processedLoans.map((loan, index) => (
-						<tr key={loan.id}>
+						<tr key={loan.loanId}>
 							<td>
-								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
+								{sortConfig?.key === "loanId" && sortConfig?.direction === "desc"
 									? processedLoans.length - index
 									: index + 1}
 							</td>
-							<td>{loan.id}</td>
+							<td>{loan.loanId}</td>
 							<td>
-								({loan.user.id}) {loan.user.firstName} {loan.user.lastName}
+								({loan.user.userId}) {loan.user.firstName} {loan.user.lastName}
 							</td>
 							<td>
 								({loan.copy.inventoryCode}) {loan.copy.book.title}
 							</td>
-							<td>{new Date(loan.loanDate).toLocaleDateString()}</td>
-							<td>{new Date(loan.dueDate).toLocaleDateString()}</td>
-							<td>{new Date(loan.returnDate).toLocaleDateString()}</td>
+							<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
+							<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
+							<td>
+								{loan.loanDate ? new Date(loan.loanDate).toLocaleDateString() : "-"}
+							</td>
+							<td>
+								{loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : "-"}
+							</td>
+							<td>
+								{loan.returnDate
+									? new Date(loan.returnDate).toLocaleDateString()
+									: "-"}
+							</td>
 							<td>{loan.status}</td>
 							<td>
 								<button
 									className="btn btn-sm btn-primary"
 									onClick={() =>
-										(window.location.href = `/loanItem/view/${loan.id}`)
+										(window.location.href = `/loanItem/view/${loan.loanId}`)
 									}
 								>
 									View Details

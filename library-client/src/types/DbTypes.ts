@@ -40,20 +40,20 @@ export interface CategoryType {
 
 //============================================================================
 export interface LoanResponse {
-	id: number;
+	loanId: number;
 	copy: BookPhysicalResponse;
 	reservedAt: Date;
 	expiresAt: Date;
-	loanDate: Date;
-	dueDate: Date;
-	returnDate: Date;
+	loanDate: Date | null;
+	dueDate: Date | null;
+	returnDate: Date | null;
 	status: LoanStatusType;
 	user: UserType;
 }
 
 //===========================================================================
 export interface UserType {
-	id: number;
+	userId: number;
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -127,6 +127,8 @@ export interface UserData {
 	role: UserRoleType;
 }
 
+export interface UserRegisterForm {}
+
 export interface BookPhysicalForm {
 	bookId: number;
 	inventoryCode: string;
@@ -197,7 +199,7 @@ export interface CartItemForm {
 	//expiresAt: string;
 }
 
-export interface LoanAddToCartForm {
+export interface LoanStatusChangeRequest {
 	userId: number;
 	bookId: number;
 }

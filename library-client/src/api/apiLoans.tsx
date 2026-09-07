@@ -1,5 +1,10 @@
 import axiosClient from "./axiosClient";
-import type { LoanResponse, LoanStatusType, LoanCountType } from "../types/DbTypes";
+import type {
+	LoanResponse,
+	LoanStatusType,
+	LoanCountType,
+	LoanStatusChangeRequest,
+} from "../types/DbTypes";
 
 //endpoints
 const LOAN_ENDPOINT = "/loans";
@@ -7,22 +12,12 @@ const LOAN_ENDPOINT = "/loans";
 //===============================================================================
 //Loan
 
-export const getLoans = async () => {
+export const getAll = async () => {
 	try {
 		const response = await axiosClient.get<LoanResponse[]>(LOAN_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch loans:", error);
-		throw error;
-	}
-};
-
-export const getLoansByLoanStatus = async (status: LoanStatusType) => {
-	try {
-		const response = await axiosClient.get<LoanResponse[]>(`${LOAN_ENDPOINT}/status/${status}`);
-		return response.data;
-	} catch (error) {
-		console.error(`Failed to fetch loans with status ${status}:`, error);
 		throw error;
 	}
 };
@@ -39,22 +34,33 @@ export const getLoansByUserId = async (userId: number) => {
 	}
 };
 
-export const addLoan = async (loan: LoanResponse) => {
+export const addLoanReserve = async (loan: LoanStatusChangeRequest) => {
 	try {
-		const response = await axiosClient.post<LoanResponse>(LOAN_ENDPOINT, loan);
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/reserve`, loan);
 		return response.data;
 	} catch (error) {
-		console.error("Failed to add loan:", error);
+		console.error("Failed to add loan with status RESERVED:", error);
 		throw error;
 	}
 };
 
-export const updateLoanById = async (id: number, loan: LoanResponse) => {
+export const borrowBookByLoanId = async (loanId: number) => {
 	try {
-		const response = await axiosClient.put<LoanResponse>(`${LOAN_ENDPOINT}/${id}`, loan);
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/borrow/${loanId}`);
+
 		return response.data;
 	} catch (error) {
-		console.error(`Failed to update loan with id ${id}:`, error);
+		console.error(`Failed to change loan with id ${loanId} to BORROW:`, error);
+		throw error;
+	}
+};
+
+export const returnBookByLoanId = async (loanId: number) => {
+	try {
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/return/${loanId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to change loan with id ${loanId} to RETURN:`, error);
 		throw error;
 	}
 };
@@ -79,11 +85,22 @@ export const getLoansWithCounts = async () => {
 	}
 };
 
+export const updateLoanById = async (id: number, loan: LoanResponse) => {
+	try {
+		const response = await axiosClient.put<LoanResponse>(`${LOAN_ENDPOINT}/${id}`, loan);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to update loan with id ${id}:`, error);
+		throw error;
+	}
+};
+
 const apiLoans = {
-	getLoans,
-	getLoansByLoanStatus,
+	getLoans: getAll,
+	borrowBookByLoanId,
+	returnBookByLoanId,
 	getLoansByUserId,
-	addLoan,
+	addLoanReserve,
 	updateLoanById,
 	deleteLoanById,
 	getLoansWithCounts,

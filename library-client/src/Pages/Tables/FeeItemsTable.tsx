@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { AuthorType, FeeType } from "../../../../../types/DbTypes";
-import SearchBar from "../../../../common/SearchBar";
-import TableAlert from "../../../../common/TableAlert";
-import apiFees from "../../../../../api/apiFees";
+import type { AuthorType, FeeType } from "../../types/DbTypes";
+import SearchBar from "../../component/common/SearchBar";
+import TableAlert from "../../component/common/TableAlert";
+import apiFees from "../../api/apiFees";
 
 type FeeExtendedType = FeeType & {
 	authors: AuthorType[];
@@ -23,7 +23,7 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 			.then((data) => {
 				setFees(data);
 				setLoading(false);
-				console.log("Fetched fees:", data);
+				console.log("Fetched User fees:", data);
 			})
 			.catch((err) => {
 				console.error(err);

@@ -73,7 +73,7 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 	};
 
 	return (
-		<>
+		<div className="container-fluid py-3">
 			<button className="btn btn-secondary" onClick={onBack}>
 				Back
 			</button>
@@ -88,7 +88,7 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 				isLoading={isLoading}
 				title="Add User"
 			/>
-		</>
+		</div>
 	);
 };
 

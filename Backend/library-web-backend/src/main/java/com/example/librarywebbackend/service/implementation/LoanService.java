@@ -63,21 +63,29 @@ public class LoanService implements ILoanService {
     // ------------------------------------------------------------
 
     @Override
-    public Loan reserveBook(Long userId, Long copyId) {
+    public Loan reserveBook(Long userId, Long bookId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        BookPhyscial copy = bookCopyRepository.findById(copyId)
-                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
+        // znajdź wszystkie kopie fizyczne przypisane do książki
+        List<BookPhyscial> copies = bookCopyRepository.findByBook_Id(bookId);
 
-        if (copy.getStatus() != CopyStatus.AVAILABLE) {
-            throw new IllegalStateException("Copy is not available");
+        if (copies.isEmpty()) {
+            throw new IllegalArgumentException("No copies found for this book");
         }
 
+        // znajdź pierwszą wolną kopię
+        BookPhyscial copy = copies.stream()
+                .filter(c -> c.getStatus() == CopyStatus.AVAILABLE)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No available copies"));
+
+        // ustaw status kopii
         copy.setStatus(CopyStatus.RESERVED);
         bookCopyRepository.save(copy);
 
+        // utwórz Loan
         Loan loan = new Loan();
         loan.setUser(user);
         loan.setCopy(copy);
@@ -88,34 +96,38 @@ public class LoanService implements ILoanService {
         return loanRepository.save(loan);
     }
 
+
+
+
     // ------------------------------------------------------------
     // BORROW BOOK
     // ------------------------------------------------------------
 
     @Override
-    public Loan borrowBook(Long userId, Long copyId) {
+    public Loan borrowBook(Long loanId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
 
-        BookPhyscial copy = bookCopyRepository.findById(copyId)
-                .orElseThrow(() -> new IllegalArgumentException("Copy not found"));
+        BookPhyscial copy = loan.getCopy();
 
-        if (copy.getStatus() != CopyStatus.RESERVED && copy.getStatus() != CopyStatus.AVAILABLE)
+        if (copy.getStatus() != CopyStatus.RESERVED && copy.getStatus() != CopyStatus.AVAILABLE) {
             throw new IllegalStateException("Copy must be reserved or available");
+        }
 
+        // aktywacja wypożyczenia
         copy.setStatus(CopyStatus.BORROWED);
         bookCopyRepository.save(copy);
 
-        Loan loan = new Loan();
-        loan.setUser(user);
-        loan.setCopy(copy);
         loan.setLoanDate(LocalDateTime.now());
         loan.setDueDate(LocalDateTime.now().plusDays(returnAfterDays));
         loan.setStatus(LoanStatus.ACTIVE);
 
         return loanRepository.save(loan);
     }
+
+
+
 
     // ------------------------------------------------------------
     // RETURN BOOK

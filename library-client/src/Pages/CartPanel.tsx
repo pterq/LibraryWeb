@@ -1,22 +1,22 @@
 import CartItem from "../component/cart/CartItem";
-import type { CartItemResponse } from "../types/DbTypes";
+import type { LoanResponse } from "../types/DbTypes";
 import { useAuth } from "../context/AuthContext";
 
-import apiCarts from "../api/apiCarts";
+import apiLoans from "../api/apiLoans";
 import { useEffect, useState } from "react";
 
 const CartPanel = () => {
 	const { userId } = useAuth();
 
-	const [reservations, setReservations] = useState<CartItemResponse[]>([]);
+	const [reservations, setReservations] = useState<LoanResponse[]>([]);
 
 	useEffect(() => {
 		if (userId == null) return;
 
 		console.log("User id:", userId);
 
-		apiCarts
-			.getCartItemsByUserId(userId)
+		apiLoans
+			.getLoansByUserId(userId)
 			.then((data) => {
 				setReservations(data);
 				console.log("Fetched cart items:", data);
@@ -36,7 +36,7 @@ const CartPanel = () => {
 				) : (
 					<div className="row row-cols-1 g-1">
 						{reservations.map((item) => (
-							<div className="col" key={item.cartId}>
+							<div className="col" key={item.id}>
 								<CartItem item={item} />
 							</div>
 						))}

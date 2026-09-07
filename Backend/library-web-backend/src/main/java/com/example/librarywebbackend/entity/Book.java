@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,7 @@ public class Book {
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private List<BookPhyscial> copies = new ArrayList<>();
 
 

@@ -1,9 +1,8 @@
-import { MockData } from "../../types/MockData";
 import type { LoanResponse } from "../../types/DbTypes";
 import { useParams } from "react-router-dom";
 import ImageFrame from "../common/ImageFrame";
 
-const loans = MockData.mockLoans;
+const loans: LoanResponse[] = [];
 
 const UserBookCard = () => {
 	const { id } = useParams<{ id: string }>();

@@ -15,7 +15,7 @@ public interface ILoanService {
 
     Loan reserveBook(Long userId, Long copyId);
 
-    Loan borrowBook(Long userId, Long copyId);
+    Loan borrowBook(Long loanId);
 
     Loan returnBook(Long loanId);
 
