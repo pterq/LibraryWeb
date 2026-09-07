@@ -1,9 +1,8 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.CartRequestDTO;
+import com.example.librarywebbackend.dto.CartItemRequestDTO;
 import com.example.librarywebbackend.dto.CartItemsResponseDTO;
 import com.example.librarywebbackend.dto.CartWithCountDTO;
-import com.example.librarywebbackend.entity.Cart;
 import com.example.librarywebbackend.service.ICartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,8 @@ public class CartController {
     }
 
     @GetMapping
-    public List<Cart> getAll() {
-        return cartService.getAllCarts();
+    public List<CartItemsResponseDTO> getAll() {
+        return cartService.getAllCartItems();
     }
 
     @GetMapping("/counts")
@@ -34,15 +33,13 @@ public class CartController {
     @GetMapping("/{id}")
     public ResponseEntity<CartItemsResponseDTO> getById(@PathVariable Long id) {
         CartItemsResponseDTO cart = cartService.getCartItemsByUserId(id);
-        return cart != null
-                ? ResponseEntity.ok(cart)
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(cart);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Cart cart) {
+    public ResponseEntity<?> create(@RequestBody CartItemRequestDTO dto) {
         try {
-            return ResponseEntity.ok(cartService.createCartItem(cart));
+            return ResponseEntity.ok(cartService.createCartItem(dto));
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
@@ -57,10 +54,11 @@ public class CartController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CartItemsResponseDTO> updateCartItemByCartItemId(@RequestParam Long id, @RequestBody CartRequestDTO dto) {
+    public ResponseEntity<CartItemsResponseDTO> update(
+            @PathVariable Long id,
+            @RequestBody CartItemRequestDTO dto
+    ) {
         CartItemsResponseDTO updatedCart = cartService.updateCartItemByCartItemId(id, dto);
-        return updatedCart != null
-                ? ResponseEntity.ok(updatedCart)
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedCart);
     }
 }

@@ -8,16 +8,16 @@ import { useEffect, useState } from "react";
 const CartPanel = () => {
 	const { userId } = useAuth();
 
-	const [reservations, setReservations] = useState<CartItemResponse[] | null>(null);
+	const [reservations, setReservations] = useState<CartItemResponse[]>([]);
 
 	useEffect(() => {
 		if (userId == null) return;
 
 		apiCarts
-			.getUserCartItemsByUserId(userId)
+			.getCartItemsByUserId(userId)
 			.then((data) => {
 				setReservations(data);
-				console.log("Fetched reservations:", data);
+				console.log("Fetched cart items:", data);
 			})
 			.catch(console.error);
 	}, [userId]);
@@ -32,7 +32,7 @@ const CartPanel = () => {
 				{items.length === 0 ? (
 					<div className="text-center py-5">
 						<h5>No books in shopping cart</h5>
-						<p className="text-muted">Your reservations will appear here.</p>
+						<p className="text-muted">Your cart items will appear here.</p>
 					</div>
 				) : (
 					<div className="row row-cols-1 g-1">

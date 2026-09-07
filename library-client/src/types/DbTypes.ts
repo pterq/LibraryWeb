@@ -203,3 +203,10 @@ export interface UserResponse {
 	role: UserRoleType;
 	hasFee: boolean;
 }
+
+export interface CartItemForm {
+	userId: number;
+	copyId: number;
+	reservedAt: string;
+	expiresAt: string;
+}

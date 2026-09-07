@@ -3,9 +3,9 @@ import CartItemsTable from "../Tables/CartItemsTable";
 const CartItemsDashboard = () => {
 	return (
 		<div className="container-fluid">
-			<h1>Shopping Carts Dashboard</h1>
+			<h1>Cart Items Dashboard</h1>
 
-			<CartItemsTable userId={null} />
+			<CartItemsTable />
 		</div>
 	);
 };

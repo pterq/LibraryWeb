@@ -1,34 +1,67 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type {
-	AuthorType,
-	CartItemResponse,
-	BookType,
-	BookPhysicalResponse,
-} from "../../../types/DbTypes";
+import type { CartItemResponse } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import apiCarts from "../../../api/apiCarts";
 import TableAlert from "../../common/TableAlert";
+
+// Importy CRUD
+import ViewCartItem from "../CRUDs/CartItems/ViewCartItem";
+import EditCartItem from "../CRUDs/CartItems/EditCartItem";
+import AddCartItem from "../CRUDs/CartItems/AddCartItem";
+import ViewAuthor from "../CRUDs/Author/ViewAuthor";
+import DeleteButton from "../admin-components/DeleteButton";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
 
 const getReservationCopy = (reservation: CartItemResponse) =>
 	reservation.bookPhysical ?? reservation.copy;
 
 const formatReservationDate = (value: Date | string) => new Date(value).toLocaleString();
 
-const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
-	const selectedUserId = userId ?? null;
-	const [reservations, setReservations] = useState<CartItemResponse[] | null>(null);
+const CartItemsTable = () => {
+	//{ userId = null }: { userId?: number | null }
+	//const selectedUserId = userId ?? null;
+
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+	const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
+		reloadCartItems();
+	}, []);
+
+	const reloadCartItems = () => {
 		apiCarts
-			.getAllCarts()
-			.then((data) => {
-				setReservations(data);
-				console.log("Fetched reservations:", data);
+			.getAllCartItems()
+			.then((data: CartItemResponse[]) => {
+				setCartItems(data);
+				console.log("Fetched Cart Items:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	// useEffect(() => {
+	// 	apiCarts
+	// 		.getAllCarts()
+	// 		.then((data) => {
+	// 			setCartItems(data);
+	// 			console.log("Fetched Cart Items:", data);
+	// 		})
+	// 		.catch(console.error);
+	// }, []);
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	//=====================================================
 	const [search, setSearch] = useState("");
@@ -54,12 +87,14 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const shoppingCarts = useMemo(() => {
-		let data: CartItemResponse[] = [...(reservations ?? [])];
+	const cartItemsData = useMemo(() => {
+		let data: CartItemResponse[] = [...cartItems];
 
+		/*
 		if (selectedUserId !== null && selectedUserId !== undefined) {
 			data = data.filter((reservation) => reservation.user.id === selectedUserId);
 		}
+		*/
 
 		if (search) {
 			const lowerSearch = search.toLowerCase();
@@ -154,7 +189,63 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		return data;
-	}, [reservations, search, sortConfig, selectedUserId]);
+	}, [cartItems, search, sortConfig]);
+
+	if (crud.mode === "view") {
+		return (
+			<ViewCartItem
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCartItems}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "edit") {
+		return (
+			<EditCartItem
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCartItems}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddCartItem
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadCartItems}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	const handleDelete = async (id: number) => {
+		const cartItemToDelete = cartItems.find((cartItem) => cartItem.id === id);
+		const displayName = cartItemToDelete
+			? `(${cartItemToDelete.user.id}) ${cartItemToDelete.user.firstName} ${cartItemToDelete.user.lastName}`.trim()
+			: "Unknown cart item";
+
+		try {
+			await apiCarts.deleteCartById(id);
+			showMessage(`Cart item "${displayName}" has been deleted.`);
+			reloadCartItems();
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete cart item "${displayName}": it is still assigned to orders.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete cart item "${displayName}".`, "danger");
+			console.error(error);
+		}
+	};
 
 	return (
 		<>
@@ -167,9 +258,9 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 			<div className="d-flex justify-content-end mb-3">
 				<button
 					className="btn btn-primary btn-sm me-2"
-					onClick={() => (window.location.href = `/shoppingCartItem/add`)}
+					onClick={() => setCrud({ mode: "add" })}
 				>
-					Add Item to Shopping Cart
+					Add Cart Item
 				</button>
 
 				<button
@@ -214,11 +305,11 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{shoppingCarts.map((cartItem, index) => (
+					{cartItems.map((cartItem, index) => (
 						<tr key={cartItem.id}>
 							<td>
 								{sortConfig?.key === "id" && sortConfig?.direction === "desc"
-									? shoppingCarts.length - index
+									? cartItems.length - index
 									: index + 1}
 							</td>
 							{/*<td>{cartItem.id}</td>*/}
@@ -238,21 +329,33 @@ const CartItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							<td>{formatReservationDate(cartItem.reservedAt)}</td>
 							<td>{formatReservationDate(cartItem.expiresAt)}</td>
 
-							<td>
+							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"
-									onClick={() =>
-										(window.location.href = `/shoppingCartItem/view/${cartItem.id}`)
-									}
+									onClick={() => setCrud({ mode: "view", id: cartItem.id })}
 								>
-									View Details
+									View
 								</button>
+
+								<button
+									className="btn btn-sm btn-warning me-2"
+									onClick={() => setCrud({ mode: "edit", id: cartItem.id })}
+								>
+									Edit
+								</button>
+
+								<DeleteButton
+									id={cartItem.id}
+									name={`(${cartItem.user.id}) ${cartItem.user.firstName} ${cartItem.user.lastName}`}
+									entityName="cart item"
+									onDelete={() => handleDelete(cartItem.id)}
+								/>
 							</td>
 						</tr>
 					))}
 				</tbody>
 			</table>
-			<TableAlert count={shoppingCarts.length} message="No items found." />
+			<TableAlert count={cartItems.length} message="No items found." />
 		</>
 	);
 };
