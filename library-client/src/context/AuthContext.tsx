@@ -1,3 +1,4 @@
+// AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { UserRoleType, LoginUserResponse } from "../types/DbTypes";
 
@@ -19,6 +20,11 @@ interface AuthContextType {
 	updateUserData: (field: AuthUserDataField, value: string) => void;
 	setHasFees: (hasFees: boolean) => void;
 	setTokenExpiresAt: (value: string | null) => void;
+
+	showToast: (msg: string) => void;
+
+	cartChanged: boolean;
+	notifyCartChanged: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -49,7 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				: null,
 	);
 	const [phone, setPhone] = useState<string | null>(localStorage.getItem("phone"));
-
 	const [tokenExpiresAt, setTokenExpiresAtState] = useState<string | null>(
 		localStorage.getItem("tokenExpiresAt"),
 	);
@@ -58,10 +63,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 	const showToast = (msg: string) => {
 		setToastMessage(msg);
-		setTimeout(() => setToastMessage(null), 3000); // znika po 3s
+		setTimeout(() => setToastMessage(null), 3000);
 	};
 
-	//AUTO LOGOUT MECHANIZM
+	const [cartChanged, setCartChanged] = useState(false);
+
+	const notifyCartChanged = () => {
+		setCartChanged((prev) => !prev); // flip → trigger useEffect
+	};
+
+	// AUTO LOGOUT
 	useEffect(() => {
 		if (!token || !tokenExpiresAt) return;
 
@@ -108,18 +119,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			localStorage.setItem(field, value);
 		}
 
-		if (field === "firstName") {
-			setFirstName(value);
-			return;
-		}
-		if (field === "lastName") {
-			setLastName(value);
-			return;
-		}
-		if (field === "email") {
-			setEmail(value);
-			return;
-		}
+		if (field === "firstName") return setFirstName(value);
+		if (field === "lastName") return setLastName(value);
+		if (field === "email") return setEmail(value);
 
 		setPhone(value);
 	};
@@ -144,7 +146,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		updateUserData("lastName", lastName);
 		updateUserData("email", email);
 		updateUserData("phone", phone);
-		setPhone(phone);
 
 		const nextRole = parseUserRole(role);
 		if (!nextRole) throw new Error(`Unsupported user role: ${role}`);
@@ -155,16 +156,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setRole(nextRole);
 		setUserId(userId);
 		updateHasFees(nextHasFees);
-
 		updateTokenExpiresAt(tokenExpiresAt ?? null);
 
 		showToast("Login successful.");
 	};
 
 	const logout = (showManualToast: boolean = false) => {
-		if (showManualToast) {
-			showToast("Logout successful.");
-		}
+		if (showManualToast) showToast("Logout successful.");
+
 		localStorage.removeItem("token");
 		localStorage.removeItem("userId");
 		localStorage.removeItem("firstName");
@@ -202,6 +201,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				updateUserData,
 				setHasFees: updateHasFees,
 				setTokenExpiresAt: updateTokenExpiresAt,
+				showToast,
+				cartChanged,
+				notifyCartChanged,
 			}}
 		>
 			{toastMessage && (
@@ -210,9 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 						position: "fixed",
 						bottom: "20px",
 						right: "20px",
-						backgroundColor: toastMessage.startsWith("Session")
-							? "#ff4d4d" // red
-							: "#28a745", // green
+						backgroundColor: toastMessage.startsWith("Session") ? "#ff4d4d" : "#28a745",
 						color: "#fff",
 						padding: "14px 20px",
 						borderRadius: "10px",
@@ -220,9 +220,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 						zIndex: 9999,
 						fontSize: "16px",
 						fontWeight: "bold",
-						opacity: 0.98,
-						border: "2px solid rgba(255,255,255,0.7)",
-						transition: "all 0.3s ease-in-out",
 					}}
 				>
 					{toastMessage}
@@ -234,8 +231,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	);
 };
 
-export const useAuth = () => {
-	const ctx = useContext(AuthContext);
-	if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-	return ctx;
-};
+export const useAuth = () => useContext(AuthContext)!;

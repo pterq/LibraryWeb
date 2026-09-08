@@ -12,6 +12,7 @@ import com.example.librarywebbackend.service.ILoanService;
 import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -168,9 +169,22 @@ public class LoanService implements ILoanService {
     // ------------------------------------------------------------
 
     @Override
+    @Transactional
     public void deleteLoan(Long id) {
-        loanRepository.deleteById(id);
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
+
+        BookPhyscial copy = loan.getCopy();
+
+        // zabezpieczenie: tylko jeśli kopia była RESERVED
+        if (copy.getStatus() == CopyStatus.RESERVED) {
+            copy.setStatus(CopyStatus.AVAILABLE);
+            bookCopyRepository.save(copy);
+        }
+
+        loanRepository.delete(loan);
     }
+
 
     // ------------------------------------------------------------
     // STATISTICS
