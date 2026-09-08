@@ -147,7 +147,7 @@ const EditPhysicalBook = ({ bookId, onBack, onReload, showMessage }: Props) => {
 	};
 
 	return (
-		<div className="container py-3">
+		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
 				<button className="btn btn-secondary" onClick={onBack}>
 					Back
@@ -203,7 +203,7 @@ const EditPhysicalBook = ({ bookId, onBack, onReload, showMessage }: Props) => {
 					/>
 				</div>
 
-				{/* STATUS */}
+				{/* STATUS 
 				<div className="mb-3">
 					<label className="form-label">Status</label>
 					<select
@@ -218,6 +218,7 @@ const EditPhysicalBook = ({ bookId, onBack, onReload, showMessage }: Props) => {
 						<option value="RESERVED">RESERVED</option>
 					</select>
 				</div>
+				*/}
 
 				<button type="submit" className="btn btn-primary" disabled={isLoading}>
 					Save Changes

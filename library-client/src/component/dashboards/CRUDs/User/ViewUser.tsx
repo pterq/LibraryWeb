@@ -3,6 +3,7 @@ import apiUsers from "../../../../api/apiUsers";
 import type { UserType } from "../../../../types/DbTypes";
 import UserLoansView from "./UserLoansView";
 import UserFeesView from "./UserFeesView";
+import UserDataCard from "../../../../Pages/Tables/UserDataCard";
 
 type Props = {
 	id: number;
@@ -85,39 +86,7 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 			{error && <p className="text-danger">{error}</p>}
 
 			<div className="mt-3">
-				<div className="card p-4 mt-3">
-					<p>
-						<strong>User ID:</strong> {data.id}
-					</p>
-
-					<div className="row mt-3">
-						{/* LEWA KOLUMNA */}
-						<div className="col-md-6">
-							<p>
-								<strong>First Name:</strong> {data.firstName}
-							</p>
-							<p>
-								<strong>Last Name:</strong> {data.lastName}
-							</p>
-							<p>
-								<strong>Email:</strong> {data.email}
-							</p>
-						</div>
-
-						{/* PRAWA KOLUMNA */}
-						<div className="col-md-6">
-							<p>
-								<strong>Phone:</strong> {data.phone || "-"}
-							</p>
-							<p>
-								<strong>Role:</strong> {data.role}
-							</p>
-							<p>
-								<strong>Has Unpaid Fees:</strong> {data.hasFee ? "Yes" : "No"}
-							</p>
-						</div>
-					</div>
-				</div>
+				<UserDataCard userData={data} />
 
 				<div className="d-flex flex-wrap gap-2 mt-4">
 					<button

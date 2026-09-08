@@ -91,7 +91,7 @@ const AddPhysicalBook = ({ onBack, onReload, showMessage }: Props) => {
 	};
 
 	return (
-		<div className="container py-3">
+		<div className="container-fluid py-3">
 			<button className="btn btn-secondary mb-3" onClick={onBack}>
 				Back
 			</button>

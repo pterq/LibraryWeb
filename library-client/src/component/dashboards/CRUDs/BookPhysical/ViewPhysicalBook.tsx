@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import apiBooksPhysical from "../../../../api/apiBooksPhysical";
+import type { BookPhysicalResponse, BookType } from "../../../../types/DbTypes";
+import BookDataCard from "../Book/BookDataCard";
 
 type Props = {
 	id: number;
@@ -9,7 +11,7 @@ type Props = {
 };
 
 const ViewPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
-	const [data, setData] = useState<any | null>(null);
+	const [data, setData] = useState<BookPhysicalResponse>();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +39,7 @@ const ViewPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 	}, [id]);
 
 	return (
-		<div className="container py-3">
+		<div className="container-fluid py-3">
 			<button
 				className="btn btn-secondary mb-3"
 				onClick={() => {
@@ -56,7 +58,7 @@ const ViewPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 			{data && (
 				<div className="mt-3">
 					<p>
-						<strong>ID:</strong> {data.id}
+						<strong>ID:</strong> {data.copyId}
 					</p>
 					<p>
 						<strong>Inventory Code:</strong> {data.inventoryCode}
@@ -65,32 +67,7 @@ const ViewPhysicalBook = ({ id, onBack, onReload, showMessage }: Props) => {
 						<strong>Status:</strong> {data.status}
 					</p>
 
-					<h4 className="mt-4">Book Information</h4>
-					<p>
-						<strong>Title:</strong> {data.book.title}
-					</p>
-					<p>
-						<strong>Authors:</strong>{" "}
-						{data.book.authors
-							.map((a: any) => `${a.firstName} ${a.lastName}`)
-							.join(", ")}
-					</p>
-					<p>
-						<strong>ISBN:</strong> {data.book.isbn || "-"}
-					</p>
-					<p>
-						<strong>Published year:</strong> {data.book.publishedYear ?? "-"}
-					</p>
-					<p>
-						<strong>Description:</strong> {data.book.description || "No description."}
-					</p>
-
-					<img
-						src={data.book.coverImageUrl ?? "/src/assets/book-placeholder.jpg"}
-						alt={data.book.title}
-						className="img-fluid border rounded mt-3"
-						style={{ width: "120px", height: "180px", objectFit: "cover" }}
-					/>
+					{!isLoading && data && <BookDataCard bookData={data.book} />}
 				</div>
 			)}
 		</div>

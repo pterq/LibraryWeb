@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import apiUser from "../api/apiUsers";
+import UserDataCard from "./Tables/UserDataCard";
 
 const MySettingsPage = () => {
 	const { firstName, lastName, email, role, userId, hasFees, phone } = useAuth();
@@ -64,24 +65,17 @@ const MySettingsPage = () => {
 
 			<div className="card p-4 mt-3">
 				{/* ---------------- USER DATA (READONLY) ---------------- */}
-				<p>
-					<strong>First Name:</strong> {firstName}
-				</p>
-				<p>
-					<strong>Last Name:</strong> {lastName}
-				</p>
-				<p>
-					<strong>Email:</strong> {email}
-				</p>
-				<p>
-					<strong>Phone:</strong> {phone ?? "N/A"}
-				</p>
-				<p>
-					<strong>Role:</strong> {role}
-				</p>
-				<p>
-					<strong>Has Fees:</strong> {hasFees ? "Yes" : "No"}
-				</p>
+				<UserDataCard
+					userData={{
+						id: userId ?? 0,
+						firstName: firstName ?? "NO DATA",
+						lastName: lastName ?? "NO DATA",
+						email: email ?? "NO DATA",
+						phone: phone ?? "NO DATA",
+						role: role ?? "NO DATA",
+						hasFee: hasFees ?? false,
+					}}
+				/>
 
 				{/* ---------------- PASSWORD FORM (ALWAYS VISIBLE) ---------------- */}
 				<div className="mt-4">

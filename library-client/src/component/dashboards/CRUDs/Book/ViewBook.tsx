@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import apiBooks from "../../../../api/apiBooks";
 import type { BookType } from "../../../../types/DbTypes";
-
-const BOOK_PLACEHOLDER_IMAGE = "/src/assets/book-placeholder.jpg";
+import BookDataCard from "./BookDataCard";
 
 type Props = {
 	bookId: number;
@@ -31,6 +30,8 @@ const ViewBook = ({ bookId, onBack }: Props) => {
 		const load = async () => {
 			setIsLoading(true);
 			setError(null);
+
+			console.log("Loading book with ID:", bookId);
 
 			try {
 				const book = await apiBooks.getBookById(bookId);
@@ -62,16 +63,6 @@ const ViewBook = ({ bookId, onBack }: Props) => {
 		};
 	}, [bookId]);
 
-	const authorNames =
-		data.authors.length > 0
-			? data.authors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")
-			: "-";
-
-	const categoryNames =
-		data.categories.length > 0 ? data.categories.map((c) => c.name).join(", ") : "-";
-
-	const displayCover = data.imageUrl?.trim() ? data.imageUrl : BOOK_PLACEHOLDER_IMAGE;
-
 	return (
 		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
@@ -79,48 +70,9 @@ const ViewBook = ({ bookId, onBack }: Props) => {
 					Back
 				</button>
 			</div>
-			<div className="card mb-3">
-				<div className="card-body">
-					{isLoading && <p>Loading book...</p>}
-					{error && <p className="text-danger">{error}</p>}
-
-					{!isLoading && !error && (
-						<div className="d-flex gap-3">
-							<img
-								src={displayCover}
-								alt={data.title || "Book cover"}
-								style={{ width: "120px", height: "180px", objectFit: "cover" }}
-								className="border rounded"
-								onError={(e) => (e.currentTarget.src = BOOK_PLACEHOLDER_IMAGE)}
-							/>
-
-							<div>
-								<h5>Book information</h5>
-
-								<p>
-									<strong>Title:</strong> {data.title || "-"}
-								</p>
-								<p>
-									<strong>Authors:</strong> {authorNames}
-								</p>
-								<p>
-									<strong>ISBN:</strong> {data.isbn || "-"}
-								</p>
-								<p>
-									<strong>Published year:</strong> {data.publishedYear || "-"}
-								</p>
-								<p>
-									<strong>Categories:</strong> {categoryNames}
-								</p>
-								<p>
-									<strong>Description:</strong>
-								</p>
-								<p>{data.description || "-"}</p>
-							</div>
-						</div>
-					)}
-				</div>
-			</div>
+			{isLoading && <p>Loading book...</p>}
+			{error && <p className="text-danger">{error}</p>}
+			{!isLoading && !error && <BookDataCard bookData={data} />}
 		</div>
 	);
 };
