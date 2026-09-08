@@ -125,6 +125,8 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 
 	return (
 		<div>
+			<h5>User ID: {userId}</h5>
+
 			<SearchBar search={search} setSearch={setSearch} placeholder="Search Fee by title" />
 
 			<div className="d-flex justify-content-end mb-3">

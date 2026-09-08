@@ -4,12 +4,10 @@ import com.example.librarywebbackend.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.Instant;
-
 @AllArgsConstructor
 @Getter
 public class UserResponseDTO {
-    private Long userId;
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;

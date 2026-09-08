@@ -50,7 +50,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		let data = [...fees];
 
 		if (selectedUserId !== null) {
-			data = data.filter((fee) => fee.user.userId === selectedUserId);
+			data = data.filter((fee) => fee.user.id === selectedUserId);
 		}
 
 		if (filter !== "ALL") {
@@ -100,8 +100,8 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						bVal = b.paidAt ? new Date(b.paidAt).getTime() : -Infinity;
 						break;
 					case "user":
-						aVal = a.user.userId;
-						bVal = b.user.userId;
+						aVal = a.user.id;
+						bVal = b.user.id;
 						break;
 				}
 
@@ -197,7 +197,7 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 						<tr key={fee.id}>
 							<td>{index + 1}</td>
 							<td>{fee.id}</td>
-							<td>{`(${fee.user.userId}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
+							<td>{`(${fee.user.id}) ${fee.user.firstName} ${fee.user.lastName}`}</td>
 							<td>{fee.amount.toFixed(2)} zł</td>
 							<td>
 								{`(${fee.loan.loanId}) ${fee.loan.copy.inventoryCode} (${fee.loan.copy.book.title} (${
@@ -212,15 +212,16 @@ const FeeItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
 							<td>{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}</td>
 							<td>{fee.status}</td>
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
 										(window.location.href = `/feeItem/view/${fee.id}`)
 									}
 								>
-									View Details
+									Details
 								</button>
+								<button className="btn btn-sm btn-danger me-1">Fee Paid</button>
 							</td>
 						</tr>
 					))}

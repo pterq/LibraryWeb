@@ -11,8 +11,8 @@ type Props = {
 	showMessage: (text: string) => void;
 };
 
-const EMPTY: Omit<UserType, "id"> = {
-	userId: 0,
+const EMPTY: UserType = {
+	id: 0,
 	firstName: "",
 	lastName: "",
 	email: "",
@@ -36,12 +36,16 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 			setIsLoading(true);
 			setError(null);
 
+			console.log("Loading user data for ID:", id);
+
 			try {
 				const user = await apiUsers.getUserById(id);
 				if (!active) return;
 
+				console.log("Fetching user data:", user);
+
 				setData({
-					userId: Number(id),
+					id: Number(id),
 					firstName: user.firstName ?? "",
 					lastName: user.lastName ?? "",
 					email: user.email ?? "",
@@ -83,7 +87,7 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 			<div className="mt-3">
 				<div className="card p-4 mt-3">
 					<p>
-						<strong>User ID:</strong> {data.userId}
+						<strong>User ID:</strong> {data.id}
 					</p>
 
 					<div className="row mt-3">

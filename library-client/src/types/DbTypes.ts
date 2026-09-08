@@ -53,7 +53,7 @@ export interface LoanResponse {
 
 //===========================================================================
 export interface UserType {
-	userId: number;
+	id: number;
 	firstName: string;
 	lastName: string;
 	email: string;

@@ -63,7 +63,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 		}
 
 		if (selectedUserId !== null && selectedUserId !== undefined) {
-			data = data.filter((element) => element.user.userId === selectedUserId);
+			data = data.filter((element) => element.user.id === selectedUserId);
 		}
 
 		if (search) {
@@ -207,7 +207,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							</td>
 							<td>{loan.loanId}</td>
 							<td>
-								({loan.user.userId}) {loan.user.firstName} {loan.user.lastName}
+								({loan.user.id}) {loan.user.firstName} {loan.user.lastName}
 							</td>
 							<td>
 								({loan.copy.inventoryCode}) {loan.copy.book.title}
@@ -226,15 +226,18 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 									: "-"}
 							</td>
 							<td>{loan.status}</td>
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
+									className="btn btn-sm btn-primary me-2"
 									onClick={() =>
 										(window.location.href = `/loanItem/view/${loan.loanId}`)
 									}
 								>
-									View Details
+									Details
 								</button>
+								<button className="btn btn-sm btn-success me-1">Rent</button>
+								<button className="btn btn-sm btn-warning me-1">Return</button>
+								<button className="btn btn-sm btn-danger me-1">Set Overdue</button>
 							</td>
 						</tr>
 					))}
