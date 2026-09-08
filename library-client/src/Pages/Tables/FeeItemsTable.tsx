@@ -154,6 +154,10 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 							Author {getSortIcon("authors")}
 						</th>
 
+						<th onClick={() => requestSort("inventoryCode")}>
+							Inventory Code {getSortIcon("inventoryCode")}
+						</th>
+
 						<th onClick={() => requestSort("createdAt")}>
 							Fee issue date {getSortIcon("createdAt")}
 						</th>
@@ -197,6 +201,7 @@ const FeeItemsTable = ({ userId }: { userId: number }) => {
 								<td>{index + 1}</td>
 								<td>{title}</td>
 								<td>{authors}</td>
+								<td>{fee.loan.copy.inventoryCode}</td>
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
 								<td>{fee.amount.toFixed(2)} zł</td>
 								<td>{fee.status}</td>

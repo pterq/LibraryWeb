@@ -7,8 +7,6 @@ type Props = {
 const UserFeesView = ({ userId }: Props) => {
 	return (
 		<div>
-			<h4 className="mb-3">Fees</h4>
-			<h5>Of user: {userId}</h5>
 			<FeeItemsTable userId={userId} />
 		</div>
 	);

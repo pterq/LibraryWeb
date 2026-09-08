@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import type { LoanResponse, AuthorType } from "../../types/DbTypes";
 import SearchBar from "../../component/common/SearchBar";
 import TableAlert from "../../component/common/TableAlert";
 import apiLoans from "../../api/apiLoans";
+import { useAuth } from "../../context/AuthContext";
 
 type LoanExtended = LoanResponse & {
 	authors: AuthorType[];
@@ -13,15 +14,26 @@ type LoanExtended = LoanResponse & {
 const LoanItemsTable = ({ userId }: { userId: number }) => {
 	const [loans, setLoans] = useState<LoanResponse[]>([]);
 	const [loading, setLoading] = useState(true);
+	const { role } = useAuth();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	useEffect(() => {
 		if (!userId) return;
 
+		if (role !== "ADMIN" && role !== "LIBRARIAN") {
+			navigate("/login");
+		}
+
 		apiLoans
 			.getLoansByUserId(userId)
 			.then((data) => {
-				// usuwa rekordy RESERVED
-				const filtered = data.filter((loan) => loan.status !== "RESERVED");
+				let filtered = [...data];
+
+				// Usuwanie RESERVED tylko na stronie /my-books
+				if (location.pathname === "/my-books") {
+					filtered = filtered.filter((loan) => loan.status !== "RESERVED");
+				}
 
 				setLoans(filtered);
 				setLoading(false);
@@ -147,6 +159,9 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 						<th onClick={() => requestSort("authors")}>
 							Author {getSortIcon("authors")}
 						</th>
+						<th onClick={() => requestSort("inventoryCode")}>
+							Inventory Code {getSortIcon("inventoryCode")}
+						</th>
 						<th onClick={() => requestSort("reservedAt")}>
 							Reserved At {getSortIcon("reservedAt")}
 						</th>
@@ -196,6 +211,8 @@ const LoanItemsTable = ({ userId }: { userId: number }) => {
 									.map((author) => author.firstName + " " + author.lastName)
 									.join(", ")}
 							</td>
+
+							<td>{loan.copy.inventoryCode}</td>
 
 							<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
 

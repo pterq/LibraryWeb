@@ -81,27 +81,39 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 			{error && <p className="text-danger">{error}</p>}
 
 			<div className="mt-3">
-				<p>
-					<strong>User ID:</strong> {data.userId}
-				</p>
-				<p>
-					<strong>First Name:</strong> {data.firstName}
-				</p>
-				<p>
-					<strong>Last Name:</strong> {data.lastName}
-				</p>
-				<p>
-					<strong>Email:</strong> {data.email}
-				</p>
-				<p>
-					<strong>Phone:</strong> {data.phone || "-"}
-				</p>
-				<p>
-					<strong>Role:</strong> {data.role}
-				</p>
-				<p>
-					<strong>Has Unpaid Fees:</strong> {data.hasFee ? "Yes" : "No"}
-				</p>
+				<div className="card p-4 mt-3">
+					<p>
+						<strong>User ID:</strong> {data.userId}
+					</p>
+
+					<div className="row mt-3">
+						{/* LEWA KOLUMNA */}
+						<div className="col-md-6">
+							<p>
+								<strong>First Name:</strong> {data.firstName}
+							</p>
+							<p>
+								<strong>Last Name:</strong> {data.lastName}
+							</p>
+							<p>
+								<strong>Email:</strong> {data.email}
+							</p>
+						</div>
+
+						{/* PRAWA KOLUMNA */}
+						<div className="col-md-6">
+							<p>
+								<strong>Phone:</strong> {data.phone || "-"}
+							</p>
+							<p>
+								<strong>Role:</strong> {data.role}
+							</p>
+							<p>
+								<strong>Has Unpaid Fees:</strong> {data.hasFee ? "Yes" : "No"}
+							</p>
+						</div>
+					</div>
+				</div>
 
 				<div className="d-flex flex-wrap gap-2 mt-4">
 					<button
