@@ -113,7 +113,7 @@ const LoansDashboard = () => {
 
 	return (
 		<div className="container-fluid">
-			<h1>Loans Dashboard - Raport</h1>
+			<h1>Loans Report</h1>
 			<SearchBar
 				search={search}
 				setSearch={setSearch}
