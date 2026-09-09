@@ -1,4 +1,4 @@
-import LoanItemsTable from "../../../../Pages/Tables/LoanItemsTable";
+import LoanItemsTable from "../../../../component/dashboards/Tables/LoanItemsTable";
 
 type Props = {
 	userId: number;
@@ -7,7 +7,7 @@ type Props = {
 const UserLoansView = ({ userId }: Props) => {
 	return (
 		<div>
-			<LoanItemsTable userId={userId} />
+			<LoanItemsTable userId={userId} mode="admin" />
 		</div>
 	);
 };

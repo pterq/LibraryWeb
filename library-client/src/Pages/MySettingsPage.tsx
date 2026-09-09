@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import apiUser from "../api/apiUsers";
-import UserDataCard from "./Tables/UserDataCard";
+import UserDataCard from "../component/common/UserDataCard";
 
 const MySettingsPage = () => {
 	const { firstName, lastName, email, role, userId, hasFees, phone } = useAuth();

@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import LoanItemsTable from "./Tables/LoanItemsTable";
+import LoanItemsTable from "../component/dashboards/Tables/LoanItemsTable";
 
 const UserBooksPage = () => {
 	const { userId } = useAuth();

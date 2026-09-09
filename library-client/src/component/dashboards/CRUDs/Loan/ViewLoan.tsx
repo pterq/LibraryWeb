@@ -1,7 +1,7 @@
 import React from "react";
 import type { LoanResponse } from "../../../../types/DbTypes";
 import { useEffect, useState } from "react";
-import LoanDataCard from "../../../../Pages/Tables/LoanDataCard";
+import LoanDataCard from "../../../common/LoanDataCard";
 import apiLoans from "../../../../api/apiLoans";
 
 type Props = {
@@ -57,9 +57,9 @@ const ViewLoan = ({ id, onBack, onReload, showMessage }: Props) => {
 				>
 					Back
 				</button>
-				<h2>View Loan Data</h2>
+				<h2>Loan Data</h2>
 			</div>
-			<div className="mt-3">
+			<div>
 				<LoanDataCard loanData={data} />
 			</div>
 		</div>

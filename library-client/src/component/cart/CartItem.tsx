@@ -23,7 +23,7 @@ const CartItem = ({ item, refreshCart }: { item: LoanResponse; refreshCart: () =
 				notifyCartChanged();
 			})
 			.catch(() => {
-				showToast("Failed to remove book.");
+				showToast("Failed to remove book from cart.");
 			});
 	};
 

@@ -4,7 +4,7 @@ const FeeItemsDashboard = () => {
 	return (
 		<div className="container-fluid">
 			<h1>Fee Items Dashboar</h1>
-			<FeeItemsTable />
+			<FeeItemsTable mode="admin" />
 		</div>
 	);
 };

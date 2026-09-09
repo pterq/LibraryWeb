@@ -5,7 +5,7 @@ const LoanItemsDashboard = () => {
 		<div className="container-fluid">
 			<h1>Loans Dashboard</h1>
 
-			<LoanItemsTable />
+			<LoanItemsTable mode="admin" />
 		</div>
 	);
 };

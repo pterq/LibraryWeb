@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import FeeItemsTable from "./Tables/FeeItemsTable";
+import FeeItemsTable from "../component/dashboards/Tables/FeeItemsTable";
 
 const MyFeesPage = () => {
 	const { userId, hasFees: userHasFees, setHasFees } = useAuth();

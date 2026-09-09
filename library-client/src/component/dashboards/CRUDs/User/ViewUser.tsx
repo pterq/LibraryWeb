@@ -3,7 +3,7 @@ import apiUsers from "../../../../api/apiUsers";
 import type { UserType } from "../../../../types/DbTypes";
 import UserLoansView from "./UserLoansView";
 import UserFeesView from "./UserFeesView";
-import UserDataCard from "../../../../Pages/Tables/UserDataCard";
+import UserDataCard from "../../../common/UserDataCard";
 
 type Props = {
 	id: number;
