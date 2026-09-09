@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { UserType } from "../../../types/DbTypes";
+import type { UserRoleType, UserType } from "../../../types/DbTypes";
 import SearchBar from "../../common/SearchBar";
 
 import apiUsers from "../../../api/apiUsers";
@@ -52,7 +52,7 @@ const UsersDashboard = () => {
 		direction: "asc" | "desc";
 	} | null>(null);
 
-	const roleOptions = useMemo(() => Array.from(new Set(users.map((user) => user.role))), [users]);
+	const roleOptions: UserRoleType[] = ["ADMIN", "LIBRARIAN", "USER"];
 
 	const isFiltered =
 		search !== "" || filter !== "ALL" || sortConfig !== null || feeFilter !== "ALL";
@@ -248,7 +248,7 @@ const UsersDashboard = () => {
 									style={{ width: "auto" }}
 									value={filter}
 									onChange={(e) =>
-										setFilter(e.target.value as "ALL" | UserType["role"])
+										setFilter(e.target.value as "ALL" | UserRoleType)
 									}
 								>
 									<option value="ALL">All</option>

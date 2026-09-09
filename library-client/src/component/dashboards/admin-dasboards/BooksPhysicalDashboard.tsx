@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import type { BookPhysicalResponse } from "../../../types/DbTypes";
+import type { BookPhysicalResponse, BookPhysicalStatusType } from "../../../types/DbTypes";
 
 import SearchBar from "../../common/SearchBar";
 import TableAlert from "../../common/TableAlert";
@@ -65,10 +65,7 @@ const BooksPhysicalDashboard = () => {
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
 
-	const statusOptions = useMemo(
-		() => Array.from(new Set(booksPhysical.map((copy) => copy.status))),
-		[booksPhysical],
-	);
+	const statusOptions: BookPhysicalStatusType[] = ["AVAILABLE", "BORROWED", "RESERVED"];
 
 	const physicalBooks = useMemo(() => {
 		let data = [...booksPhysical];
@@ -227,9 +224,7 @@ const BooksPhysicalDashboard = () => {
 									value={filterStatus}
 									onChange={(e) =>
 										setFilterStatus(
-											e.target.value as
-												| "ALL"
-												| BookPhysicalResponse["status"],
+											e.target.value as "ALL" | BookPhysicalStatusType,
 										)
 									}
 								>

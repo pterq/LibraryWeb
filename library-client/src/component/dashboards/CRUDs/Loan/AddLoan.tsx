@@ -13,7 +13,7 @@ const AddLoan = ({ onBack, onReload, showMessage }: Props) => {
 			<div className="d-flex gap-2 mb-3">
 				<ReturnButton onBack={onBack} onReload={onReload} />
 
-				<h2>Loan Data</h2>
+				<h2>Add Loan to User Cart</h2>
 			</div>
 			<div>user select</div>
 			<div>book select</div>

@@ -48,6 +48,7 @@ const FeeItemsTable = ({
 
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<FeeStatusType | "ALL">("ALL");
+	const statusOptions: FeeStatusType[] = ["PAID", "PENDING", "CANCELLED"];
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof FeeType;
@@ -209,7 +210,27 @@ const FeeItemsTable = ({
 							<th onClick={() => requestSort("paidAt")}>
 								Paid At {getSortIcon("paidAt")}
 							</th>
-							<th>Status</th>
+							<th scope="col" onClick={() => requestSort("status")}>
+								<div className="d-flex align-items-center gap-2">
+									<span>Status</span>
+									<select
+										className="form-select form-select-sm py-0 me-2"
+										style={{ width: "auto" }}
+										value={filter}
+										onChange={(e) =>
+											setFilter(e.target.value as FeeStatusType | "ALL")
+										}
+									>
+										<option value="ALL">All</option>
+										{statusOptions.map((status) => (
+											<option key={status} value={status}>
+												{status}
+											</option>
+										))}
+									</select>
+								</div>
+							</th>
+
 							<th>Actions</th>
 						</tr>
 					</thead>
@@ -270,7 +291,26 @@ const FeeItemsTable = ({
 							<th onClick={() => requestSort("paidAt")}>
 								Paid At {getSortIcon("paidAt")}
 							</th>
-							<th>Status</th>
+							<th scope="col" onClick={() => requestSort("status")}>
+								<div className="d-flex align-items-center gap-2">
+									<span>Status</span>
+									<select
+										className="form-select form-select-sm py-0 me-2"
+										style={{ width: "auto" }}
+										value={filter}
+										onChange={(e) =>
+											setFilter(e.target.value as FeeStatusType | "ALL")
+										}
+									>
+										<option value="ALL">All</option>
+										{statusOptions.map((status) => (
+											<option key={status} value={status}>
+												{status}
+											</option>
+										))}
+									</select>
+								</div>
+							</th>
 							<th>Action</th>
 						</tr>
 					</thead>

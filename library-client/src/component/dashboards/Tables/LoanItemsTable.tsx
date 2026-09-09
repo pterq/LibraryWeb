@@ -11,7 +11,7 @@ import TableAlert from "../../common/TableAlert";
 import apiLoans from "../../../api/apiLoans";
 import { useAuth } from "../../../context/AuthContext";
 
-import type { LoanResponse, AuthorType } from "../../../types/DbTypes";
+import type { LoanResponse, AuthorType, LoanStatusType } from "../../../types/DbTypes";
 
 type CrudState = { mode: "dashboard" } | { mode: "view"; id: number } | { mode: "add" };
 
@@ -48,6 +48,19 @@ const LoanItemsTable = ({
 	}, [notifyCartChanged]);
 
 	const reloadLoans = () => {
+		// ADMIN + userId → pobierz tylko wypożyczenia użytkownika
+		if (mode === "admin" && userId) {
+			apiLoans
+				.getLoansByUserId(userId)
+				.then((data) => {
+					setLoans(data);
+					setLoading(false);
+				})
+				.catch(console.error);
+			return;
+		}
+
+		// ADMIN bez userId → pobierz wszystkie
 		if (mode === "admin") {
 			apiLoans
 				.getLoans()
@@ -56,30 +69,33 @@ const LoanItemsTable = ({
 					setLoading(false);
 				})
 				.catch(console.error);
-		} else {
-			if (!userId) return;
-
-			apiLoans
-				.getLoansByUserId(userId)
-				.then((data) => {
-					let filtered = [...data];
-
-					// Usuwanie RESERVED tylko na stronie /my-books
-					if (location.pathname === "/my-books") {
-						filtered = filtered.filter((loan) => loan.status !== "RESERVED");
-					}
-
-					setLoans(filtered);
-					setLoading(false);
-				})
-				.catch(console.error);
+			return;
 		}
+
+		// USER → pobierz wypożyczenia użytkownika
+		if (!userId) return;
+
+		apiLoans
+			.getLoansByUserId(userId)
+			.then((data) => {
+				let filtered = [...data];
+
+				if (location.pathname === "/my-books") {
+					filtered = filtered.filter((loan) => loan.status !== "RESERVED");
+				}
+
+				setLoans(filtered);
+				setLoading(false);
+			})
+			.catch(console.error);
 	};
 
 	// ============================
 	// Search / Filter / Sort
 	// ============================
 
+	const statusOptions: LoanStatusType[] = ["RESERVED", "BORROWED", "RETURNED", "OVERDUE"];
+	const [filterStatus, setFilterStatus] = useState<"ALL" | LoanStatusType>("ALL");
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | LoanResponse["status"]>("ALL");
 
@@ -88,7 +104,7 @@ const LoanItemsTable = ({
 		direction: "asc" | "desc";
 	} | null>(null);
 
-	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
+	const isFiltered = search !== "" || filterStatus !== "ALL" || sortConfig !== null;
 
 	const requestSort = (key: keyof LoanExtended) => {
 		if (key === "status") return;
@@ -112,8 +128,8 @@ const LoanItemsTable = ({
 		let data = [...loans];
 
 		// Filtrowanie statusów
-		if (filter !== "ALL") {
-			data = data.filter((loan) => loan.status === filter);
+		if (filterStatus !== "ALL") {
+			data = data.filter((loan) => loan.status === filterStatus);
 		}
 
 		// Sortowanie
@@ -156,7 +172,7 @@ const LoanItemsTable = ({
 		return data.filter((loan) =>
 			loan.copy.book.title.toLowerCase().includes(search.toLowerCase()),
 		);
-	}, [loans, filter, sortConfig, search]);
+	}, [loans, filterStatus, sortConfig, search]);
 
 	// ============================
 	// CRUD VIEW
@@ -211,7 +227,7 @@ const LoanItemsTable = ({
 					disabled={!isFiltered}
 					onClick={() => {
 						setSearch("");
-						setFilter("ALL");
+						setFilterStatus("ALL");
 						setSortConfig(null);
 					}}
 				>
@@ -246,7 +262,31 @@ const LoanItemsTable = ({
 							<th onClick={() => requestSort("returnDate")}>
 								Return {getSortIcon("returnDate")}
 							</th>
-							<th>Status</th>
+
+							<th scope="col" style={{ width: "16%" }}>
+								<div className="d-flex align-items-center gap-2">
+									<span onClick={() => requestSort("status")}>
+										Status {getSortIcon("status")}
+									</span>
+									<select
+										className="form-select form-select-sm py-0 me-2"
+										style={{ width: "auto" }}
+										value={filterStatus}
+										onChange={(e) =>
+											setFilterStatus(
+												e.target.value as "ALL" | LoanStatusType,
+											)
+										}
+									>
+										<option value="ALL">All</option>
+										{statusOptions.map((status) => (
+											<option key={status} value={status}>
+												{status}
+											</option>
+										))}
+									</select>
+								</div>
+							</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
@@ -322,7 +362,34 @@ const LoanItemsTable = ({
 							<th onClick={() => requestSort("returnDate")}>
 								Return Date {getSortIcon("returnDate")}
 							</th>
-							<th>Status</th>
+							<th scope="col" style={{ width: "16%" }}>
+								<div className="d-flex align-items-center gap-2">
+									<span onClick={() => requestSort("status")}>
+										Status {getSortIcon("status")}
+									</span>
+
+									<select
+										className="form-select form-select-sm py-0 me-2"
+										style={{ width: "auto" }}
+										value={filterStatus}
+										onChange={(e) =>
+											setFilterStatus(
+												e.target.value as "ALL" | LoanStatusType,
+											)
+										}
+									>
+										<option value="ALL">All</option>
+
+										{/*bez RESERVED  */}
+										{["BORROWED", "RETURNED", "OVERDUE"].map((status) => (
+											<option key={status} value={status}>
+												{status}
+											</option>
+										))}
+									</select>
+								</div>
+							</th>
+
 							<th>Action</th>
 						</tr>
 					</thead>
