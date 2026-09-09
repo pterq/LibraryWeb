@@ -30,6 +30,11 @@ public class BookController {
                 .toList();
     }
 
+    @GetMapping("/available")
+    public List<BookResponseDTO> getAllAvailable() {
+        return bookService.getAllAvailableBooks();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BookResponseDTO> getById(@PathVariable Long id) {
         Book book = bookService.getBookById(id);

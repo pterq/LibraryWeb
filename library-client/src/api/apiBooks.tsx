@@ -27,6 +27,16 @@ export const getBooks = async () => {
 	}
 };
 
+export const getAvailableBooks = async () => {
+	try {
+		const response = await axiosClient.get<BookType[]>(`${BOOKS_ENDPOINT}/available`);
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch books:", error);
+		throw error;
+	}
+};
+
 export const addBook = async (book: BookCreatePayload) => {
 	try {
 		const response = await axiosClient.post<BookType>(BOOKS_ENDPOINT, book);
@@ -69,6 +79,7 @@ export const deleteBookById = async (id: number) => {
 
 const apiBooks = {
 	getBooks,
+	getAvailableBooks,
 	getBookById,
 	addBook,
 	updateBookById,

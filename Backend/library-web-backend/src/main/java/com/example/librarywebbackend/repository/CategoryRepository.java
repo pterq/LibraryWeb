@@ -13,7 +13,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
     @Query("""
-    select new com.example.librarywebbackend.dto.CategoryWithCountDTO(
+    select new com.example.librarywebbackend.dto.Category.CategoryWithCountDTO(
         c.id,
         c.name,
         coalesce(count(b.id), 0)

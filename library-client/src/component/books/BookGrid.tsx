@@ -6,23 +6,26 @@ import type { BookType } from "../../types/DbTypes";
 
 import apiBooks from "../../api/apiBooks";
 import TableAlert from "../common/TableAlert";
+import { useAuth } from "../../context/AuthContext";
 
 interface BookGridProps {
 	search: string;
 }
 
 const BookGrid: React.FC<BookGridProps> = ({ search }) => {
+	const { cartChanged } = useAuth();
+
 	const [books, setBooks] = useState<BookType[]>([]);
 
 	useEffect(() => {
 		apiBooks
-			.getBooks()
+			.getAvailableBooks()
 			.then((data) => {
 				setBooks(data);
 				console.log("Fetched books:", data);
 			})
 			.catch(console.error);
-	}, []);
+	}, [cartChanged]);
 
 	const normalizedSearch = search.trim().toLowerCase();
 	const filteredBooks = books.filter((book) =>

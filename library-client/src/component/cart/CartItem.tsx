@@ -12,7 +12,7 @@ const calculateDaysLeft = (expiresAt: Date): number => {
 };
 
 const CartItem = ({ item, refreshCart }: { item: LoanResponse; refreshCart: () => void }) => {
-	const { showToast } = useAuth();
+	const { showToast, notifyCartChanged } = useAuth();
 
 	const handleRemoveFromCart = () => {
 		apiLoans
@@ -20,6 +20,7 @@ const CartItem = ({ item, refreshCart }: { item: LoanResponse; refreshCart: () =
 			.then(() => {
 				showToast("Book removed from cart.");
 				refreshCart();
+				notifyCartChanged();
 			})
 			.catch(() => {
 				showToast("Failed to remove book.");
