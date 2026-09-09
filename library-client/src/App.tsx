@@ -16,7 +16,6 @@ import BookCardPage from "./Pages/BookCardPage";
 import UserBooksPage from "./Pages/UserBooksPage";
 import MyFeesPage from "./Pages/MyFeesPage";
 import MySettingsPage from "./Pages/MySettingsPage";
-import CartPanel from "./Pages/CartPanel";
 import FeeCard from "./component/fees/FeeCard";
 import UserBookCard from "./component/books/UserBookCard";
 
@@ -50,15 +49,6 @@ function App() {
 							}
 						/>
 
-						<Route
-							path="/user/:id/books"
-							element={
-								<ProtectedRoute>
-									<UserBooksPage />
-								</ProtectedRoute>
-							}
-						/>
-
 						<Route path="/user-loan/:id" element={<UserBookCard />} />
 
 						<Route
@@ -66,24 +56,6 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<MyFeesPage />
-								</ProtectedRoute>
-							}
-						/>
-
-						<Route
-							path="/user/:id/fees"
-							element={
-								<ProtectedRoute>
-									<MyFeesPage />
-								</ProtectedRoute>
-							}
-						/>
-
-						<Route
-							path="/user/:id/cart-items"
-							element={
-								<ProtectedRoute>
-									<CartPanel />
 								</ProtectedRoute>
 							}
 						/>
@@ -116,12 +88,12 @@ function App() {
 
 						{/* LIBRARIAN PANEL — SPA tak samo jak admin */}
 						<Route
-							path="/librarian-panel"
-							element={<Navigate to="/librarian-panel/dashboard" replace />}
+							path="/library-panel"
+							element={<Navigate to="/library-panel/dashboard" replace />}
 						/>
 
 						<Route
-							path="/librarian-panel/:section"
+							path="/library-panel/:section"
 							element={
 								<ProtectedRoute>
 									<AdminPanelPage />

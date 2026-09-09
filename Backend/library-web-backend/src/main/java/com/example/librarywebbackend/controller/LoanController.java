@@ -40,17 +40,24 @@ public class LoanController {
 
     @GetMapping("/userBooks/{userId}")
     public List<LoanResponseDTO> getLoansByUserId(@PathVariable Long userId) {
-        return loanService.getLoansByUserId(userId);
+        return loanService.getLoansByUserId(userId)
+                .stream()
+                .map(loanMapper::toDto)
+                .toList();
     }
+
+
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Loan> getById(@PathVariable Long id) {
+    public ResponseEntity<LoanResponseDTO> getById(@PathVariable Long id) {
         Loan loan = loanService.getLoanByLoanId(id);
         return loan != null
-                ? ResponseEntity.ok(loan)
+                ? ResponseEntity.ok(loanMapper.toDto(loan))
                 : ResponseEntity.notFound().build();
     }
+
+
 
     @GetMapping("/counts")
     public List<LoanWithCountDTO> getLoanCounts() {
@@ -100,9 +107,11 @@ public class LoanController {
     public ResponseEntity<?> returnBook(@PathVariable Long loanId) {
         Loan loan = loanService.returnBook(loanId);
         return loan != null
-                ? ResponseEntity.ok(loan)
+                ? ResponseEntity.ok(loanMapper.toDto(loan))
                 : ResponseEntity.notFound().build();
     }
+
+
 
     // ------------------------------------------------------------
     // DELETE LOAN

@@ -57,12 +57,10 @@ public class LoanService implements ILoanService {
     }
 
     @Override
-    public List<LoanResponseDTO> getLoansByUserId(Long id) {
-        return loanRepository.findByUserId(id)
-                .stream()
-                .map(loanMapper::toDto)
-                .toList();
+    public List<Loan> getLoansByUserId(Long id) {
+        return loanRepository.findByUserId(id);
     }
+
 
 
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import type { LoanResponse } from "../../../types/DbTypes";
 
@@ -7,10 +7,24 @@ import SearchBar from "../../common/SearchBar";
 import apiLoans from "../../../api/apiLoans";
 import TableAlert from "../../common/TableAlert";
 
+import ViewLoan from "../../dashboards/CRUDs/Loan/ViewLoan";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
 const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
-	const [loans, setLoans] = useState<LoanResponse[]>([]);
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
+		reloadLoans();
+	}, []);
+
+	const reloadLoans = () => {
 		apiLoans
 			.getLoans()
 			.then((data) => {
@@ -18,7 +32,15 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 				console.log("Fetched Loan Items:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
+
+	const [loans, setLoans] = useState<LoanResponse[]>([]);
 
 	const selectedUserId = userId ?? null;
 
@@ -112,6 +134,20 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 
 		return data;
 	}, [loans, filter, search, sortConfig, selectedUserId]);
+
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewLoan
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadLoans}
+				showMessage={showMessage}
+			/>
+		);
+	}
 
 	return (
 		<>
@@ -229,9 +265,7 @@ const LoanItemsTable = ({ userId = null }: { userId?: number | null }) => {
 							<td className="text-nowrap">
 								<button
 									className="btn btn-sm btn-primary me-2"
-									onClick={() =>
-										(window.location.href = `/loanItem/view/${loan.loanId}`)
-									}
+									onClick={() => setCrud({ mode: "view", id: loan.loanId })}
 								>
 									Details
 								</button>

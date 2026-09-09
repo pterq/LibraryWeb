@@ -10,7 +10,8 @@ public interface ILoanService {
 
     List<Loan> getAllLoans();
 
-    List<LoanResponseDTO> getLoansByUserId(Long id);
+    List<Loan> getLoansByUserId(Long id);
+
 
     Loan getLoanByLoanId(Long id);
 

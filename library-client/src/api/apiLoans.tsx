@@ -34,6 +34,16 @@ export const getLoansByUserId = async (userId: number) => {
 	}
 };
 
+export const getLoanByLoanId = async (loanId: number) => {
+	try {
+		const response = await axiosClient.get<LoanResponse>(`${LOAN_ENDPOINT}/${loanId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to fetch loan with id ${loanId}:`, error);
+		throw error;
+	}
+};
+
 export const addLoanReserve = async (loan: LoanStatusChangeRequest) => {
 	try {
 		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/reserve`, loan);
@@ -104,6 +114,7 @@ const apiLoans = {
 	updateLoanById,
 	deleteLoanById,
 	getLoansWithCounts,
+	getLoanByLoanId,
 };
 
 export default apiLoans;
