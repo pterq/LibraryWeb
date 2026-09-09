@@ -16,8 +16,8 @@ import BookCardPage from "./Pages/BookCardPage";
 import UserBooksPage from "./Pages/UserBooksPage";
 import MyFeesPage from "./Pages/MyFeesPage";
 import MySettingsPage from "./Pages/MySettingsPage";
-import FeeCard from "./component/fees/FeeCard";
-import UserBookCard from "./component/books/UserBookCard";
+import ViewFee from "./component/dashboards/CRUDs/Fee/ViewFee";
+import UserBookCard from "./component/page-components/books/UserBookCard";
 
 import AdminPanelPage from "./Pages/AdminPanelPage";
 
@@ -60,7 +60,7 @@ function App() {
 							}
 						/>
 
-						<Route path="/fee/:id" element={<FeeCard />} />
+						<Route path="/fee/:id" element={<ViewFee />} />
 
 						<Route
 							path="/settings"

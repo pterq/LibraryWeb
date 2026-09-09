@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import LoanActionButtons from "../../dashboards/CRUDs/Loan/LoanActionButtons";
 import ViewLoan from "../../dashboards/CRUDs/Loan/ViewLoan";
+import AddLoan from "../../dashboards/CRUDs/Loan/AddLoan";
 
 import SearchBar from "../../common/SearchBar";
 import TableAlert from "../../common/TableAlert";
@@ -12,7 +13,7 @@ import { useAuth } from "../../../context/AuthContext";
 
 import type { LoanResponse, AuthorType } from "../../../types/DbTypes";
 
-type CrudState = { mode: "dashboard" } | { mode: "view"; id: number };
+type CrudState = { mode: "dashboard" } | { mode: "view"; id: number } | { mode: "add" };
 
 type LoanExtended = LoanResponse & {
 	authors: AuthorType[];
@@ -172,6 +173,16 @@ const LoanItemsTable = ({
 		);
 	}
 
+	if (crud.mode === "add") {
+		return (
+			<AddLoan
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadLoans}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	// ============================
 	// Render
 	// ============================
@@ -189,6 +200,12 @@ const LoanItemsTable = ({
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				<button
+					className="btn btn-sm btn-primary me-2"
+					onClick={() => setCrud({ mode: "add" })}
+				>
+					Add Loan
+				</button>
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}

@@ -1,6 +1,6 @@
 import React from "react";
 import SearchBar from "../component/common/SearchBar";
-import BookGrid from "../component/books/BookGrid";
+import BookGrid from "../component/page-components/books/BookGrid";
 
 const BooksMainPage = () => {
 	const [search, setSearch] = React.useState("");

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import BookTile from "./BookTile";
-import PageNav from "../dashboards/admin-components/PageNav";
+import PageNav from "../../dashboards/admin-components/PageNav";
 
-import type { BookType } from "../../types/DbTypes";
+import type { BookType } from "../../../types/DbTypes";
 
-import apiBooks from "../../api/apiBooks";
-import TableAlert from "../common/TableAlert";
-import { useAuth } from "../../context/AuthContext";
+import apiBooks from "../../../api/apiBooks";
+import TableAlert from "../../common/TableAlert";
+import { useAuth } from "../../../context/AuthContext";
 
 interface BookGridProps {
 	search: string;

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import "./book-tile.css";
 import TileImage from "./TileImage";
-import type { BookType, AuthorType } from "../../types/DbTypes";
-import { useAuth } from "../../context/AuthContext";
-import apiLoans from "../../api/apiLoans";
+import type { BookType, AuthorType } from "../../../types/DbTypes";
+import { useAuth } from "../../../context/AuthContext";
+import apiLoans from "../../../api/apiLoans";
 
 interface BookTileProps {
 	book: BookType;

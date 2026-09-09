@@ -1,12 +1,12 @@
-import type { LoanResponse } from "../../types/DbTypes";
+import type { LoanResponse } from "../../../types/DbTypes";
 import { useParams } from "react-router-dom";
-import ImageFrame from "../common/ImageFrame";
+import ImageFrame from "../../common/ImageFrame";
 
 const loans: LoanResponse[] = [];
 
 const UserBookCard = () => {
 	const { id } = useParams<{ id: string }>();
-	const loan: LoanResponse | undefined = loans.find((f) => f.id === parseInt(id || "", 10));
+	const loan: LoanResponse | undefined = loans.find((f) => f.loanId === parseInt(id || "", 10));
 
 	if (!loan) {
 		return <div>Loan not found</div>;
