@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.LoanResponseDTO;
-import com.example.librarywebbackend.dto.LoanStatusChangeRequestDTO;
-import com.example.librarywebbackend.dto.LoanWithCountDTO;
+import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
+import com.example.librarywebbackend.dto.Loan.LoanStatusChangeRequestDTO;
+import com.example.librarywebbackend.dto.Loan.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.mapper.LoanMapper;
 import com.example.librarywebbackend.service.ILoanService;

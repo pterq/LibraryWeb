@@ -1,9 +1,9 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.BookCopyCreateRequest;
-import com.example.librarywebbackend.dto.BookCopyRequestDTO;
-import com.example.librarywebbackend.dto.BookCopyResponseDTO;
-import com.example.librarywebbackend.dto.BookResponseDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyCreateRequest;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyRequestDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyResponseDTO;
+import com.example.librarywebbackend.dto.Book.BookResponseDTO;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.CopyStatus;

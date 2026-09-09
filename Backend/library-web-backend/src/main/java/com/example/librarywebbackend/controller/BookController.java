@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.BookRequestDTO;
-import com.example.librarywebbackend.dto.BookResponseDTO;
+import com.example.librarywebbackend.dto.Book.BookRequestDTO;
+import com.example.librarywebbackend.dto.Book.BookResponseDTO;
 import com.example.librarywebbackend.mapper.BookMapper;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.service.IBookService;

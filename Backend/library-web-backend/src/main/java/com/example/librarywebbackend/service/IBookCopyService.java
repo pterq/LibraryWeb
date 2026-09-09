@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.dto.BookCopyCreateRequest;
-import com.example.librarywebbackend.dto.BookCopyRequestDTO;
-import com.example.librarywebbackend.dto.BookCopyResponseDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyCreateRequest;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyRequestDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyResponseDTO;
 import com.example.librarywebbackend.entity.CopyStatus;
 
 import java.util.List;

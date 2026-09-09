@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.*;
+import com.example.librarywebbackend.dto.User.*;
 import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.service.implementation.UserService;
 import jakarta.validation.Valid;

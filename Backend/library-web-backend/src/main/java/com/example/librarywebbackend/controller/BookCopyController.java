@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.BookCopyCreateRequest;
-import com.example.librarywebbackend.dto.BookCopyRequestDTO;
-import com.example.librarywebbackend.dto.BookCopyResponseDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyCreateRequest;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyRequestDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyResponseDTO;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.service.IBookCopyService;
 import org.springframework.http.ResponseEntity;

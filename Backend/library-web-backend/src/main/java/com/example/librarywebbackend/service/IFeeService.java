@@ -1,9 +1,8 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.dto.FeeRequestDTO;
-import com.example.librarywebbackend.dto.FeeResponseDTO;
-import com.example.librarywebbackend.dto.FeeWithCountDTO;
-import com.example.librarywebbackend.entity.Fee;
+import com.example.librarywebbackend.dto.Fee.FeeRequestDTO;
+import com.example.librarywebbackend.dto.Fee.FeeResponseDTO;
+import com.example.librarywebbackend.dto.Fee.FeeWithCountDTO;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.Loan;
 

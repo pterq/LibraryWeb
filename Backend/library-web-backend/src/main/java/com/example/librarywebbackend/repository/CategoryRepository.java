@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.repository;
 
 import com.example.librarywebbackend.entity.Category;
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.Category.CategoryWithCountDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

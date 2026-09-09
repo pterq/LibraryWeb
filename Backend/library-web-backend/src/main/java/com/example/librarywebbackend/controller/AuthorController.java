@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.AuthorDTO;
+import com.example.librarywebbackend.dto.Author.AuthorDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.service.IAuthorService;
 import org.springframework.http.ResponseEntity;

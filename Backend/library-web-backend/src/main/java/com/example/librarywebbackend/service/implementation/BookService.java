@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.BookRequestDTO;
+import com.example.librarywebbackend.dto.Book.BookRequestDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.Category;

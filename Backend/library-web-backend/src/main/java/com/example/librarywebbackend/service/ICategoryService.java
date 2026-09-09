@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.service;
 
 import com.example.librarywebbackend.entity.Category;
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.Category.CategoryWithCountDTO;
 
 import java.util.List;
 

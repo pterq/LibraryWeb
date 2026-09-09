@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.dto.LoanResponseDTO;
-import com.example.librarywebbackend.dto.LoanWithCountDTO;
+import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
+import com.example.librarywebbackend.dto.Loan.LoanWithCountDTO;
 import com.example.librarywebbackend.entity.Loan;
 
 import java.util.List;

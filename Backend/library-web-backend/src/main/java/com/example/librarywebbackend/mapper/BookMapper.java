@@ -1,8 +1,8 @@
 package com.example.librarywebbackend.mapper;
 
-import com.example.librarywebbackend.dto.AuthorDTO;
-import com.example.librarywebbackend.dto.BookResponseDTO;
-import com.example.librarywebbackend.dto.CategoryResponseDTO;
+import com.example.librarywebbackend.dto.Author.AuthorDTO;
+import com.example.librarywebbackend.dto.Book.BookResponseDTO;
+import com.example.librarywebbackend.dto.Category.CategoryResponseDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.entity.Book;
 import org.springframework.stereotype.Component;

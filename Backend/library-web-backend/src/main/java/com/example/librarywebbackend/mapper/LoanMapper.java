@@ -1,6 +1,11 @@
 package com.example.librarywebbackend.mapper;
 
-import com.example.librarywebbackend.dto.*;
+import com.example.librarywebbackend.dto.Author.AuthorDTO;
+import com.example.librarywebbackend.dto.Book.BookResponseDTO;
+import com.example.librarywebbackend.dto.BookPhysical.BookCopyResponseDTO;
+import com.example.librarywebbackend.dto.Category.CategoryResponseDTO;
+import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
+import com.example.librarywebbackend.dto.User.UserResponseDTO;
 import com.example.librarywebbackend.entity.Book;
 import com.example.librarywebbackend.entity.BookPhyscial;
 import com.example.librarywebbackend.entity.Loan;

@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.service;
 
-import com.example.librarywebbackend.dto.LoginRequestDTO;
-import com.example.librarywebbackend.dto.LoginResponseDTO;
+import com.example.librarywebbackend.dto.User.LoginRequestDTO;
+import com.example.librarywebbackend.dto.User.LoginResponseDTO;
 
 public interface ILoginService {
 

@@ -1,6 +1,6 @@
 package com.example.librarywebbackend.controller;
 
-import com.example.librarywebbackend.dto.CategoryWithCountDTO;
+import com.example.librarywebbackend.dto.Category.CategoryWithCountDTO;
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.service.ICategoryService;
 import org.springframework.http.HttpStatus;

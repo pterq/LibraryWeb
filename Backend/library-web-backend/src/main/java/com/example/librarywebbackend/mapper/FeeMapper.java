@@ -1,7 +1,7 @@
 package com.example.librarywebbackend.mapper;
 
-import com.example.librarywebbackend.dto.FeeRequestDTO;
-import com.example.librarywebbackend.dto.FeeResponseDTO;
+import com.example.librarywebbackend.dto.Fee.FeeRequestDTO;
+import com.example.librarywebbackend.dto.Fee.FeeResponseDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.entity.Loan;
