@@ -1,11 +1,25 @@
 import React from "react";
 
-const ReturnButton = () => {
+interface ReturnButtonProps {
+	onBack?: () => void;
+	onReload?: () => void;
+}
+
+const ReturnButton: React.FC<ReturnButtonProps> = ({ onBack, onReload }) => {
 	const handleBackClick = () => {
-		window.history.back();
-		setTimeout(() => {
-			window.location.reload();
-		}, 50);
+		if (onBack) {
+			onBack();
+		} else {
+			window.history.back();
+		}
+
+		if (onReload) {
+			onReload();
+		} else {
+			setTimeout(() => {
+				window.location.reload();
+			}, 50);
+		}
 	};
 
 	return (

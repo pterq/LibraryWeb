@@ -3,6 +3,7 @@ import apiUsers from "../../../../api/apiUsers";
 import { useAuth } from "../../../../context/AuthContext";
 import type { UserType, EmptyRegisterUserForm } from "../../../../types/DbTypes";
 import RegisterForm from "../../../common/RegisterForm";
+import ReturnButton from "../../../common/ReturnButton";
 
 type Props = {
 	onBack: () => void;
@@ -74,20 +75,24 @@ const AddUser = ({ onBack, onReload, showMessage }: Props) => {
 
 	return (
 		<div className="container-fluid py-3">
-			<button className="btn btn-secondary" onClick={onBack}>
-				Back
-			</button>
+			<div className="d-flex gap-2 mb-3">
+				<ReturnButton onBack={onBack} onReload={onReload} />
 
-			<RegisterForm
-				form={formData}
-				setForm={setFormData}
-				onSubmit={handleSubmit}
-				showPassword={showPassword}
-				setShowPassword={setShowPassword}
-				error={error}
-				isLoading={isLoading}
-				title="Add User"
-			/>
+				<h2>Add User</h2>
+			</div>
+
+			<div className="card p-3 d-flex flex-column">
+				<RegisterForm
+					form={formData}
+					setForm={setFormData}
+					onSubmit={handleSubmit}
+					showPassword={showPassword}
+					setShowPassword={setShowPassword}
+					error={error}
+					isLoading={isLoading}
+					title="Add User"
+				/>
+			</div>
 		</div>
 	);
 };

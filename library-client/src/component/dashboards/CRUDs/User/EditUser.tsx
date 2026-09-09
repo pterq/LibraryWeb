@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import apiUsers from "../../../../api/apiUsers";
 import { useAuth } from "../../../../context/AuthContext";
 import type { UserType } from "../../../../types/DbTypes";
+import ReturnButton from "../../../common/ReturnButton";
 
 type Props = {
 	id: number;
@@ -120,12 +121,9 @@ const EditUser = ({ id, onBack, onReload, showMessage }: Props) => {
 	return (
 		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
-				<button className="btn btn-secondary" onClick={handleCancel}>
-					Back
-				</button>
+				<ReturnButton onBack={onBack} onReload={onReload} />
+				<h2>Edit User</h2>
 			</div>
-
-			<h2>Edit User</h2>
 
 			{isLoading && <p>Loading...</p>}
 			{error && <p className="text-danger">{error}</p>}

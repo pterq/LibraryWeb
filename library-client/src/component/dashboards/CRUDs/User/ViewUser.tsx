@@ -4,6 +4,7 @@ import type { UserType } from "../../../../types/DbTypes";
 import UserLoansView from "./UserLoansView";
 import UserFeesView from "./UserFeesView";
 import UserDataCard from "../../../common/UserDataCard";
+import ReturnButton from "../../../common/ReturnButton";
 
 type Props = {
 	id: number;
@@ -70,15 +71,7 @@ const ViewUser = ({ id, onBack, onReload }: Props) => {
 	return (
 		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
-				<button
-					className="btn btn-secondary"
-					onClick={() => {
-						onBack();
-						onReload();
-					}}
-				>
-					Back
-				</button>
+				<ReturnButton onBack={onBack} onReload={onReload} />
 				<h2>View User Data</h2>
 			</div>
 

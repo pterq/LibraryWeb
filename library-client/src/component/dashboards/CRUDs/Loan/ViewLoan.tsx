@@ -3,6 +3,7 @@ import type { LoanResponse } from "../../../../types/DbTypes";
 import { useEffect, useState } from "react";
 import LoanDataCard from "../../../common/LoanDataCard";
 import apiLoans from "../../../../api/apiLoans";
+import ReturnButton from "../../../common/ReturnButton";
 
 type Props = {
 	id: number;
@@ -48,15 +49,8 @@ const ViewLoan = ({ id, onBack, onReload, showMessage }: Props) => {
 	return (
 		<div className="container-fluid py-3">
 			<div className="d-flex gap-2 mb-3">
-				<button
-					className="btn btn-secondary"
-					onClick={() => {
-						onBack();
-						onReload();
-					}}
-				>
-					Back
-				</button>
+				<ReturnButton onBack={onBack} onReload={onReload} />
+
 				<h2>Loan Data</h2>
 			</div>
 			<div>

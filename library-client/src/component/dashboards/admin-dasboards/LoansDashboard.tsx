@@ -6,11 +6,26 @@ import SearchBar from "../../common/SearchBar";
 
 import apiLoans from "../../../api/apiLoans";
 import TableAlert from "../../common/TableAlert";
+import ViewLoan from "../CRUDs/Loan/ViewLoan";
+import ViewLoanUserCount from "../CRUDs/Loan/ViewLoanUserCount";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
 
 const LoansDashboard = () => {
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [loansWithCount, setLoansWithCount] = useState<LoanCountType[]>([]);
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
 
 	useEffect(() => {
+		reloadLoanCounts();
+	}, []);
+
+	const reloadLoanCounts = () => {
 		apiLoans
 			.getLoansWithCounts()
 			.then((data) => {
@@ -18,7 +33,13 @@ const LoansDashboard = () => {
 				console.log("Fetched loans with counts:", data);
 			})
 			.catch(console.error);
-	}, []);
+	};
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [sortConfig, setSortConfig] = useState<{
 		key: keyof LoanCountType;
@@ -111,6 +132,20 @@ const LoansDashboard = () => {
 		return data;
 	}, [loansWithCount, search, sortConfig]);
 
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewLoanUserCount
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadLoanCounts}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	return (
 		<div className="container-fluid">
 			<h1>Loans Report</h1>
@@ -119,6 +154,15 @@ const LoansDashboard = () => {
 				setSearch={setSearch}
 				placeholder="Search loan by user, book title, author or inventory code"
 			/>
+
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
 
 			<div className="d-flex justify-content-end mb-3">
 				<button
@@ -174,12 +218,10 @@ const LoansDashboard = () => {
 							<td>{loan.countBorrowed}</td>
 							<td>{loan.countReturned}</td>
 							<td>{loan.countOverdue}</td>
-							<td>
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
-									onClick={() =>
-										(window.location.href = `/userLoans/view/${loan.user.id}`)
-									}
+									className="btn btn-sm btn-primary me-2"
+									onClick={() => setCrud({ mode: "view", id: loan.user.id })}
 								>
 									View Details
 								</button>

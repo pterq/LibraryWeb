@@ -227,7 +227,7 @@ const UsersDashboard = () => {
 							Last Name {getSortIcon("lastName")}
 						</th>
 
-						{/* 🔥 WĄSKA KOLUMNA EMAIL */}
+						{/* WĄSKA KOLUMNA EMAIL */}
 						<th
 							scope="col"
 							onClick={() => requestSort("email")}
