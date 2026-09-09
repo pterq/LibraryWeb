@@ -7,10 +7,26 @@ import SearchBar from "../../common/SearchBar";
 import apiFees from "../../../api/apiFees";
 import TableAlert from "../../common/TableAlert";
 
+import ViewFeeUserCount from "../CRUDs/Fee/ViewFeeUserCount";
+
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "edit"; id: number }
+	| { mode: "add" };
+
 const FeesDashboard = () => {
 	const [feesWithCount, setFeesWithCount] = useState<FeesCountType[]>([]);
 
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
+
 	useEffect(() => {
+		reloadFeeCounts();
+	}, []);
+
+	const reloadFeeCounts = () => {
 		apiFees
 			.getFeesWithCounts()
 			.then((data) => {
@@ -18,8 +34,13 @@ const FeesDashboard = () => {
 				console.log("Fetched fees with count:", data);
 			})
 			.catch(console.error);
-	}, []);
-	// const feesWithCount: FeesWithCountsType[] = MockData.mockFeesCount;
+	};
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	const [search, setSearch] = useState("");
 	const [sortConfig, setSortConfig] = useState<{
@@ -110,6 +131,20 @@ const FeesDashboard = () => {
 		return data;
 	}, [feesWithCount, search, sortConfig]);
 
+	// -----------------------------
+	// RENDER CRUD
+	// -----------------------------
+	if (crud.mode === "view") {
+		return (
+			<ViewFeeUserCount
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadFeeCounts}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
 	return (
 		<div className="container-fluid">
 			<h1>Fees Report</h1>
@@ -170,12 +205,11 @@ const FeesDashboard = () => {
 							<td>{fee.countPending}</td>
 							<td>{fee.countPaid}</td>
 							<td>{fee.countCancelled}</td>
-							<td>
+
+							<td className="text-nowrap">
 								<button
-									className="btn btn-sm btn-primary"
-									onClick={() =>
-										(window.location.href = `/userFees/view/${fee.id}`)
-									}
+									className="btn btn-sm btn-primary me-2"
+									onClick={() => setCrud({ mode: "view", id: fee.user.id })}
 								>
 									View Details
 								</button>
