@@ -1,5 +1,5 @@
 // CartPanel.tsx
-import CartItem from "../component/cart/CartItem";
+import CartItem from "../component/page-components/cart/CartItem";
 import type { LoanResponse } from "../types/DbTypes";
 import { useAuth } from "../context/AuthContext";
 import apiLoans from "../api/apiLoans";

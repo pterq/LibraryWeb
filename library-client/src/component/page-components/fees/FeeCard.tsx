@@ -1,4 +1,4 @@
-import type { FeeType } from "../../types/DbTypes";
+import type { FeeType } from "../../../types/DbTypes";
 
 //get fee id from url params
 import { useParams } from "react-router-dom";

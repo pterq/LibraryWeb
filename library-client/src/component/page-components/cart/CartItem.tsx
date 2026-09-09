@@ -1,8 +1,8 @@
 // CartItem.tsx
 import { Link } from "react-router-dom";
-import type { LoanResponse, AuthorType } from "../../types/DbTypes";
-import apiLoans from "../../api/apiLoans";
-import { useAuth } from "../../context/AuthContext";
+import type { LoanResponse, AuthorType } from "../../../types/DbTypes";
+import apiLoans from "../../../api/apiLoans";
+import { useAuth } from "../../../context/AuthContext";
 
 const calculateDaysLeft = (expiresAt: Date): number => {
 	const currentDate = new Date();
