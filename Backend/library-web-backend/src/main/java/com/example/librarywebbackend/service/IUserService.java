@@ -19,4 +19,6 @@ public interface IUserService {
     RegisterResponseDTO createUser(RegisterRequestDTO request);
 
     LoginResponseDTO login(LoginRequestDTO request);
+
+    void changePassword(Long id, PasswordRequestDTO dto);
 }

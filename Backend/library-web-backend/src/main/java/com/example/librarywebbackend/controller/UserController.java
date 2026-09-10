@@ -61,4 +61,14 @@ public class UserController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(userService.login(request));
     }
+
+    @PutMapping("/changePassword/{id}")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody PasswordRequestDTO request
+    ) {
+        userService.changePassword(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
 }

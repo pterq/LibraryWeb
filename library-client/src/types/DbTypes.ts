@@ -203,3 +203,8 @@ export interface LoanStatusChangeRequest {
 	userId: number;
 	bookId: number;
 }
+
+export interface ChangeUserPasswordRequest {
+	currentPassword: string;
+	newPassword: string;
+}

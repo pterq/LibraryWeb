@@ -5,6 +5,7 @@ import type {
 	LoginUserForm,
 	LoginUserResponse,
 	RegisterUserForm,
+	ChangeUserPasswordRequest,
 } from "../types/DbTypes";
 
 //endpoints
@@ -106,13 +107,11 @@ export const loginUser = async (user: LoginUserForm) => {
 	}
 };
 
-export const changeUserPassword = async (id: number, newPassword: string) => {
+export const changeUserPassword = async (id: number, passwordForm: ChangeUserPasswordRequest) => {
 	try {
 		const response = await axiosClient.put<BackendUserType>(
-			`${USER_ENDPOINT}/${id}/change-password`,
-			{
-				newPassword,
-			},
+			`${USER_ENDPOINT}/changePassword/${id}`,
+			passwordForm,
 		);
 		return normalizeUser(response.data);
 	} catch (error) {

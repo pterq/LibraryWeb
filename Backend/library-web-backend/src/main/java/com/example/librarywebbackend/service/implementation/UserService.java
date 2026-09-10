@@ -163,4 +163,27 @@ public class UserService implements IUserService {
                 tokenData.tokenExpiresAt()
         );
     }
+
+    @Override
+    public void changePassword(Long id, PasswordRequestDTO dto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+                );
+
+        // sprawdzenie poprawności aktualnego hasła
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid current password");
+        }
+
+        try {
+            user.setPasswordHash(passwordEncoder.encode(dto.getNewPassword()));
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to change password");
+        }
+    }
+
+
 }

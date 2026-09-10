@@ -27,7 +27,23 @@ const MySettingsPage = () => {
 		setMessage(null);
 
 		if (!userId) {
-			setMessage("Brak ID użytkownika — zaloguj się ponownie.");
+			setMessage("No user ID — please log in again.");
+			return;
+		}
+
+		// --- WALIDACJA PÓL ---
+		if (!passwordForm.currentPassword.trim()) {
+			setMessage("Current password is required.");
+			return;
+		}
+
+		if (!passwordForm.newPassword.trim()) {
+			setMessage("New password is required.");
+			return;
+		}
+
+		if (!passwordForm.confirmNewPassword.trim()) {
+			setMessage("Confirm new password is required.");
 			return;
 		}
 
@@ -37,12 +53,16 @@ const MySettingsPage = () => {
 		}
 
 		try {
-			await apiUser.changeUserPassword(userId, passwordForm.newPassword);
+			console.log("User id:", userId);
+
+			await apiUser.changeUserPassword(userId, {
+				currentPassword: passwordForm.currentPassword,
+				newPassword: passwordForm.newPassword,
+			});
 
 			setMessage("Password changed successfully.");
 			setIsPasswordEditing(false);
 
-			// czyścimy pola
 			setPasswordForm({
 				currentPassword: "",
 				newPassword: "",
@@ -103,6 +123,7 @@ const MySettingsPage = () => {
 							onChange={(e) =>
 								handlePasswordChange("currentPassword", e.target.value)
 							}
+							required
 						/>
 					</div>
 
@@ -114,6 +135,7 @@ const MySettingsPage = () => {
 							value={passwordForm.newPassword}
 							disabled={!isPasswordEditing}
 							onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
+							required
 						/>
 					</div>
 
@@ -127,6 +149,7 @@ const MySettingsPage = () => {
 							onChange={(e) =>
 								handlePasswordChange("confirmNewPassword", e.target.value)
 							}
+							required
 						/>
 					</div>
 
@@ -138,6 +161,7 @@ const MySettingsPage = () => {
 							checked={passwordForm.showPassword}
 							disabled={!isPasswordEditing}
 							onChange={(e) => handlePasswordChange("showPassword", e.target.checked)}
+							required
 						/>
 						<label className="form-check-label" htmlFor="showPassword">
 							Show Passwords
