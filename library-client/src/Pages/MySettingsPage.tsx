@@ -32,6 +32,11 @@ const MySettingsPage = () => {
 		}
 
 		// --- WALIDACJA PÓL ---
+		if (passwordForm.currentPassword === passwordForm.newPassword) {
+			setMessage("New password cannot be the same as current password.");
+			return;
+		}
+
 		if (!passwordForm.currentPassword.trim()) {
 			setMessage("Current password is required.");
 			return;
