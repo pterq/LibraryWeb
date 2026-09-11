@@ -13,6 +13,8 @@ import { useAuth } from "../../../context/AuthContext";
 
 import ViewFee from "../../dashboards/CRUDs/Fee/ViewFee";
 import AddFee from "../../dashboards/CRUDs/Fee/AddFee";
+import DeleteButton from "../admin-components/DeleteButton";
+import ViewLoan from "../CRUDs/Loan/ViewLoan";
 
 function formatDateTime(dateRaw?: string | number | Date): string {
 	if (!dateRaw) return "-";
@@ -27,7 +29,11 @@ function formatDateTime(dateRaw?: string | number | Date): string {
 	});
 }
 
-type CrudState = { mode: "dashboard" } | { mode: "view"; id: number } | { mode: "add" };
+type CrudState =
+	| { mode: "dashboard" }
+	| { mode: "view"; id: number }
+	| { mode: "add" }
+	| { mode: "loan"; id: number };
 
 const FeeItemsTable = ({
 	userId = null,
@@ -252,13 +258,27 @@ const FeeItemsTable = ({
 		}
 	};
 
-	const handleDeleteFee = async (feeId: number) => {
-		try {
-			await apiFees.deleteFeeById(feeId);
+	const handleDeleteFee = async (id: number) => {
+		const feeToDelete = fees.find((fee) => fee.id === id);
+		const displayName = feeToDelete
+			? `${feeToDelete.id} / ${feeToDelete.user.firstName} ${feeToDelete.user.lastName}`.trim()
+			: "Unknown fee";
 
-			setFees((prev) => prev.filter((fee) => fee.id !== feeId));
-		} catch (err) {
-			console.error("Error deleting fee:", err);
+		try {
+			await apiFees.deleteFeeById(id);
+			showMessage(`Fee for user "${displayName}" has been deleted.`);
+			reloadFees();
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete fee for user "${displayName}": it has associated constraints.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete fee "${displayName}".`, "danger");
+			console.error(error);
 		}
 	};
 
@@ -268,7 +288,7 @@ const FeeItemsTable = ({
 
 	if (crud.mode === "view") {
 		return (
-			<ViewFee
+			<ViewLoan
 				id={crud.id}
 				onBack={() => setCrud({ mode: "dashboard" })}
 				onReload={reloadFees}
@@ -303,8 +323,17 @@ const FeeItemsTable = ({
 				placeholder="Search fee by user, fee ID, loan ID or book title"
 			/>
 
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
-				{userRole === "ADMIN" && (
+				{userRole === "" && (
 					<button
 						className="btn btn-sm btn-primary me-2"
 						onClick={() => setCrud({ mode: "add" })}
@@ -421,13 +450,13 @@ const FeeItemsTable = ({
 									>
 										Mark as Paid
 									</button>
-									<button
-										className="btn btn-sm btn-danger me-2"
-										onClick={() => handleDeleteFee(fee.id)}
-										disabled={fee.status === "PAID"}
-									>
-										Delete Fee
-									</button>
+
+									<DeleteButton
+										id={fee.id}
+										name={`${fee.loan?.copy?.book?.title} / ${fee.user?.firstName} ${fee.user?.lastName}`}
+										entityName="fee"
+										onDelete={() => handleDeleteFee(fee.id)}
+									/>
 								</td>
 							</tr>
 						))}
@@ -507,7 +536,7 @@ const FeeItemsTable = ({
 								<td>
 									<button
 										className="btn btn-sm btn-primary me-2"
-										onClick={() => setCrud({ mode: "view", id: fee.id })}
+										onClick={() => setCrud({ mode: "view", id: fee.loanId })}
 									>
 										Details
 									</button>

@@ -35,12 +35,16 @@ const UserDataCard = ({ userData }: { userData: UserType | null }) => {
 					<p>
 						<strong>Phone:</strong> {userData?.phone || "-"}
 					</p>
-					<p>
-						<strong>Role:</strong> {userData?.role}
-					</p>
-					<p>
-						<strong>Has Unpaid Fees:</strong> {userData?.hasFee ? "Yes" : "No"}
-					</p>
+					{role !== "USER" && (
+						<>
+							<p>
+								<strong>Role:</strong> {userData?.role}
+							</p>
+							<p>
+								<strong>Has Unpaid Fees:</strong> {userData?.hasFee ? "Yes" : "No"}
+							</p>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

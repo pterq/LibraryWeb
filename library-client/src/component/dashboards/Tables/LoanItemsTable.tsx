@@ -12,6 +12,7 @@ import apiLoans from "../../../api/apiLoans";
 import { useAuth } from "../../../context/AuthContext";
 
 import type { LoanResponse, AuthorType, LoanStatusType } from "../../../types/DbTypes";
+import DeleteButton from "../admin-components/DeleteButton";
 
 function formatDateTime(dateRaw?: string | number | Date): string {
 	if (!dateRaw) return "-";
@@ -196,6 +197,30 @@ const LoanItemsTable = ({
 		);
 	}, [loans, filterStatus, sortConfig, search]);
 
+	const handleDelete = async (id: number) => {
+		const loanToDelete = loans.find((loan) => loan.loanId === id);
+		const displayName = loanToDelete
+			? `${loanToDelete.copy.book.title} / ${loanToDelete.user.firstName} ${loanToDelete.user.lastName}`.trim()
+			: "Unknown loan";
+
+		try {
+			await apiLoans.deleteLoanById(id);
+			showMessage(`Loan for user "${displayName}" has been deleted.`);
+			reloadLoans();
+		} catch (error) {
+			if ((error as { response?: { status?: number } })?.response?.status === 409) {
+				showMessage(
+					`Failed to delete loan for user "${displayName}": it has associated constraints.`,
+					"danger",
+				);
+				return;
+			}
+
+			showMessage(`Failed to delete loan "${displayName}".`, "danger");
+			console.error(error);
+		}
+	};
+
 	// ============================
 	// CRUD VIEW
 	// ============================
@@ -237,8 +262,17 @@ const LoanItemsTable = ({
 				placeholder="Search loan by book title"
 			/>
 
+			{message && (
+				<div
+					className={`alert ${messageType === "success" ? "alert-success" : "alert-danger"}`}
+					role="alert"
+				>
+					{message}
+				</div>
+			)}
+
 			<div className="d-flex justify-content-end mb-3">
-				{userRole === "ADMIN" && (
+				{userRole === "" && (
 					<button
 						className="btn btn-sm btn-primary me-2"
 						onClick={() => setCrud({ mode: "add" })}
@@ -344,6 +378,14 @@ const LoanItemsTable = ({
 										loanId={loan.loanId}
 										loanStatus={loan.status}
 									/>
+									{userRole === "ADMIN" && (
+										<DeleteButton
+											id={loan.loanId}
+											name={`${loan.copy.book.title} / ${loan.user.firstName} ${loan.user.lastName}`}
+											entityName="loan"
+											onDelete={() => handleDelete(loan.loanId)}
+										/>
+									)}
 								</td>
 							</tr>
 						))}
