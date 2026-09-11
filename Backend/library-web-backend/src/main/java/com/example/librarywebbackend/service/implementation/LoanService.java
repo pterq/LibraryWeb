@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.config.LibraryProperties;
 import com.example.librarywebbackend.dto.Loan.LoanWithCountDTO;
 import com.example.librarywebbackend.dto.User.UserDTO;
 import com.example.librarywebbackend.entity.*;
@@ -15,17 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
 public class LoanService implements ILoanService {
 
-    @Value("${return-after-days}")
-    private int returnAfterDays;
+    private final LibraryProperties props;
 
-    @Value("${overdue-fee-per-day}")
-    private BigDecimal overdueFeePerDay;
 
     private final LoanRepository loanRepository;
     private final BookCopyRepository bookCopyRepository;
@@ -35,20 +35,24 @@ public class LoanService implements ILoanService {
 
     private final LoanMapper loanMapper;
 
+
+
     public LoanService(LoanRepository loanRepository,
                        BookCopyRepository bookCopyRepository,
                        UserRepository userRepository,
                        IFeeService feeService,
                        LoanMapper loanMapper,
-                       FeeRepository feeRepository
-    ) {
+                       FeeRepository feeRepository,
+                       LibraryProperties props) {
         this.loanRepository = loanRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.userRepository = userRepository;
         this.feeService = feeService;
         this.loanMapper = loanMapper;
         this.feeRepository = feeRepository;
+        this.props = props;
     }
+
 
 
     // ------------------------------------------------------------
@@ -105,7 +109,15 @@ public class LoanService implements ILoanService {
         loan.setUser(user);
         loan.setCopy(copy);
         loan.setReservedAt(LocalDateTime.now());
-        loan.setExpiresAt(LocalDateTime.now().plusHours(2));
+
+        LocalDate expiresDate = LocalDate.now()
+                .plusDays(props.getReservationExpiresAfterDays());
+
+        LocalTime expiresTime = LocalTime.parse(props.getExpireAtTime());
+
+        loan.setExpiresAt(LocalDateTime.of(expiresDate, expiresTime));
+
+
         loan.setStatus(LoanStatus.RESERVED);
 
         return loanRepository.save(loan);
@@ -126,8 +138,8 @@ public class LoanService implements ILoanService {
 
         BookPhysical copy = loan.getCopy();
 
-        if (copy.getStatus() != CopyStatus.RESERVED && copy.getStatus() != CopyStatus.AVAILABLE) {
-            throw new IllegalStateException("Copy must be reserved or available");
+        if (copy.getStatus() != CopyStatus.RESERVED) {
+            throw new IllegalStateException("Copy must be reserved");
         }
 
         // aktywacja wypożyczenia
@@ -135,7 +147,16 @@ public class LoanService implements ILoanService {
         bookCopyRepository.save(copy);
 
         loan.setLoanDate(LocalDateTime.now());
-        loan.setDueDate(LocalDateTime.now().plusDays(returnAfterDays));
+
+        LocalDate dueDate = LocalDate.now()
+                .plusDays(props.getReturnAfterDays());
+
+        LocalTime dueTime = LocalTime.parse(props.getLoanDueAtTime());
+
+        loan.setDueDate(LocalDateTime.of(dueDate, dueTime));
+
+
+
         loan.setStatus(LoanStatus.ACTIVE);
 
         return loanRepository.save(loan);
@@ -189,10 +210,20 @@ public class LoanService implements ILoanService {
 
         Fee lastFee = feeRepository.findTopByLoanIdOrderByCreatedAtDesc(loan.getId());
 
-        // tworzymy nową Fee tylko jeśli NIE ma aktywnej PENDING
         if (lastFee == null || lastFee.getStatus() == FeeStatus.PAID) {
-            feeService.createOverdueFee(loan);
+
+            BigDecimal feeAmount = props.getOverdueFeePerDay();
+
+            Fee fee = new Fee();
+            fee.setLoan(loan);
+            fee.setUser(loan.getUser());
+            fee.setAmount(feeAmount);
+            fee.setCreatedAt(LocalDateTime.now());
+            fee.setStatus(FeeStatus.PENDING);
+
+            feeRepository.save(fee);
         }
+
 
         return loan;
     }
@@ -211,16 +242,20 @@ public class LoanService implements ILoanService {
         Loan loan = loanRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
 
+        // można usunąć TYLKO jeśli Loan ma status RETURNED
+        if (loan.getStatus() != LoanStatus.RETURNED) {
+            throw new IllegalStateException("Loan can only be deleted if status is RETURNED");
+        }
+
         BookPhysical copy = loan.getCopy();
 
-        // zabezpieczenie: tylko jeśli kopia była RESERVED
-        if (copy.getStatus() == CopyStatus.RESERVED) {
-            copy.setStatus(CopyStatus.AVAILABLE);
-            bookCopyRepository.save(copy);
-        }
+        // fizyczna kopia ZAWSZE wraca na AVAILABLE
+        copy.setStatus(CopyStatus.AVAILABLE);
+        bookCopyRepository.save(copy);
 
         loanRepository.delete(loan);
     }
+
 
 
     // ------------------------------------------------------------

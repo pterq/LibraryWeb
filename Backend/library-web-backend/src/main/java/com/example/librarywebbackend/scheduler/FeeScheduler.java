@@ -1,5 +1,6 @@
 package com.example.librarywebbackend.scheduler;
 
+import com.example.librarywebbackend.config.LibraryProperties;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.Loan;
@@ -20,11 +21,14 @@ public class FeeScheduler {
 
     private final LoanRepository loanRepository;
     private final FeeRepository feeRepository;
+    private final LibraryProperties props;
 
     public FeeScheduler(LoanRepository loanRepository,
-                        FeeRepository feeRepository) {
+                        FeeRepository feeRepository,
+                        LibraryProperties props) {
         this.loanRepository = loanRepository;
         this.feeRepository = feeRepository;
+        this.props = props;
     }
 
 
@@ -56,7 +60,13 @@ public class FeeScheduler {
                 Fee fee = new Fee();
                 fee.setLoan(loan);
                 fee.setUser(loan.getUser());
-                fee.setAmount(BigDecimal.valueOf(daysLate * 1.00)); // 1 zł za dzień
+
+                BigDecimal feeAmount = props.getOverdueFeePerDay()
+                        .multiply(BigDecimal.valueOf(daysLate)); // ← TU WCHODZI TWOJA LINIJKA
+
+                fee.setAmount(feeAmount);
+
+
                 fee.setCreatedAt(LocalDateTime.now());
                 fee.setStatus(FeeStatus.PENDING);
 

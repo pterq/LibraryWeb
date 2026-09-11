@@ -1,4 +1,4 @@
-package com.example.librarywebbackend.security;
+package com.example.librarywebbackend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
