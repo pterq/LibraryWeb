@@ -43,11 +43,12 @@ public class FeeService implements IFeeService {
 
     @Override
     public List<FeeResponseDTO> getAllFees() {
-        return feeRepository.findAll()
+        return feeRepository.findAllWithGraph()
                 .stream()
                 .map(feeMapper::toResponse)
                 .toList();
     }
+
 
     @Override
     public List<FeeResponseDTO> getUserFeesByUserId(Long userId) {

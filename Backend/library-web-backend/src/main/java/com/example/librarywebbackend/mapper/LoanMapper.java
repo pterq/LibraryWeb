@@ -25,10 +25,10 @@ public class LoanMapper {
                 loan.getExpiresAt(),
                 loan.getLoanDate(),
                 loan.getDueDate(),
+                loan.getOverdueAt(),
                 loan.getReturnDate()
         );
     }
-
     private UserResponseDTO toUserDto(User user) {
         return new UserResponseDTO(
                 user.getId(),

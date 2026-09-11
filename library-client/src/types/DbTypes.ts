@@ -47,6 +47,7 @@ export interface LoanResponse {
 	loanDate: Date | null;
 	dueDate: Date | null;
 	returnDate: Date | null;
+	overdueAt: Date | null;
 	status: LoanStatusType;
 	user: UserType;
 }

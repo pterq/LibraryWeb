@@ -276,9 +276,12 @@ public class LoanService implements ILoanService {
         for (Loan loan : overdue) {
 
             loan.setStatus(LoanStatus.OVERDUE);
+            loan.setOverdueAt(LocalDateTime.now());
+
             loanRepository.save(loan);
 
             feeService.createOverdueFee(loan);
         }
     }
+
 }

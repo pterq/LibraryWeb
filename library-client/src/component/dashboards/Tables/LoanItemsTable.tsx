@@ -244,7 +244,7 @@ const LoanItemsTable = ({
 						<tr>
 							<th onClick={() => requestSort("loanId")}># {getSortIcon("loanId")}</th>
 							<th onClick={() => requestSort("user")}>
-								(ID) User {getSortIcon("user")}
+								ID / User {getSortIcon("user")}
 							</th>
 							<th onClick={() => requestSort("copy")}>Book {getSortIcon("copy")}</th>
 							<th onClick={() => requestSort("reservedAt")}>
@@ -261,6 +261,9 @@ const LoanItemsTable = ({
 							</th>
 							<th onClick={() => requestSort("returnDate")}>
 								Returned At {getSortIcon("returnDate")}
+							</th>
+							<th onClick={() => requestSort("overdueAt")}>
+								Overdue At {getSortIcon("overdueAt")}
 							</th>
 
 							<th scope="col" style={{ width: "16%" }}>
@@ -296,7 +299,7 @@ const LoanItemsTable = ({
 							<tr key={loan.loanId}>
 								<td>{index + 1}</td>
 								<td>
-									({loan.user.id}) {loan.user.firstName} {loan.user.lastName}
+									{loan.user.id} / {loan.user.firstName} {loan.user.lastName}
 								</td>
 								<td>{loan.copy.book.title}</td>
 								<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
@@ -314,6 +317,11 @@ const LoanItemsTable = ({
 								<td>
 									{loan.returnDate
 										? new Date(loan.returnDate).toLocaleDateString()
+										: "-"}
+								</td>
+								<td>
+									{loan.overdueAt
+										? new Date(loan.overdueAt).toLocaleDateString()
 										: "-"}
 								</td>
 								<td>{loan.status}</td>

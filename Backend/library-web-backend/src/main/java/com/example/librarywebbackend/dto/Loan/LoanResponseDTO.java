@@ -20,6 +20,7 @@ public class LoanResponseDTO {
     private LocalDateTime expiresAt;
     private LocalDateTime loanDate;
     private LocalDateTime dueDate;
+    private LocalDateTime overdueAt;
     private LocalDateTime returnDate;
 }
 

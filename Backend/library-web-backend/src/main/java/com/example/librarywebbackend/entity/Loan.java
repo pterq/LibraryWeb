@@ -30,7 +30,9 @@ public class Loan {
 
     private LocalDateTime loanDate;
     private LocalDateTime dueDate;
+    private LocalDateTime overdueAt;
     private LocalDateTime returnDate;
+
 
     @Enumerated(EnumType.STRING)
     private LoanStatus status;

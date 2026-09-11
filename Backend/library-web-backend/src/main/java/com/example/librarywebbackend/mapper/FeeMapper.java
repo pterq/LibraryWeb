@@ -74,6 +74,7 @@ public class FeeMapper {
                 loan.getExpiresAt(),
                 loan.getLoanDate(),
                 loan.getDueDate(),
+                loan.getOverdueAt(),
                 loan.getReturnDate()
         );
     }

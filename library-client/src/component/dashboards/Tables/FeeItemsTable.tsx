@@ -26,7 +26,6 @@ const FeeItemsTable = ({
 				.then((data) => {
 					setFees(data);
 					setLoading(false);
-					console.log("Fees loaded:", data);
 				})
 				.catch(console.error);
 		} else {
@@ -38,7 +37,6 @@ const FeeItemsTable = ({
 					const filtered = data.filter((fee) => fee.user.id === selectedUserId);
 					setFees(filtered);
 					setLoading(false);
-					console.log("Fees loaded for user:", filtered);
 				})
 				.catch(console.error);
 		}
@@ -77,12 +75,10 @@ const FeeItemsTable = ({
 	const processedFees = useMemo(() => {
 		let data = [...fees];
 
-		// Filtrowanie statusu
 		if (filter !== "ALL") {
 			data = data.filter((fee) => fee.status === filter);
 		}
 
-		// Wyszukiwanie
 		if (search) {
 			const lower = search.toLowerCase();
 			data = data.filter((fee) => {
@@ -103,7 +99,6 @@ const FeeItemsTable = ({
 			});
 		}
 
-		// Sortowanie
 		if (sortConfig) {
 			data.sort((a, b) => {
 				let aVal: any = "";
@@ -159,6 +154,38 @@ const FeeItemsTable = ({
 	}, [fees, filter, search, sortConfig]);
 
 	// ============================
+	// ACTION HANDLERS
+	// ============================
+
+	const handleMarkAsPaid = async (feeId: number) => {
+		try {
+			const updated = await apiFees.markAsPaid(feeId);
+
+			setFees((prev) => prev.map((fee) => (fee.id === feeId ? { ...fee, ...updated } : fee)));
+		} catch (err) {
+			console.error("Error marking fee as paid:", err);
+		}
+	};
+
+	apiFees
+		.getFees()
+		.then((data) => {
+			setFees(data);
+			setLoading(false);
+		})
+		.catch(console.error);
+
+	const handleCancelFee = async (feeId: number) => {
+		try {
+			const updated = await apiFees.cancelFee(feeId);
+
+			setFees((prev) => prev.map((fee) => (fee.id === feeId ? { ...fee, ...updated } : fee)));
+		} catch (err) {
+			console.error("Error cancelling fee:", err);
+		}
+	};
+
+	// ============================
 	// Render
 	// ============================
 
@@ -188,30 +215,32 @@ const FeeItemsTable = ({
 				</button>
 			</div>
 
-			{/* ============================
-                ADMIN TABLE
-            ============================ */}
 			{mode === "admin" ? (
 				<table className="table table-striped table-hover shadow">
 					<thead>
 						<tr>
 							<th onClick={() => requestSort("id")}># {getSortIcon("id")}</th>
-							<th onClick={() => requestSort("id")}>Fee ID {getSortIcon("id")}</th>
+
 							<th onClick={() => requestSort("user")}>
-								(ID) User {getSortIcon("user")}
+								ID / User {getSortIcon("user")}
 							</th>
-							<th onClick={() => requestSort("amount")}>
-								Amount {getSortIcon("amount")}
-							</th>
+
 							<th onClick={() => requestSort("loan")}>
-								Loan / Inventory / Book {getSortIcon("loan")}
+								Book / Authors / Inventory Code {getSortIcon("loan")}
 							</th>
+
 							<th onClick={() => requestSort("createdAt")}>
 								Created At {getSortIcon("createdAt")}
 							</th>
+
+							<th onClick={() => requestSort("amount")}>
+								Amount {getSortIcon("amount")}
+							</th>
+
 							<th onClick={() => requestSort("paidAt")}>
 								Paid At {getSortIcon("paidAt")}
 							</th>
+
 							<th scope="col" onClick={() => requestSort("status")}>
 								<div className="d-flex align-items-center gap-2">
 									<span>Status</span>
@@ -241,24 +270,29 @@ const FeeItemsTable = ({
 						{processedFees.map((fee, index) => (
 							<tr key={fee.id}>
 								<td>{index + 1}</td>
-								<td>{fee.id}</td>
+
 								<td>
-									({fee.user.id}) {fee.user.firstName} {fee.user.lastName}
+									{fee.user.id} / {fee.user.firstName} {fee.user.lastName}
 								</td>
-								<td>{fee.amount.toFixed(2)} zł</td>
+
 								<td>
-									({fee.loan.loanId}) {fee.loan.copy.inventoryCode} —{" "}
-									{fee.loan.copy.book.title} (
+									{fee.loan.copy.book.title} / (
 									{fee.loan.copy.book.authors
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
-									)
+									) / {fee.loan.copy.inventoryCode}
 								</td>
+
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
+
+								<td>{fee.amount.toFixed(2)} zł</td>
+
 								<td>
 									{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}
 								</td>
+
 								<td>{fee.status}</td>
+
 								<td>
 									<Link
 										className="btn btn-sm btn-primary me-2"
@@ -266,33 +300,53 @@ const FeeItemsTable = ({
 									>
 										Details
 									</Link>
-									<button className="btn btn-sm btn-success">Mark as Paid</button>
+
+									<button
+										className="btn btn-sm btn-success me-2"
+										disabled={
+											fee.status === "PAID" || fee.status === "CANCELLED"
+										}
+										onClick={() => handleMarkAsPaid(fee.id)}
+									>
+										Mark as Paid
+									</button>
+
+									<button
+										className="btn btn-sm btn-danger"
+										disabled={
+											fee.status === "CANCELLED" || fee.status === "PAID"
+										}
+										onClick={() => handleCancelFee(fee.id)}
+									>
+										Cancel Fee
+									</button>
 								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			) : (
-				/* ============================
-                    USER TABLE
-                ============================ */
 				<table className="table table-striped table-hover shadow">
 					<thead>
 						<tr>
 							<th onClick={() => requestSort("id")}># {getSortIcon("id")}</th>
-							<th onClick={() => requestSort("id")}>Fee ID {getSortIcon("id")}</th>
-							<th onClick={() => requestSort("amount")}>
-								Amount {getSortIcon("amount")}
-							</th>
+
 							<th onClick={() => requestSort("loan")}>
-								Loan / Inventory / Book {getSortIcon("loan")}
+								Book / Authors / Inventory Code {getSortIcon("loan")}
 							</th>
+
 							<th onClick={() => requestSort("createdAt")}>
 								Created At {getSortIcon("createdAt")}
 							</th>
+
+							<th onClick={() => requestSort("amount")}>
+								Amount(PLN) {getSortIcon("amount")}
+							</th>
+
 							<th onClick={() => requestSort("paidAt")}>
 								Paid At {getSortIcon("paidAt")}
 							</th>
+
 							<th scope="col" onClick={() => requestSort("status")}>
 								<div className="d-flex align-items-center gap-2">
 									<span>Status</span>
@@ -313,6 +367,7 @@ const FeeItemsTable = ({
 									</select>
 								</div>
 							</th>
+
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -321,21 +376,25 @@ const FeeItemsTable = ({
 						{processedFees.map((fee, index) => (
 							<tr key={fee.id}>
 								<td>{index + 1}</td>
-								<td>{fee.id}</td>
-								<td>{fee.amount.toFixed(2)} zł</td>
+
 								<td>
-									({fee.loan.loanId}) {fee.loan.copy.inventoryCode} —{" "}
-									{fee.loan.copy.book.title} (
+									{fee.loan.copy.book.title} / (
 									{fee.loan.copy.book.authors
 										.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
-									)
+									) / {fee.loan.copy.inventoryCode}
 								</td>
+
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
+
+								<td>{fee.amount.toFixed(2)} zł</td>
+
 								<td>
 									{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}
 								</td>
+
 								<td>{fee.status}</td>
+
 								<td>
 									<Link to={`/feeItem/view/${fee.id}`}>View</Link>
 								</td>
