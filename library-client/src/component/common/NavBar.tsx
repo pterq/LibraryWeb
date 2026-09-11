@@ -120,7 +120,6 @@ const NavBar = () => {
 												{hasFees && (
 													<span className="badge rounded-pill bg-danger ms-2 align-middle">
 														{hasFees ? "1" : ""}
-														fees
 													</span>
 												)}
 											</Link>

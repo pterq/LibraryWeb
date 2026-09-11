@@ -42,16 +42,12 @@ const LoginPage: React.FC = () => {
 				role: response.data.role,
 				tokenExpiresAt: response.data.tokenExpiresAt,
 				phone: response.data.phone,
-				hasFees: response.data.hasFees,
+				hasFee: response.data.hasFee, // ✔️ to wystarczy
 			});
 
-			if (response.data.hasFees) {
-				useAuth().setHasFees(true);
-			}
-
-			setMessage("Logged in successfully");
 			console.log("Login response:", response.data);
 
+			setMessage("Logged in successfully");
 			navigate("/", { replace: true });
 		} catch (error) {
 			const err = error as AxiosError;

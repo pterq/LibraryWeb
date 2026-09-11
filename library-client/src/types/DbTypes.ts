@@ -60,7 +60,7 @@ export interface UserType {
 	email: string;
 	phone: string | null;
 	role: UserRoleType;
-	hasFees: boolean;
+	hasFee: boolean;
 }
 
 export interface UserDtoType {
@@ -183,7 +183,7 @@ export interface LoginUserResponse {
 	firstName: string;
 	lastName: string;
 	role: string;
-	hasFees?: boolean;
+	hasFee: boolean;
 	accessToken: string;
 	//tokenType: string;
 	tokenExpiresAt: string;

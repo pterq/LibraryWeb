@@ -98,7 +98,7 @@ const MySettingsPage = () => {
 						email: email ?? "NO DATA",
 						phone: phone ?? "NO DATA",
 						role: role ?? "",
-						hasFees: hasFees ?? false,
+						hasFee: hasFees ?? false,
 					}}
 				/>
 

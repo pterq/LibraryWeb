@@ -15,8 +15,8 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
     select case when count(f) > 0 then true else false end
     from Fee f
     where f.user.id = :userId and f.status = :status
-""")
-    boolean existsByUserIdAndStatus(Long userId, FeeStatus status);
+    """)
+    boolean existsByUserIdAndStatus(@Param("userId") Long userId, @Param("status") FeeStatus status);
 
     @Query("select f from Fee f where f.user.id = :userId")
     List<Fee> findByUserId(@Param("userId") Long userId);

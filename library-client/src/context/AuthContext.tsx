@@ -11,14 +11,14 @@ interface AuthContextType {
 	firstName: string | null;
 	lastName: string | null;
 	email: string | null;
+	phone: string | null;
 	hasFees: boolean | null;
 	tokenExpiresAt: string | null;
-	phone: string | null;
 
 	login: (authData: LoginUserResponse) => void;
 	logout: (showManualToast?: boolean) => void;
-	updateUserData: (field: AuthUserDataField, value: string) => void;
-	setHasFees: (hasFees: boolean) => void;
+	updateUserData: (field: AuthUserDataField, value: string | null) => void;
+	setHasFees: (value: boolean | null) => void;
 	setTokenExpiresAt: (value: string | null) => void;
 
 	showToast: (msg: string) => void;
@@ -37,6 +37,7 @@ const parseUserRole = (value: string | null): UserRoleType | null => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	// INITIAL STATE FROM LOCAL STORAGE
 	const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 	const [role, setRole] = useState<UserRoleType | null>(
 		parseUserRole(localStorage.getItem("role")),
@@ -47,18 +48,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	const [firstName, setFirstName] = useState<string | null>(localStorage.getItem("firstName"));
 	const [lastName, setLastName] = useState<string | null>(localStorage.getItem("lastName"));
 	const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
-	const [hasFees, setHasFeesState] = useState<boolean | null>(
-		localStorage.getItem("hasFees") === "false"
-			? false
-			: localStorage.getItem("hasFees") === "true"
-				? true
-				: null,
-	);
 	const [phone, setPhone] = useState<string | null>(localStorage.getItem("phone"));
+
+	const [hasFees, setHasFeesState] = useState<boolean | null>(() => {
+		const raw = localStorage.getItem("hasFees");
+		return raw === "true" ? true : raw === "false" ? false : null;
+	});
+
 	const [tokenExpiresAt, setTokenExpiresAtState] = useState<string | null>(
 		localStorage.getItem("tokenExpiresAt"),
 	);
 
+	// TOAST
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 	const showToast = (msg: string) => {
@@ -66,13 +67,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setTimeout(() => setToastMessage(null), 3000);
 	};
 
+	// CART CHANGE FLAG
 	const [cartChanged, setCartChanged] = useState(false);
 
 	const notifyCartChanged = () => {
-		setCartChanged((prev) => !prev); // flip → trigger useEffect
+		setCartChanged((prev) => !prev);
 	};
 
-	// AUTO LOGOUT
+	// AUTO LOGOUT WHEN TOKEN EXPIRES
 	useEffect(() => {
 		if (!token || !tokenExpiresAt) return;
 
@@ -94,13 +96,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		return () => clearTimeout(timer);
 	}, [token, tokenExpiresAt]);
 
-	const updateHasFees = (nextValue: boolean | null) => {
-		if (nextValue === null) {
+	// UPDATE HELPERS
+	const updateHasFees = (value: boolean | null) => {
+		if (value === null) {
 			localStorage.removeItem("hasFees");
 		} else {
-			localStorage.setItem("hasFees", nextValue.toString());
+			localStorage.setItem("hasFees", value.toString());
 		}
-		setHasFeesState(nextValue);
+		setHasFeesState(value);
 	};
 
 	const updateTokenExpiresAt = (value: string | null) => {
@@ -122,10 +125,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		if (field === "firstName") return setFirstName(value);
 		if (field === "lastName") return setLastName(value);
 		if (field === "email") return setEmail(value);
-
-		setPhone(value);
+		if (field === "phone") return setPhone(value);
 	};
 
+	// LOGIN
 	const login = ({
 		userId,
 		accessToken,
@@ -134,23 +137,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		email,
 		phone,
 		role,
-		hasFees,
+		hasFee,
 		tokenExpiresAt,
 	}: LoginUserResponse) => {
-		const nextHasFees =
-			typeof hasFees === "boolean" ? hasFees : localStorage.getItem("hasFees") === "true";
-
-		localStorage.setItem("token", accessToken);
-		localStorage.setItem("userId", userId.toString());
-		updateUserData("firstName", firstName);
-		updateUserData("lastName", lastName);
-		updateUserData("email", email);
-		updateUserData("phone", phone);
+		const nextHasFees = typeof hasFee === "boolean" ? hasFee : null;
 
 		const nextRole = parseUserRole(role);
 		if (!nextRole) throw new Error(`Unsupported user role: ${role}`);
 
+		localStorage.setItem("token", accessToken);
+		localStorage.setItem("userId", userId.toString());
 		localStorage.setItem("role", nextRole);
+
+		updateUserData("firstName", firstName);
+		updateUserData("lastName", lastName);
+		updateUserData("email", email);
+		updateUserData("phone", phone);
 
 		setToken(accessToken);
 		setRole(nextRole);
@@ -158,9 +160,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		updateHasFees(nextHasFees);
 		updateTokenExpiresAt(tokenExpiresAt ?? null);
 
-		showToast("Login successful.");
+		showToast("Login successful");
 	};
 
+	// LOGOUT
 	const logout = (showManualToast: boolean = false) => {
 		if (showManualToast) showToast("Logout successful.");
 
@@ -180,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		setFirstName(null);
 		setLastName(null);
 		setEmail(null);
+		setPhone(null);
 		updateHasFees(null);
 		updateTokenExpiresAt(null);
 	};
