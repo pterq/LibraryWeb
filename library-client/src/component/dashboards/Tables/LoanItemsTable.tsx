@@ -40,6 +40,8 @@ const LoanItemsTable = ({
 	userId?: number | null;
 	mode?: "user" | "admin";
 }) => {
+	const userRole = useAuth().role ?? "USER";
+
 	const { notifyCartChanged } = useAuth();
 	const location = useLocation();
 
@@ -236,12 +238,14 @@ const LoanItemsTable = ({
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
-				<button
-					className="btn btn-sm btn-primary me-2"
-					onClick={() => setCrud({ mode: "add" })}
-				>
-					Add Loan
-				</button>
+				{userRole === "ADMIN" && (
+					<button
+						className="btn btn-sm btn-primary me-2"
+						onClick={() => setCrud({ mode: "add" })}
+					>
+						Add Loan
+					</button>
+				)}
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}

@@ -9,6 +9,10 @@ import apiLoans from "../../../api/apiLoans";
 
 import SearchBar from "../../common/SearchBar";
 import TableAlert from "../../common/TableAlert";
+import { useAuth } from "../../../context/AuthContext";
+
+import ViewFee from "../../dashboards/CRUDs/Fee/ViewFee";
+import AddFee from "../../dashboards/CRUDs/Fee/AddFee";
 
 function formatDateTime(dateRaw?: string | number | Date): string {
 	if (!dateRaw) return "-";
@@ -23,6 +27,8 @@ function formatDateTime(dateRaw?: string | number | Date): string {
 	});
 }
 
+type CrudState = { mode: "dashboard" } | { mode: "view"; id: number } | { mode: "add" };
+
 const FeeItemsTable = ({
 	userId = null,
 	mode = "user",
@@ -31,11 +37,23 @@ const FeeItemsTable = ({
 	mode?: "user" | "admin";
 }) => {
 	const selectedUserId = userId ?? null;
+	const userRole = useAuth().role ?? "USER";
 
 	const [fees, setFees] = useState<any[]>([]);
 	const [users, setUsers] = useState<UserType[]>([]);
 	const [loans, setLoans] = useState<LoanResponse[]>([]);
 	const [loading, setLoading] = useState(true);
+
+	const { notifyCartChanged } = useAuth();
+	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
+	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "danger">("success");
+
+	const showMessage = (text: string, type: "success" | "danger" = "success") => {
+		setMessage(text);
+		setMessageType(type);
+		setTimeout(() => setMessage(null), 3000);
+	};
 
 	// ============================
 	// Load users & loans first
@@ -44,7 +62,7 @@ const FeeItemsTable = ({
 	useEffect(() => {
 		reloadUsers();
 		reloadLoans();
-	}, []);
+	}, [notifyCartChanged]);
 
 	const reloadUsers = async () => {
 		try {
@@ -245,6 +263,31 @@ const FeeItemsTable = ({
 	};
 
 	// ============================
+	// CRUD VIEW
+	// ============================
+
+	if (crud.mode === "view") {
+		return (
+			<ViewFee
+				id={crud.id}
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadFees}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	if (crud.mode === "add") {
+		return (
+			<AddFee
+				onBack={() => setCrud({ mode: "dashboard" })}
+				onReload={reloadFees}
+				showMessage={showMessage}
+			/>
+		);
+	}
+
+	// ============================
 	// Render
 	// ============================
 
@@ -261,6 +304,14 @@ const FeeItemsTable = ({
 			/>
 
 			<div className="d-flex justify-content-end mb-3">
+				{userRole === "ADMIN" && (
+					<button
+						className="btn btn-sm btn-primary me-2"
+						onClick={() => setCrud({ mode: "add" })}
+					>
+						Add Fee
+					</button>
+				)}
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -354,12 +405,12 @@ const FeeItemsTable = ({
 								<td>{fee.status}</td>
 
 								<td>
-									<Link
+									<button
 										className="btn btn-sm btn-primary me-2"
-										to={`/feeItem/view/${fee.id}`}
+										onClick={() => setCrud({ mode: "view", id: fee.id })}
 									>
 										Details
-									</Link>
+									</button>
 
 									<button
 										className="btn btn-sm btn-success me-2"
@@ -454,7 +505,12 @@ const FeeItemsTable = ({
 								<td>{fee.status}</td>
 
 								<td>
-									<Link to={`/feeItem/view/${fee.id}`}>View</Link>
+									<button
+										className="btn btn-sm btn-primary me-2"
+										onClick={() => setCrud({ mode: "view", id: fee.id })}
+									>
+										Details
+									</button>
 								</td>
 							</tr>
 						))}
