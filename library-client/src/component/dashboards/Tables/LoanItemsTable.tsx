@@ -116,13 +116,13 @@ const LoanItemsTable = ({
 	const [filter, setFilter] = useState<"ALL" | LoanResponse["status"]>("ALL");
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof LoanExtended;
+		key: keyof LoanExtended | "user";
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filterStatus !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: keyof LoanExtended) => {
+	const requestSort = (key: keyof LoanExtended | "user") => {
 		if (key === "status") return;
 
 		let direction: "asc" | "desc" = "asc";
@@ -134,7 +134,7 @@ const LoanItemsTable = ({
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof LoanExtended) => {
+	const getSortIcon = (key: keyof LoanExtended | "user") => {
 		if (key === "status") return "";
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
@@ -164,6 +164,10 @@ const LoanItemsTable = ({
 						bVal = b.copy.inventoryCode;
 						break;
 
+					case "user":
+						aVal = a.user?.firstName ?? "";
+						bVal = b.user?.firstName ?? "";
+						break;
 					case "authors":
 						aVal = a.copy.book?.title ?? "";
 						bVal = b.copy.book?.title ?? "";
