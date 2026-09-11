@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { FeeType, FeesCountType } from "../types/DbTypes";
+import type { FeeType, FeesCountType, FeeResponseDTO } from "../types/DbTypes";
 
 const FEE_ENDPOINT = "/fees";
 
@@ -8,7 +8,7 @@ const FEE_ENDPOINT = "/fees";
 
 export const getFees = async () => {
 	try {
-		const response = await axiosClient.get<FeeType[]>(FEE_ENDPOINT);
+		const response = await axiosClient.get<FeeResponseDTO[]>(FEE_ENDPOINT);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to fetch fees:", error);
@@ -18,7 +18,9 @@ export const getFees = async () => {
 
 export const getFeeByStatus = async (status: string) => {
 	try {
-		const response = await axiosClient.get<FeeType[]>(`${FEE_ENDPOINT}/status/${status}`);
+		const response = await axiosClient.get<FeeResponseDTO[]>(
+			`${FEE_ENDPOINT}/status/${status}`,
+		);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch fees with status ${status}:`, error);
@@ -28,7 +30,7 @@ export const getFeeByStatus = async (status: string) => {
 
 export const getFeeById = async (id: number) => {
 	try {
-		const response = await axiosClient.get<FeeType>(`${FEE_ENDPOINT}/${id}`);
+		const response = await axiosClient.get<FeeResponseDTO>(`${FEE_ENDPOINT}/${id}`);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch fee with id ${id}:`, error);
@@ -38,7 +40,7 @@ export const getFeeById = async (id: number) => {
 
 export const addFee = async (fee: FeeType) => {
 	try {
-		const response = await axiosClient.post<FeeType>(FEE_ENDPOINT, fee);
+		const response = await axiosClient.post<FeeResponseDTO>(FEE_ENDPOINT, fee);
 		return response.data;
 	} catch (error) {
 		console.error("Failed to add fee:", error);
@@ -48,7 +50,7 @@ export const addFee = async (fee: FeeType) => {
 
 export const updateFeeById = async (id: number, fee: FeeType) => {
 	try {
-		const response = await axiosClient.put<FeeType>(`${FEE_ENDPOINT}/${id}`, fee);
+		const response = await axiosClient.put<FeeResponseDTO>(`${FEE_ENDPOINT}/${id}`, fee);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to update fee with id ${id}:`, error);
@@ -68,7 +70,9 @@ export const deleteFeeById = async (id: number) => {
 
 export const updateFeeStatusById = async (id: number, status: string) => {
 	try {
-		const response = await axiosClient.put<FeeType>(`${FEE_ENDPOINT}/${id}/status`, { status });
+		const response = await axiosClient.put<FeeResponseDTO>(`${FEE_ENDPOINT}/${id}/status`, {
+			status,
+		});
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to update fee status with id ${id}:`, error);
@@ -88,7 +92,9 @@ export const getFeesWithCounts = async () => {
 
 export const getFeesByUserId = async (userId: number) => {
 	try {
-		const response = await axiosClient.get<FeeType[]>(`${FEE_ENDPOINT}/userFees/${userId}`);
+		const response = await axiosClient.get<FeeResponseDTO[]>(
+			`${FEE_ENDPOINT}/userFees/${userId}`,
+		);
 		return response.data;
 	} catch (error) {
 		console.error(`Failed to fetch fees for user with id ${userId}:`, error);

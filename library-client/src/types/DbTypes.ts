@@ -82,6 +82,29 @@ export type FeeType = {
 	user: UserType;
 };
 
+[
+	{
+		id: 1,
+		userId: 1,
+		userFirstName: "Piotr",
+		userLastName: "Owczarek",
+		loanId: 38,
+		amount: 5,
+		createdAt: "2026-09-11T15:32:18.291043",
+		paidAt: "2026-09-11T16:21:05.32494",
+		status: "PAID",
+	},
+];
+export type FeeResponseDTO = {
+	id: number;
+	userId: number;
+	loanId: number;
+	amount: number;
+	createdAt: Date;
+	paidAt: Date | null;
+	status: FeeStatusType;
+};
+
 //============================================================================
 export interface CategoriesWithCountsResponse {
 	id: number;

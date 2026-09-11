@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { FeeType, FeeStatusType } from "../../../types/DbTypes";
+import type { FeeResponseDTO, FeeStatusType, UserType, LoanResponse } from "../../../types/DbTypes";
+
+import apiFees from "../../../api/apiFees";
+import apiUsers from "../../../api/apiUsers";
+import apiLoans from "../../../api/apiLoans";
 
 import SearchBar from "../../common/SearchBar";
-import apiFees from "../../../api/apiFees";
 import TableAlert from "../../common/TableAlert";
 
 const FeeItemsTable = ({
@@ -16,31 +19,76 @@ const FeeItemsTable = ({
 }) => {
 	const selectedUserId = userId ?? null;
 
-	const [fees, setFees] = useState<FeeType[]>([]);
+	const [fees, setFees] = useState<any[]>([]);
+	const [users, setUsers] = useState<UserType[]>([]);
+	const [loans, setLoans] = useState<LoanResponse[]>([]);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		if (mode === "admin") {
-			apiFees
-				.getFees()
-				.then((data) => {
-					setFees(data);
-					setLoading(false);
-				})
-				.catch(console.error);
-		} else {
-			if (!selectedUserId) return;
+	// ============================
+	// Load users & loans first
+	// ============================
 
-			apiFees
-				.getFees()
-				.then((data) => {
-					const filtered = data.filter((fee) => fee.user.id === selectedUserId);
-					setFees(filtered);
-					setLoading(false);
-				})
-				.catch(console.error);
+	useEffect(() => {
+		reloadUsers();
+		reloadLoans();
+	}, []);
+
+	const reloadUsers = async () => {
+		try {
+			const data = await apiUsers.getUsers();
+			setUsers(data);
+		} catch (error) {
+			console.error("Failed to reload users:", error);
 		}
-	}, [mode, selectedUserId]);
+	};
+
+	const reloadLoans = async () => {
+		try {
+			const data = await apiLoans.getLoans();
+			setLoans(data);
+		} catch (error) {
+			console.error("Failed to reload loans:", error);
+		}
+	};
+
+	// ============================
+	// Load fees AFTER users & loans
+	// ============================
+
+	useEffect(() => {
+		if (users.length > 0 && loans.length > 0) {
+			reloadFees();
+		}
+	}, [users, loans, mode, selectedUserId]);
+
+	const enrichFees = (fees: FeeResponseDTO[]) => {
+		return fees.map((fee) => {
+			const user = users.find((u) => u.id === fee.userId) ?? null;
+			const loan = loans.find((l) => l.loanId === fee.loanId) ?? null;
+
+			return {
+				...fee,
+				user,
+				loan,
+			};
+		});
+	};
+
+	const reloadFees = async () => {
+		try {
+			const data = await apiFees.getFees();
+
+			const filtered =
+				mode === "admin" ? data : data.filter((fee) => fee.userId === selectedUserId);
+
+			const enriched = enrichFees(filtered);
+
+			setFees(enriched);
+			setLoading(false);
+		} catch (err) {
+			console.error("Error loading fees:", err);
+		}
+	};
 
 	// ============================
 	// Search / Filter / Sort
@@ -51,13 +99,13 @@ const FeeItemsTable = ({
 	const statusOptions: FeeStatusType[] = ["PAID", "PENDING", "CANCELLED"];
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof FeeType;
+		key: keyof FeeResponseDTO;
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: keyof FeeType) => {
+	const requestSort = (key: keyof FeeResponseDTO) => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -67,7 +115,7 @@ const FeeItemsTable = ({
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof FeeType) => {
+	const getSortIcon = (key: keyof FeeResponseDTO) => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -81,20 +129,23 @@ const FeeItemsTable = ({
 
 		if (search) {
 			const lower = search.toLowerCase();
+
 			data = data.filter((fee) => {
-				const fullName = `${fee.user.firstName} ${fee.user.lastName}`.toLowerCase();
-				const bookTitle = fee.loan.copy.book.title.toLowerCase();
-				const authors = fee.loan.copy.book.authors
-					.map((a) => `${a.firstName} ${a.lastName}`)
-					.join(" ")
-					.toLowerCase();
+				const fullName =
+					`${fee.user?.firstName ?? ""} ${fee.user?.lastName ?? ""}`.toLowerCase();
+				const bookTitle = fee.loan?.copy?.book?.title?.toLowerCase() ?? "";
+				const authors =
+					fee.loan?.copy?.book?.authors
+						?.map((a) => `${a.firstName} ${a.lastName}`)
+						.join(" ")
+						.toLowerCase() ?? "";
 
 				return (
 					fullName.includes(lower) ||
 					bookTitle.includes(lower) ||
 					authors.includes(lower) ||
 					String(fee.id).includes(lower) ||
-					String(fee.loan.loanId).includes(lower)
+					String(fee.loan?.loanId).includes(lower)
 				);
 			});
 		}
@@ -111,8 +162,8 @@ const FeeItemsTable = ({
 						break;
 
 					case "user":
-						aVal = `${a.user.firstName} ${a.user.lastName}`;
-						bVal = `${b.user.firstName} ${b.user.lastName}`;
+						aVal = `${a.user?.firstName} ${a.user?.lastName}`;
+						bVal = `${b.user?.firstName} ${b.user?.lastName}`;
 						break;
 
 					case "amount":
@@ -121,8 +172,8 @@ const FeeItemsTable = ({
 						break;
 
 					case "loan":
-						aVal = a.loan.loanId;
-						bVal = b.loan.loanId;
+						aVal = a.loan?.loanId;
+						bVal = b.loan?.loanId;
 						break;
 
 					case "createdAt":
@@ -166,14 +217,6 @@ const FeeItemsTable = ({
 			console.error("Error marking fee as paid:", err);
 		}
 	};
-
-	apiFees
-		.getFees()
-		.then((data) => {
-			setFees(data);
-			setLoading(false);
-		})
-		.catch(console.error);
 
 	const handleCancelFee = async (feeId: number) => {
 		try {
@@ -272,15 +315,15 @@ const FeeItemsTable = ({
 								<td>{index + 1}</td>
 
 								<td>
-									{fee.user.id} / {fee.user.firstName} {fee.user.lastName}
+									{fee.user?.id} / {fee.user?.firstName} {fee.user?.lastName}
 								</td>
 
 								<td>
-									{fee.loan.copy.book.title} / (
-									{fee.loan.copy.book.authors
-										.map((a) => `${a.firstName} ${a.lastName}`)
+									{fee.loan?.copy?.book?.title} / (
+									{fee.loan?.copy?.book?.authors
+										?.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
-									) / {fee.loan.copy.inventoryCode}
+									) / {fee.loan?.copy?.inventoryCode}
 								</td>
 
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
@@ -378,11 +421,11 @@ const FeeItemsTable = ({
 								<td>{index + 1}</td>
 
 								<td>
-									{fee.loan.copy.book.title} / (
-									{fee.loan.copy.book.authors
-										.map((a) => `${a.firstName} ${a.lastName}`)
+									{fee.loan?.copy?.book?.title} / (
+									{fee.loan?.copy?.book?.authors
+										?.map((a) => `${a.firstName} ${a.lastName}`)
 										.join(", ")}
-									) / {fee.loan.copy.inventoryCode}
+									) / {fee.loan?.copy?.inventoryCode}
 								</td>
 
 								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>

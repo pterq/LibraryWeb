@@ -33,7 +33,7 @@ public class Book {
     @Column(length = 1024)
     private String imageUrl;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -41,7 +41,7 @@ public class Book {
     )
     private List<Author> authors = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -49,10 +49,9 @@ public class Book {
     )
     private List<Category> categories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<BookPhysical> copies = new ArrayList<>();
-
-
 }
+
 

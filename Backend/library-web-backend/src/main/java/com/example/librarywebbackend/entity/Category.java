@@ -24,8 +24,9 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "categories")
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Book> books = new ArrayList<>();
+    private List<Book> books;
+
 
 }
