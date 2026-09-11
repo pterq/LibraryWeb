@@ -112,7 +112,7 @@ const LoanItemsTable = ({
 	// Search / Filter / Sort
 	// ============================
 
-	const statusOptions: LoanStatusType[] = ["RESERVED", "BORROWED", "RETURNED", "OVERDUE"];
+	const statusOptions: LoanStatusType[] = ["RESERVED", "ACTIVE", "RETURNED", "OVERDUE"];
 	const [filterStatus, setFilterStatus] = useState<"ALL" | LoanStatusType>("ALL");
 	const [search, setSearch] = useState("");
 	const [filter, setFilter] = useState<"ALL" | LoanResponse["status"]>("ALL");

@@ -10,6 +10,7 @@ import ViewUser from "../CRUDs/User/ViewUser";
 import EditUser from "../CRUDs/User/EditUser";
 import AddUser from "../CRUDs/User/AddUser";
 import DeleteButton from "../admin-components/DeleteButton";
+import { useAuth } from "../../../context/AuthContext";
 
 type CrudState =
 	| { mode: "dashboard" }
@@ -18,6 +19,8 @@ type CrudState =
 	| { mode: "add" };
 
 const UsersDashboard = () => {
+	const userRole = useAuth().role ?? "USER";
+
 	const [crud, setCrud] = useState<CrudState>({ mode: "dashboard" });
 	const [users, setUsers] = useState<UserType[]>([]);
 	const [message, setMessage] = useState<string | null>(null);
@@ -187,12 +190,14 @@ const UsersDashboard = () => {
 			)}
 
 			<div className="d-flex justify-content-end mb-3">
-				<button
-					className="btn btn-primary btn-sm me-2"
-					onClick={() => setCrud({ mode: "add" })}
-				>
-					Add User
-				</button>
+				{userRole === "ADMIN" && (
+					<button
+						className="btn btn-primary btn-sm me-2"
+						onClick={() => setCrud({ mode: "add" })}
+					>
+						Add User
+					</button>
+				)}
 				<button
 					className="btn btn-secondary btn-sm"
 					disabled={!isFiltered}
@@ -325,12 +330,14 @@ const UsersDashboard = () => {
 									Edit
 								</button>
 
-								<DeleteButton
-									id={user.id}
-									name={`${user.firstName} ${user.lastName}`}
-									entityName="user"
-									onDelete={() => handleDelete(user.id)}
-								/>
+								{userRole === "ADMIN" && (
+									<DeleteButton
+										id={user.id}
+										name={`${user.firstName} ${user.lastName}`}
+										entityName="user"
+										onDelete={() => handleDelete(user.id)}
+									/>
+								)}
 							</td>
 						</tr>
 					))}

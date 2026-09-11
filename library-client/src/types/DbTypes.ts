@@ -1,6 +1,6 @@
-export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN";
+export type UserRoleType = "ADMIN" | "USER" | "LIBRARIAN" | "";
 export type BookPhysicalStatusType = "AVAILABLE" | "BORROWED" | "RESERVED";
-export type LoanStatusType = "RESERVED" | "BORROWED" | "RETURNED" | "OVERDUE";
+export type LoanStatusType = "RESERVED" | "ACTIVE" | "RETURNED" | "OVERDUE";
 export type FeeStatusType = "PAID" | "PENDING" | "CANCELLED";
 
 //============================================================================
@@ -60,7 +60,7 @@ export interface UserType {
 	email: string;
 	phone: string | null;
 	role: UserRoleType;
-	hasFee: boolean;
+	hasFees: boolean;
 }
 
 export interface UserDtoType {
@@ -82,19 +82,6 @@ export type FeeType = {
 	user: UserType;
 };
 
-[
-	{
-		id: 1,
-		userId: 1,
-		userFirstName: "Piotr",
-		userLastName: "Owczarek",
-		loanId: 38,
-		amount: 5,
-		createdAt: "2026-09-11T15:32:18.291043",
-		paidAt: "2026-09-11T16:21:05.32494",
-		status: "PAID",
-	},
-];
 export type FeeResponseDTO = {
 	id: number;
 	userId: number;

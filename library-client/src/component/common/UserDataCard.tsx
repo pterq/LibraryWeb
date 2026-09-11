@@ -39,7 +39,7 @@ const UserDataCard = ({ userData }: { userData: UserType | null }) => {
 						<strong>Role:</strong> {userData?.role}
 					</p>
 					<p>
-						<strong>Has Unpaid Fees:</strong> {userData?.hasFee ? "Yes" : "No"}
+						<strong>Has Unpaid Fees:</strong> {userData?.hasFees ? "Yes" : "No"}
 					</p>
 				</div>
 			</div>

@@ -42,7 +42,12 @@ const LoginPage: React.FC = () => {
 				role: response.data.role,
 				tokenExpiresAt: response.data.tokenExpiresAt,
 				phone: response.data.phone,
+				hasFees: response.data.hasFees,
 			});
+
+			if (response.data.hasFees) {
+				useAuth().setHasFees(true);
+			}
 
 			setMessage("Logged in successfully");
 			console.log("Login response:", response.data);

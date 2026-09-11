@@ -60,8 +60,6 @@ function App() {
 							}
 						/>
 
-						<Route path="/fee/:id" element={<ViewFee />} />
-
 						<Route
 							path="/settings"
 							element={
@@ -88,12 +86,12 @@ function App() {
 
 						{/* LIBRARIAN PANEL — SPA tak samo jak admin */}
 						<Route
-							path="/library-panel"
-							element={<Navigate to="/library-panel/dashboard" replace />}
+							path="/librarian-panel"
+							element={<Navigate to="/librarian-panel/dashboard" replace />}
 						/>
 
 						<Route
-							path="/library-panel/:section"
+							path="/librarian-panel/:section"
 							element={
 								<ProtectedRoute>
 									<AdminPanelPage />
