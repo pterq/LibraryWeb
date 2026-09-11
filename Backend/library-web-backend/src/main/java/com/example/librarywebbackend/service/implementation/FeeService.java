@@ -43,7 +43,7 @@ public class FeeService implements IFeeService {
 
     @Override
     public List<FeeResponseDTO> getAllFees() {
-        return feeRepository.findAllWithGraph()
+        return feeRepository.findAll()
                 .stream()
                 .map(feeMapper::toResponse)
                 .toList();
