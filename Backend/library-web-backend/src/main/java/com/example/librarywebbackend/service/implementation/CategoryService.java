@@ -60,8 +60,16 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public void deleteCategoryByCategoryId(Long id) {
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Category not found"));
+
+        if (category.getBooks() != null && !category.getBooks().isEmpty()) {
+            throw new IllegalStateException("Cannot delete category assigned to books.");
+        }
+
+        categoryRepository.delete(category);
     }
+
 
     private String normalizeName(String name) {
         if (name == null) {

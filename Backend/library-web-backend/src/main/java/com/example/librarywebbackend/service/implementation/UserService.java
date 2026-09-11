@@ -1,10 +1,12 @@
 package com.example.librarywebbackend.service.implementation;
 
+import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
 import com.example.librarywebbackend.dto.User.*;
 import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.UserRole;
 import com.example.librarywebbackend.repository.FeeRepository;
+import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.security.JwtService;
 import com.example.librarywebbackend.security.JwtService.TokenData;
@@ -23,13 +25,15 @@ public class UserService implements IUserService {
     private final FeeRepository feeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoanRepository loanRepository;
 
     public UserService(UserRepository userRepository, FeeRepository feeRepository,
-                       PasswordEncoder passwordEncoder, JwtService jwtService) {
+                       PasswordEncoder passwordEncoder, JwtService jwtService, LoanRepository loanRepository) {
         this.userRepository = userRepository;
         this.feeRepository = feeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.loanRepository = loanRepository;
     }
 
     // -------------------------
@@ -83,8 +87,23 @@ public class UserService implements IUserService {
 
     @Override
     public void deleteUserByUserId(Long id) {
-        userRepository.deleteById(id);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean hasFees = feeRepository.existsByUserId(id);
+        boolean hasLoans = loanRepository.existsByUserId(id);
+
+        if (hasFees || hasLoans) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cannot delete user with active loans or fees."
+            );
+        }
+
+        userRepository.delete(user);
     }
+
 
     private User withFeeFlag(User user) {
         user.setHasFee(feeRepository.existsByUserIdAndStatus(user.getId(), FeeStatus.PENDING));

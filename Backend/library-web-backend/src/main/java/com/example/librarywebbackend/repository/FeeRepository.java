@@ -42,5 +42,6 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
 
     Fee findTopByLoanIdOrderByCreatedAtDesc(Long loanId);
 
+    boolean existsByUserId(Long userId);
 
 }

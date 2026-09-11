@@ -38,4 +38,5 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     """)
     List<Object[]> countLoansByUserRaw();
 
+    boolean existsByUserId(Long userId);
 }
