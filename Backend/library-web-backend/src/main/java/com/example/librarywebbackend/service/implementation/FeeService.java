@@ -4,17 +4,16 @@ import com.example.librarywebbackend.dto.Fee.FeeResponseDTO;
 import com.example.librarywebbackend.dto.Fee.FeeRequestDTO;
 import com.example.librarywebbackend.dto.Fee.FeeWithCountDTO;
 import com.example.librarywebbackend.dto.User.UserDTO;
-import com.example.librarywebbackend.entity.Fee;
-import com.example.librarywebbackend.entity.FeeStatus;
-import com.example.librarywebbackend.entity.Loan;
-import com.example.librarywebbackend.entity.User;
+import com.example.librarywebbackend.entity.*;
 import com.example.librarywebbackend.mapper.FeeMapper;
+import com.example.librarywebbackend.repository.BookCopyRepository;
 import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,16 +29,19 @@ public class FeeService implements IFeeService {
     private final UserRepository userRepository;
     private final LoanRepository loanRepository;
     private final FeeMapper feeMapper;
+    private final BookCopyRepository bookCopyRepository;
 
     public FeeService(FeeRepository feeRepository,
                       UserRepository userRepository,
                       LoanRepository loanRepository,
-                      FeeMapper feeMapper) {
+                      FeeMapper feeMapper,
+                      BookCopyRepository bookCopyRepository) {
         this.feeRepository = feeRepository;
         this.userRepository = userRepository;
         this.loanRepository = loanRepository;
         this.feeMapper = feeMapper;
-    }
+        this.bookCopyRepository = bookCopyRepository;
+        }
 
     @Override
     public List<FeeResponseDTO> getAllFees() {
@@ -102,21 +104,66 @@ public class FeeService implements IFeeService {
         return feeMapper.toResponse(feeRepository.save(fee));
     }
 
+
+
+    private void updateLoanAfterFeePaid(Fee fee) {
+        Loan loan = fee.getLoan();
+        if (loan == null) return;
+
+        // ustawienie statusu Loan
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnDate(LocalDateTime.now());
+
+        // ustawienie statusu kopii książki
+        BookPhysical copy = loan.getCopy();
+        if (copy != null) {
+            copy.setStatus(CopyStatus.AVAILABLE);
+            bookCopyRepository.save(copy);
+        }
+
+        loanRepository.save(loan);
+    }
+
+
+
     @Override
     public FeeResponseDTO updateFeeStatus(Long id, FeeStatus status) {
         return feeRepository.findById(id)
                 .map(fee -> {
+
                     fee.setStatus(status);
                     fee.setPaidAt(status == FeeStatus.PAID ? LocalDateTime.now() : null);
-                    return feeMapper.toResponse(feeRepository.save(fee));
+
+                    Fee saved = feeRepository.save(fee);
+
+                    if (status == FeeStatus.PAID) {
+                        updateLoanAfterFeePaid(saved);
+                    }
+
+                    return feeMapper.toResponse(saved);
                 })
                 .orElse(null);
     }
 
+
+
+
+
     @Override
+    @Transactional
     public void deleteFeeByFeeId(Long id) {
-        feeRepository.deleteById(id);
+        Fee fee = feeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Fee not found"));
+
+        Loan loan = fee.getLoan();
+        if (loan != null) {
+            loan.setStatus(LoanStatus.ACTIVE);
+            loanRepository.save(loan);
+        }
+
+        feeRepository.delete(fee);
     }
+
 
     @Override
     public List<FeeWithCountDTO> getAllUsersFeeCounts() {
@@ -137,5 +184,12 @@ public class FeeService implements IFeeService {
                         ((Number) row[8]).longValue()
                 ))
                 .toList();
+    }
+
+
+
+    @Override
+    public void markFeeAsPaid(Long id) {
+        updateFeeStatus(id, FeeStatus.PAID);
     }
 }

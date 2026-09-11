@@ -38,6 +38,9 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
 """)
     List<Object[]> countFeesByUserRaw();
 
+    Fee findByLoanIdAndStatus(Long loanId, FeeStatus status);
+
+    Fee findTopByLoanIdOrderByCreatedAtDesc(Long loanId);
 
 
 }

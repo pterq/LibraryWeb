@@ -102,6 +102,28 @@ export const getFeesByUserId = async (userId: number) => {
 	}
 };
 
+export const markPaid = async (id: number) => {
+	try {
+		const response = await axiosClient.post<FeeResponseDTO>(`${FEE_ENDPOINT}/markPaid/${id}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to mark fee as paid with id ${id}:`, error);
+		throw error;
+	}
+};
+
+export const markCancelled = async (id: number) => {
+	try {
+		const response = await axiosClient.post<FeeResponseDTO>(
+			`${FEE_ENDPOINT}/markCancelled/${id}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to mark fee as cancelled with id ${id}:`, error);
+		throw error;
+	}
+};
+
 const apiFees = {
 	getFees,
 	getFeeByStatus,
@@ -112,6 +134,8 @@ const apiFees = {
 	updateFeeStatusById,
 	getFeesWithCounts,
 	getFeesByUserId,
+	markPaid,
+	markCancelled,
 };
 
 export default apiFees;

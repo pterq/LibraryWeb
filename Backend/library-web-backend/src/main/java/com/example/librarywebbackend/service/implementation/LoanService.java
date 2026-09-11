@@ -5,6 +5,7 @@ import com.example.librarywebbackend.dto.User.UserDTO;
 import com.example.librarywebbackend.entity.*;
 import com.example.librarywebbackend.mapper.LoanMapper;
 import com.example.librarywebbackend.repository.BookCopyRepository;
+import com.example.librarywebbackend.repository.FeeRepository;
 import com.example.librarywebbackend.repository.LoanRepository;
 import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.ILoanService;
@@ -30,6 +31,7 @@ public class LoanService implements ILoanService {
     private final BookCopyRepository bookCopyRepository;
     private final UserRepository userRepository;
     private final IFeeService feeService;
+    private final FeeRepository feeRepository;
 
     private final LoanMapper loanMapper;
 
@@ -37,12 +39,15 @@ public class LoanService implements ILoanService {
                        BookCopyRepository bookCopyRepository,
                        UserRepository userRepository,
                        IFeeService feeService,
-                       LoanMapper loanMapper) {
+                       LoanMapper loanMapper,
+                       FeeRepository feeRepository
+    ) {
         this.loanRepository = loanRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.userRepository = userRepository;
         this.feeService = feeService;
         this.loanMapper = loanMapper;
+        this.feeRepository = feeRepository;
     }
 
 
@@ -178,14 +183,23 @@ public class LoanService implements ILoanService {
             throw new IllegalStateException("Copy must be borrowed");
         }
 
-        // oznaczenie jako zaległe
         loan.setStatus(LoanStatus.OVERDUE);
+        loan.setOverdueAt(LocalDateTime.now());
         loanRepository.save(loan);
 
-        feeService.createOverdueFee(loan);
+        Fee lastFee = feeRepository.findTopByLoanIdOrderByCreatedAtDesc(loan.getId());
+
+        // tworzymy nową Fee tylko jeśli NIE ma aktywnej PENDING
+        if (lastFee == null || lastFee.getStatus() == FeeStatus.PAID) {
+            feeService.createOverdueFee(loan);
+        }
 
         return loan;
     }
+
+
+
+
 
     // ------------------------------------------------------------
     // DELETE LOAN
@@ -240,6 +254,8 @@ public class LoanService implements ILoanService {
     // EXPIRE RESERVED LOANS
     // ------------------------------------------------------------
 
+
+
     @Override
     public void expireReservations() {
 
@@ -277,11 +293,16 @@ public class LoanService implements ILoanService {
 
             loan.setStatus(LoanStatus.OVERDUE);
             loan.setOverdueAt(LocalDateTime.now());
-
             loanRepository.save(loan);
 
-            feeService.createOverdueFee(loan);
+            Fee lastFee = feeRepository.findTopByLoanIdOrderByCreatedAtDesc(loan.getId());
+
+            if (lastFee == null) {
+                feeService.createOverdueFee(loan);
+            }
+
         }
     }
+
 
 }

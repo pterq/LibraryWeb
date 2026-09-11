@@ -208,9 +208,9 @@ const FeeItemsTable = ({
 	// ACTION HANDLERS
 	// ============================
 
-	const handleMarkAsPaid = async (feeId: number) => {
+	const handleFeePaid = async (feeId: number) => {
 		try {
-			const updated = await apiFees.markAsPaid(feeId);
+			const updated = await apiFees.markPaid(feeId);
 
 			setFees((prev) => prev.map((fee) => (fee.id === feeId ? { ...fee, ...updated } : fee)));
 		} catch (err) {
@@ -218,13 +218,13 @@ const FeeItemsTable = ({
 		}
 	};
 
-	const handleCancelFee = async (feeId: number) => {
+	const handleDeleteFee = async (feeId: number) => {
 		try {
-			const updated = await apiFees.cancelFee(feeId);
+			await apiFees.deleteFeeById(feeId);
 
-			setFees((prev) => prev.map((fee) => (fee.id === feeId ? { ...fee, ...updated } : fee)));
+			setFees((prev) => prev.filter((fee) => fee.id !== feeId));
 		} catch (err) {
-			console.error("Error cancelling fee:", err);
+			console.error("Error deleting fee:", err);
 		}
 	};
 
@@ -349,19 +349,16 @@ const FeeItemsTable = ({
 										disabled={
 											fee.status === "PAID" || fee.status === "CANCELLED"
 										}
-										onClick={() => handleMarkAsPaid(fee.id)}
+										onClick={() => handleFeePaid(fee.id)}
 									>
 										Mark as Paid
 									</button>
-
 									<button
-										className="btn btn-sm btn-danger"
-										disabled={
-											fee.status === "CANCELLED" || fee.status === "PAID"
-										}
-										onClick={() => handleCancelFee(fee.id)}
+										className="btn btn-sm btn-danger me-2"
+										onClick={() => handleDeleteFee(fee.id)}
+										disabled={fee.status === "PAID"}
 									>
-										Cancel Fee
+										Delete Fee
 									</button>
 								</td>
 							</tr>

@@ -55,6 +55,7 @@ const LoanItemsTable = ({
 				.then((data) => {
 					setLoans(data);
 					setLoading(false);
+					console.log("Loans reloaded for admin with userId:", data);
 				})
 				.catch(console.error);
 			return;
@@ -67,6 +68,7 @@ const LoanItemsTable = ({
 				.then((data) => {
 					setLoans(data);
 					setLoading(false);
+					console.log("Loans reloaded for admin:", data);
 				})
 				.catch(console.error);
 			return;
@@ -82,6 +84,7 @@ const LoanItemsTable = ({
 
 				if (location.pathname === "/my-books") {
 					filtered = filtered.filter((loan) => loan.status !== "RESERVED");
+					console.log("Loans reloaded for filtered user:", data);
 				}
 
 				setLoans(filtered);
@@ -263,7 +266,7 @@ const LoanItemsTable = ({
 								Returned At {getSortIcon("returnDate")}
 							</th>
 							<th onClick={() => requestSort("overdueAt")}>
-								Overdue At {getSortIcon("overdueAt")}
+								Overdue Set At {getSortIcon("overdueAt")}
 							</th>
 
 							<th scope="col" style={{ width: "16%" }}>
@@ -370,6 +373,9 @@ const LoanItemsTable = ({
 							<th onClick={() => requestSort("returnDate")}>
 								Returned At {getSortIcon("returnDate")}
 							</th>
+							<th onClick={() => requestSort("overdueAt")}>
+								Overdue At {getSortIcon("overdueAt")}
+							</th>
 							<th scope="col" style={{ width: "16%" }}>
 								<div className="d-flex align-items-center gap-2">
 									<span onClick={() => requestSort("status")}>
@@ -435,6 +441,12 @@ const LoanItemsTable = ({
 									<td>
 										{loan.returnDate
 											? new Date(loan.returnDate).toLocaleDateString()
+											: "-"}
+									</td>
+
+									<td>
+										{loan.overdueAt
+											? new Date(loan.overdueAt).toLocaleDateString()
 											: "-"}
 									</td>
 

@@ -61,5 +61,14 @@ public class FeeController {
         feeService.deleteFeeByFeeId(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/markPaid/{id}")
+    public ResponseEntity<FeeResponseDTO> markPaid(@PathVariable Long id) {
+        FeeResponseDTO fee = feeService.updateFeeStatus(id, FeeStatus.PAID);
+        return fee != null
+                ? ResponseEntity.ok(fee)
+                : ResponseEntity.notFound().build();
+    }
+
 }
 

@@ -26,5 +26,8 @@ public interface IFeeService {
 
     FeeResponseDTO createOverdueFee(Loan loan);
 
+    void markFeeAsPaid(Long id);
+
+
 
 }
