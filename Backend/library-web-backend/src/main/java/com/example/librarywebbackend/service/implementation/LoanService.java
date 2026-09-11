@@ -1,6 +1,5 @@
 package com.example.librarywebbackend.service.implementation;
 
-import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
 import com.example.librarywebbackend.dto.Loan.LoanWithCountDTO;
 import com.example.librarywebbackend.dto.User.UserDTO;
 import com.example.librarywebbackend.entity.*;
@@ -80,14 +79,14 @@ public class LoanService implements ILoanService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // znajdź wszystkie kopie fizyczne przypisane do książki
-        List<BookPhyscial> copies = bookCopyRepository.findByBook_Id(bookId);
+        List<BookPhysical> copies = bookCopyRepository.findByBook_Id(bookId);
 
         if (copies.isEmpty()) {
             throw new IllegalArgumentException("No copies found for this book");
         }
 
         // znajdź pierwszą wolną kopię
-        BookPhyscial copy = copies.stream()
+        BookPhysical copy = copies.stream()
                 .filter(c -> c.getStatus() == CopyStatus.AVAILABLE)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No available copies"));
@@ -120,7 +119,7 @@ public class LoanService implements ILoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
 
-        BookPhyscial copy = loan.getCopy();
+        BookPhysical copy = loan.getCopy();
 
         if (copy.getStatus() != CopyStatus.RESERVED && copy.getStatus() != CopyStatus.AVAILABLE) {
             throw new IllegalStateException("Copy must be reserved or available");
@@ -150,7 +149,7 @@ public class LoanService implements ILoanService {
         return loanRepository.findById(id)
                 .map(loan -> {
 
-                    BookPhyscial copy = loan.getCopy();
+                    BookPhysical copy = loan.getCopy();
                     copy.setStatus(CopyStatus.AVAILABLE);
                     bookCopyRepository.save(copy);
 
@@ -160,6 +159,32 @@ public class LoanService implements ILoanService {
                     return loanRepository.save(loan);
                 })
                 .orElse(null);
+    }
+
+
+    // ------------------------------------------------------------
+    // OVERDUE BOOK
+    // ------------------------------------------------------------
+
+    @Override
+    public Loan overdueBook(Long loanId) {
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
+
+        BookPhysical copy = loan.getCopy();
+
+        if (copy.getStatus() != CopyStatus.BORROWED) {
+            throw new IllegalStateException("Copy must be borrowed");
+        }
+
+        // oznaczenie jako zaległe
+        loan.setStatus(LoanStatus.OVERDUE);
+        loanRepository.save(loan);
+
+        feeService.createOverdueFee(loan);
+
+        return loan;
     }
 
     // ------------------------------------------------------------
@@ -172,7 +197,7 @@ public class LoanService implements ILoanService {
         Loan loan = loanRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
 
-        BookPhyscial copy = loan.getCopy();
+        BookPhysical copy = loan.getCopy();
 
         // zabezpieczenie: tylko jeśli kopia była RESERVED
         if (copy.getStatus() == CopyStatus.RESERVED) {
@@ -225,7 +250,7 @@ public class LoanService implements ILoanService {
 
         for (Loan loan : expired) {
 
-            BookPhyscial copy = loan.getCopy();
+            BookPhysical copy = loan.getCopy();
 
             if (copy.getStatus() == CopyStatus.RESERVED) {
                 copy.setStatus(CopyStatus.AVAILABLE);

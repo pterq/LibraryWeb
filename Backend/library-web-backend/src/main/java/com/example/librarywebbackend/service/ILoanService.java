@@ -21,6 +21,8 @@ public interface ILoanService {
 
     Loan returnBook(Long loanId);
 
+    Loan overdueBook(Long loanId);
+
     void deleteLoan(Long id);
 
     List<LoanWithCountDTO> getLoanCountsByUser();

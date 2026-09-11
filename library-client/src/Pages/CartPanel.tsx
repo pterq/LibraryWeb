@@ -18,9 +18,8 @@ const CartPanel = () => {
 			.then((data) => {
 				let filtered = [...data];
 
-				if (location.pathname === "/my-books") {
-					filtered = filtered.filter((loan) => loan.status !== "RESERVED");
-				}
+				// Cart items are loans with status "RESERVED"
+				filtered = filtered.filter((loan) => loan.status === "RESERVED");
 
 				setCartItems(filtered);
 			})

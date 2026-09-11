@@ -105,16 +105,55 @@ export const updateLoanById = async (id: number, loan: LoanResponse) => {
 	}
 };
 
+//@PostMapping("/borrow/{loanId}")
+
+export const setLoanBorrow = async (loanId: number) => {
+	try {
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/borrow/${loanId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to change loan with id ${loanId} to BORROWED:`, error);
+		throw error;
+	}
+};
+
+//@PostMapping("/return/{loanId}")
+export const setLoanReturn = async (loanId: number) => {
+	try {
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/return/${loanId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to change loan with id ${loanId} to RETURNED:`, error);
+		throw error;
+	}
+};
+
+//@PostMapping("/overdue/{loanId}")
+export const setLoanOverdue = async (loanId: number) => {
+	try {
+		const response = await axiosClient.post<LoanResponse>(`${LOAN_ENDPOINT}/overdue/${loanId}`);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to change loan with id ${loanId} to OVERDUE:`, error);
+		throw error;
+	}
+};
+
 const apiLoans = {
 	getLoans: getAll,
 	borrowBookByLoanId,
 	returnBookByLoanId,
+
 	getLoansByUserId,
 	addLoanReserve,
 	updateLoanById,
 	deleteLoanById,
 	getLoansWithCounts,
 	getLoanByLoanId,
+
+	setLoanBorrow,
+	setLoanReturn,
+	setLoanOverdue,
 };
 
 export default apiLoans;

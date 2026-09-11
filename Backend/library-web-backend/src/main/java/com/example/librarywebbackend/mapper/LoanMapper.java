@@ -7,7 +7,7 @@ import com.example.librarywebbackend.dto.Category.CategoryResponseDTO;
 import com.example.librarywebbackend.dto.Loan.LoanResponseDTO;
 import com.example.librarywebbackend.dto.User.UserResponseDTO;
 import com.example.librarywebbackend.entity.Book;
-import com.example.librarywebbackend.entity.BookPhyscial;
+import com.example.librarywebbackend.entity.BookPhysical;
 import com.example.librarywebbackend.entity.Loan;
 import com.example.librarywebbackend.entity.User;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,7 @@ public class LoanMapper {
         );
     }
 
-    private BookCopyResponseDTO toCopyDto(BookPhyscial copy) {
+    private BookCopyResponseDTO toCopyDto(BookPhysical copy) {
         return new BookCopyResponseDTO(
                 copy.getId(),
                 toBookDto(copy.getBook()),

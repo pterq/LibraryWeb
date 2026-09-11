@@ -39,7 +39,7 @@ public class LoanExpirationScheduler {
 
         for (Loan loan : expired) {
 
-            BookPhyscial copy = loan.getCopy();
+            BookPhysical copy = loan.getCopy();
 
             // zwolnienie egzemplarza
             if (copy.getStatus() == CopyStatus.RESERVED) {

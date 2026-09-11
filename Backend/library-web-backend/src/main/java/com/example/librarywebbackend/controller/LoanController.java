@@ -112,6 +112,21 @@ public class LoanController {
     }
 
 
+    // ------------------------------------------------------------
+    // OVERDUE BOOK
+    // ------------------------------------------------------------
+    @PostMapping("/overdue/{loanId}")
+    public ResponseEntity<?> overdue(@PathVariable Long loanId) {
+        try {
+            return ResponseEntity.ok(
+                    loanService.overdueBook(loanId)
+            );
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
 
     // ------------------------------------------------------------
     // DELETE LOAN

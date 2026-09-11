@@ -7,8 +7,11 @@ import com.example.librarywebbackend.dto.User.UserDTO;
 import com.example.librarywebbackend.entity.Fee;
 import com.example.librarywebbackend.entity.FeeStatus;
 import com.example.librarywebbackend.entity.Loan;
+import com.example.librarywebbackend.entity.User;
 import com.example.librarywebbackend.mapper.FeeMapper;
 import com.example.librarywebbackend.repository.FeeRepository;
+import com.example.librarywebbackend.repository.LoanRepository;
+import com.example.librarywebbackend.repository.UserRepository;
 import com.example.librarywebbackend.service.IFeeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,20 +27,25 @@ public class FeeService implements IFeeService {
     private BigDecimal overdueFeePerDay;
 
     private final FeeRepository feeRepository;
+    private final UserRepository userRepository;
+    private final LoanRepository loanRepository;
+    private final FeeMapper feeMapper;
 
-    public FeeService(FeeRepository feeRepository) {
+    public FeeService(FeeRepository feeRepository,
+                      UserRepository userRepository,
+                      LoanRepository loanRepository,
+                      FeeMapper feeMapper) {
         this.feeRepository = feeRepository;
+        this.userRepository = userRepository;
+        this.loanRepository = loanRepository;
+        this.feeMapper = feeMapper;
     }
-
-    // ------------------------------------------------------------
-    // GETTERS
-    // ------------------------------------------------------------
 
     @Override
     public List<FeeResponseDTO> getAllFees() {
         return feeRepository.findAll()
                 .stream()
-                .map(FeeMapper::toResponse)
+                .map(feeMapper::toResponse)
                 .toList();
     }
 
@@ -45,36 +53,37 @@ public class FeeService implements IFeeService {
     public List<FeeResponseDTO> getUserFeesByUserId(Long userId) {
         return feeRepository.findByUserId(userId)
                 .stream()
-                .map(FeeMapper::toResponse)
+                .map(feeMapper::toResponse)
                 .toList();
     }
 
     @Override
     public FeeResponseDTO getFeeByFeeId(Long id) {
         return feeRepository.findById(id)
-                .map(FeeMapper::toResponse)
+                .map(feeMapper::toResponse)
                 .orElse(null);
     }
 
-    // ------------------------------------------------------------
-    // CREATE FEE (manual)
-    // ------------------------------------------------------------
-
     @Override
     public FeeResponseDTO createFee(FeeRequestDTO dto) {
-        Fee fee = FeeMapper.toEntity(dto);
+        Fee fee = feeMapper.toEntity(dto);
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Loan loan = loanRepository.findById(dto.getLoanId())
+                .orElseThrow(() -> new RuntimeException("Loan not found"));
+
+        fee.setUser(user);
+        fee.setLoan(loan);
         fee.setCreatedAt(LocalDateTime.now());
         fee.setStatus(FeeStatus.PENDING);
-        return FeeMapper.toResponse(feeRepository.save(fee));
-    }
 
-    // ------------------------------------------------------------
-    // CREATE OVERDUE FEE (automatic from Loan)
-    // ------------------------------------------------------------
+        return feeMapper.toResponse(feeRepository.save(fee));
+    }
 
     @Override
     public FeeResponseDTO createOverdueFee(Loan loan) {
-
         long daysOverdue = Math.max(
                 1,
                 java.time.Duration.between(loan.getDueDate(), LocalDateTime.now()).toDays()
@@ -89,12 +98,8 @@ public class FeeService implements IFeeService {
         fee.setCreatedAt(LocalDateTime.now());
         fee.setStatus(FeeStatus.PENDING);
 
-        return FeeMapper.toResponse(feeRepository.save(fee));
+        return feeMapper.toResponse(feeRepository.save(fee));
     }
-
-    // ------------------------------------------------------------
-    // UPDATE STATUS
-    // ------------------------------------------------------------
 
     @Override
     public FeeResponseDTO updateFeeStatus(Long id, FeeStatus status) {
@@ -102,30 +107,22 @@ public class FeeService implements IFeeService {
                 .map(fee -> {
                     fee.setStatus(status);
                     fee.setPaidAt(status == FeeStatus.PAID ? LocalDateTime.now() : null);
-                    return FeeMapper.toResponse(feeRepository.save(fee));
+                    return feeMapper.toResponse(feeRepository.save(fee));
                 })
                 .orElse(null);
     }
-
-    // ------------------------------------------------------------
-    // DELETE
-    // ------------------------------------------------------------
 
     @Override
     public void deleteFeeByFeeId(Long id) {
         feeRepository.deleteById(id);
     }
 
-    // ------------------------------------------------------------
-    // STATISTICS
-    // ------------------------------------------------------------
-
     @Override
     public List<FeeWithCountDTO> getAllUsersFeeCounts() {
         return feeRepository.countFeesByUserRaw()
                 .stream()
                 .map(row -> new FeeWithCountDTO(
-                        ((Number) row[0]).longValue(), // userId jako id
+                        ((Number) row[0]).longValue(),
                         new UserDTO(
                                 ((Number) row[0]).longValue(),
                                 (String) row[1],
@@ -133,10 +130,10 @@ public class FeeService implements IFeeService {
                                 (String) row[3],
                                 (String) row[4]
                         ),
-                        ((Number) row[5]).longValue(), // countFees
-                        ((Number) row[6]).longValue(), // countPending
-                        ((Number) row[7]).longValue(), // countPaid
-                        ((Number) row[8]).longValue()  // countCancelled
+                        ((Number) row[5]).longValue(),
+                        ((Number) row[6]).longValue(),
+                        ((Number) row[7]).longValue(),
+                        ((Number) row[8]).longValue()
                 ))
                 .toList();
     }

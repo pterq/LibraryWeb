@@ -5,7 +5,7 @@ import com.example.librarywebbackend.dto.BookPhysical.BookCopyRequestDTO;
 import com.example.librarywebbackend.dto.BookPhysical.BookCopyResponseDTO;
 import com.example.librarywebbackend.dto.Book.BookResponseDTO;
 import com.example.librarywebbackend.entity.Book;
-import com.example.librarywebbackend.entity.BookPhyscial;
+import com.example.librarywebbackend.entity.BookPhysical;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.mapper.BookMapper;
 import com.example.librarywebbackend.repository.BookCopyRepository;
@@ -53,12 +53,12 @@ public class BookCopyService implements IBookCopyService {
         Book book = bookRepository.findById(req.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        BookPhyscial copy = new BookPhyscial();
+        BookPhysical copy = new BookPhysical();
         copy.setBook(book);
         copy.setInventoryCode(req.getInventoryCode());
         copy.setStatus(CopyStatus.AVAILABLE);
 
-        BookPhyscial saved = bookCopyRepository.save(copy);
+        BookPhysical saved = bookCopyRepository.save(copy);
 
         return toDTO(saved);
     }
@@ -76,7 +76,7 @@ public class BookCopyService implements IBookCopyService {
                     copy.setInventoryCode(req.getInventoryCode());
                     copy.setStatus(CopyStatus.valueOf(req.getStatus()));
 
-                    BookPhyscial saved = bookCopyRepository.save(copy);
+                    BookPhysical saved = bookCopyRepository.save(copy);
                     return toDTO(saved);
                 })
                 .orElse(null);
@@ -88,7 +88,7 @@ public class BookCopyService implements IBookCopyService {
         return bookCopyRepository.findById(id)
                 .map(copy -> {
                     copy.setStatus(status);
-                    BookPhyscial saved = bookCopyRepository.save(copy);
+                    BookPhysical saved = bookCopyRepository.save(copy);
                     return toDTO(saved);
                 })
                 .orElse(null);
@@ -99,7 +99,7 @@ public class BookCopyService implements IBookCopyService {
         bookCopyRepository.deleteById(id);
     }
 
-    private BookCopyResponseDTO toDTO(BookPhyscial copy) {
+    private BookCopyResponseDTO toDTO(BookPhysical copy) {
 
         BookResponseDTO bookDto = bookMapper.toDto(copy.getBook());
 

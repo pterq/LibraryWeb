@@ -8,9 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 public class LoanResponseDTO {
     private Long loanId;
     private UserResponseDTO user;

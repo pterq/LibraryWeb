@@ -51,7 +51,7 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     @JsonIgnore
-    private List<BookPhyscial> copies = new ArrayList<>();
+    private List<BookPhysical> copies = new ArrayList<>();
 
 
 }

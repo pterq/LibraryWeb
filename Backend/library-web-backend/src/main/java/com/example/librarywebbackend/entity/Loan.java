@@ -23,7 +23,7 @@ public class Loan {
 
     @ManyToOne
     @JsonIgnoreProperties({"book"})
-    private BookPhyscial copy;
+    private BookPhysical copy;
 
     private LocalDateTime reservedAt;
     private LocalDateTime expiresAt;

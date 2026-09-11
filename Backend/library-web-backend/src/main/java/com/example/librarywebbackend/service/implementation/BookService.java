@@ -4,7 +4,7 @@ import com.example.librarywebbackend.dto.Book.BookRequestDTO;
 import com.example.librarywebbackend.dto.Book.BookResponseDTO;
 import com.example.librarywebbackend.entity.Author;
 import com.example.librarywebbackend.entity.Book;
-import com.example.librarywebbackend.entity.BookPhyscial;
+import com.example.librarywebbackend.entity.BookPhysical;
 import com.example.librarywebbackend.entity.Category;
 import com.example.librarywebbackend.entity.CopyStatus;
 import com.example.librarywebbackend.exception.BookHasCopiesException;
@@ -49,7 +49,7 @@ public class BookService implements IBookService {
         return bookCopyRepository.findAll()
                 .stream()
                 .filter(copy -> copy.getStatus() == CopyStatus.AVAILABLE)
-                .map(BookPhyscial::getBook)
+                .map(BookPhysical::getBook)
                 .distinct()
                 .map(bookMapper::toDto)
                 .toList();

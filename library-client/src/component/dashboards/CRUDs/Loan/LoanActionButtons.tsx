@@ -1,5 +1,5 @@
 import React from "react";
-import apiLoans from "../../../../api/apiLoans";
+import apiLoans, { setLoanOverdue } from "../../../../api/apiLoans";
 import { useAuth } from "../../../../context/AuthContext";
 
 const LoanActionButtons = ({
@@ -18,6 +18,16 @@ const LoanActionButtons = ({
 
 		console.log(`Loan status: ${loanStatus}`);
 		console.log(`Renting loan with ID: ${loanId}`);
+
+		apiLoans
+			.setLoanBorrow(loanId!)
+			.then(() => {
+				showToast("Book rented successfully.");
+				notifyCartChanged();
+			})
+			.catch(() => {
+				showToast("Failed to rent book.");
+			});
 	};
 
 	const handleReturn = () => {
@@ -25,6 +35,16 @@ const LoanActionButtons = ({
 
 		console.log(`Loan status: ${loanStatus}`);
 		console.log(`Returning loan with ID: ${loanId}`);
+
+		apiLoans
+			.setLoanReturn(loanId!)
+			.then(() => {
+				showToast("Book returned successfully.");
+				notifyCartChanged();
+			})
+			.catch(() => {
+				showToast("Failed to return book.");
+			});
 	};
 
 	const handleSetOverdue = () => {
@@ -32,6 +52,16 @@ const LoanActionButtons = ({
 
 		console.log(`Loan status: ${loanStatus}`);
 		console.log(`Overdue loan with ID: ${loanId} as overdue`);
+
+		apiLoans;
+		setLoanOverdue(loanId!)
+			.then(() => {
+				showToast("Book marked as overdue successfully.");
+				notifyCartChanged();
+			})
+			.catch(() => {
+				showToast("Failed to mark book as overdue.");
+			});
 	};
 
 	const handleRemoveFromCart = () => {

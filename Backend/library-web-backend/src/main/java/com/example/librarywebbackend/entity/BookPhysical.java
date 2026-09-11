@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "books_physical")
-public class BookPhyscial {
+public class BookPhysical {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

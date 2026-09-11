@@ -26,6 +26,7 @@ const FeeItemsTable = ({
 				.then((data) => {
 					setFees(data);
 					setLoading(false);
+					console.log("Fees loaded:", data);
 				})
 				.catch(console.error);
 		} else {
@@ -37,6 +38,7 @@ const FeeItemsTable = ({
 					const filtered = data.filter((fee) => fee.user.id === selectedUserId);
 					setFees(filtered);
 					setLoading(false);
+					console.log("Fees loaded for user:", filtered);
 				})
 				.catch(console.error);
 		}

@@ -248,19 +248,19 @@ const LoanItemsTable = ({
 							</th>
 							<th onClick={() => requestSort("copy")}>Book {getSortIcon("copy")}</th>
 							<th onClick={() => requestSort("reservedAt")}>
-								Reserved {getSortIcon("reservedAt")}
+								Reserved At {getSortIcon("reservedAt")}
 							</th>
 							<th onClick={() => requestSort("expiresAt")}>
-								Expires {getSortIcon("expiresAt")}
+								Expires At {getSortIcon("expiresAt")}
 							</th>
 							<th onClick={() => requestSort("loanDate")}>
-								Loan {getSortIcon("loanDate")}
+								Loaned At {getSortIcon("loanDate")}
 							</th>
 							<th onClick={() => requestSort("dueDate")}>
-								Due {getSortIcon("dueDate")}
+								Due At {getSortIcon("dueDate")}
 							</th>
 							<th onClick={() => requestSort("returnDate")}>
-								Return {getSortIcon("returnDate")}
+								Returned At {getSortIcon("returnDate")}
 							</th>
 
 							<th scope="col" style={{ width: "16%" }}>
@@ -357,10 +357,10 @@ const LoanItemsTable = ({
 								Expires At {getSortIcon("expiresAt")}
 							</th>
 							<th onClick={() => requestSort("loanDate")}>
-								Loan Date {getSortIcon("loanDate")}
+								Loaned At {getSortIcon("loanDate")}
 							</th>
 							<th onClick={() => requestSort("returnDate")}>
-								Return Date {getSortIcon("returnDate")}
+								Returned At {getSortIcon("returnDate")}
 							</th>
 							<th scope="col" style={{ width: "16%" }}>
 								<div className="d-flex align-items-center gap-2">

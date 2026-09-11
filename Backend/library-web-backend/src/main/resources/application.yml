@@ -36,3 +36,7 @@ latefees:
 return-after-days: 7
 reservation-expires-after-days: 7
 overdue-fee-per-day: 5
+
+expire-at-time: "23:59:59" # Time of day when the overdue fee is calculated
+loan-due-at-time: "23:59:59" # Time of day when the loan is due
+loan-rental-period-days: 14 # Number of days for which a book can be loaned
