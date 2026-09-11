@@ -10,7 +10,6 @@ Table users {
   email varchar [unique]
   phone varchar
   password_hash varchar [not null] //hashed password 
-  created_at datetime
   has_fee bool
 }
 
@@ -84,22 +83,12 @@ Table loans {
   id integer [pk, increment]
   user_id integer [ref: > users.id]
   copy_id integer [ref: > books_physical.id]
+  reserved_at datetime [not null]
+  expires_at datetime [not null]
   loan_date datetime
   due_date datetime
   return_date datetime
-  status varchar [not null] //active, returned, overdue
-}
-
-//////////////////////////////////////////////////////
-// RESERVATIONS - reservations/books in user's "shoping cart"
-//////////////////////////////////////////////////////
-
-Table cartItems {
-  id integer [pk, increment]
-  user_id integer [ref: > users.id]
-  copy_id integer [ref: > books_physical.id]
-  reserved_at datetime [not null]
-  expires_at datetime [not null]
+  status varchar [not null] //reserved, active, returned, overdue
 }
 
 //////////////////////////////////////////////////////
