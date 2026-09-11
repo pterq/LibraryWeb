@@ -13,6 +13,19 @@ import { useAuth } from "../../../context/AuthContext";
 
 import type { LoanResponse, AuthorType, LoanStatusType } from "../../../types/DbTypes";
 
+function formatDateTime(dateRaw?: string | number | Date): string {
+	if (!dateRaw) return "-";
+
+	return new Date(dateRaw).toLocaleString("pl-PL", {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}
+
 type CrudState = { mode: "dashboard" } | { mode: "view"; id: number } | { mode: "add" };
 
 type LoanExtended = LoanResponse & {
@@ -305,28 +318,12 @@ const LoanItemsTable = ({
 									{loan.user.id} / {loan.user.firstName} {loan.user.lastName}
 								</td>
 								<td>{loan.copy.book.title}</td>
-								<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
-								<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
-								<td>
-									{loan.loanDate
-										? new Date(loan.loanDate).toLocaleDateString()
-										: "-"}
-								</td>
-								<td>
-									{loan.dueDate
-										? new Date(loan.dueDate).toLocaleDateString()
-										: "-"}
-								</td>
-								<td>
-									{loan.returnDate
-										? new Date(loan.returnDate).toLocaleDateString()
-										: "-"}
-								</td>
-								<td>
-									{loan.overdueAt
-										? new Date(loan.overdueAt).toLocaleDateString()
-										: "-"}
-								</td>
+								<td>{formatDateTime(loan.reservedAt)}</td>
+								<td>{formatDateTime(loan.expiresAt)}</td>
+								<td>{loan.loanDate ? formatDateTime(loan.loanDate) : "-"}</td>
+								<td>{loan.dueDate ? formatDateTime(loan.dueDate) : "-"}</td>
+								<td>{loan.returnDate ? formatDateTime(loan.returnDate) : "-"}</td>
+								<td>{loan.overdueAt ? formatDateTime(loan.overdueAt) : "-"}</td>
 								<td>{loan.status}</td>
 								<td>
 									<button
@@ -428,27 +425,17 @@ const LoanItemsTable = ({
 
 									<td>{loan.copy.inventoryCode}</td>
 
-									<td>{new Date(loan.reservedAt).toLocaleDateString()}</td>
+									<td>{formatDateTime(loan.reservedAt)}</td>
 
-									<td>{new Date(loan.expiresAt).toLocaleDateString()}</td>
+									<td>{formatDateTime(loan.expiresAt)}</td>
 
-									<td>
-										{loan.loanDate
-											? new Date(loan.loanDate).toLocaleDateString()
-											: "-"}
-									</td>
+									<td>{loan.loanDate ? formatDateTime(loan.loanDate) : "-"}</td>
 
 									<td>
-										{loan.returnDate
-											? new Date(loan.returnDate).toLocaleDateString()
-											: "-"}
+										{loan.returnDate ? formatDateTime(loan.returnDate) : "-"}
 									</td>
 
-									<td>
-										{loan.overdueAt
-											? new Date(loan.overdueAt).toLocaleDateString()
-											: "-"}
-									</td>
+									<td>{loan.overdueAt ? formatDateTime(loan.overdueAt) : "-"}</td>
 
 									<td>{loan.status}</td>
 

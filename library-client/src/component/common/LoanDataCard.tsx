@@ -5,6 +5,19 @@ import UserDataCard from "./UserDataCard";
 import BookDataCard from "../dashboards/CRUDs/Book/BookDataCard";
 import LoanActionButtons from "../dashboards/CRUDs/Loan/LoanActionButtons";
 
+function formatDateTime(dateRaw?: string | number | Date | null): string {
+	if (!dateRaw) return "-";
+
+	return new Date(dateRaw).toLocaleString("pl-PL", {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}
+
 const LoanDataCard = ({ loanData }: { loanData: LoanResponse | null }) => {
 	console.log("Loan data:", loanData);
 
@@ -29,31 +42,11 @@ const LoanDataCard = ({ loanData }: { loanData: LoanResponse | null }) => {
 						<tr>
 							<td>{loanData?.loanId || "-"}</td>
 							<td>{loanData?.copy.inventoryCode || "-"}</td>
-							<td>
-								{loanData?.reservedAt
-									? new Date(loanData.reservedAt).toLocaleDateString()
-									: "-"}
-							</td>
-							<td>
-								{loanData?.expiresAt
-									? new Date(loanData.expiresAt).toLocaleDateString()
-									: "-"}
-							</td>
-							<td>
-								{loanData?.loanDate
-									? new Date(loanData.loanDate).toLocaleDateString()
-									: "-"}
-							</td>
-							<td>
-								{loanData?.dueDate
-									? new Date(loanData.dueDate).toLocaleDateString()
-									: "-"}
-							</td>
-							<td>
-								{loanData?.returnDate
-									? new Date(loanData.returnDate).toLocaleDateString()
-									: "-"}
-							</td>
+							<td>{formatDateTime(loanData?.reservedAt)}</td>
+							<td>{formatDateTime(loanData?.expiresAt)}</td>
+							<td>{formatDateTime(loanData?.loanDate)}</td>
+							<td>{formatDateTime(loanData?.dueDate)}</td>
+							<td>{formatDateTime(loanData?.returnDate)}</td>
 							<td>{loanData?.status || "-"}</td>
 							<td className="text-nowrap">
 								<LoanActionButtons

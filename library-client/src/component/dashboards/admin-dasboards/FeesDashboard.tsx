@@ -112,10 +112,6 @@ const FeesDashboard = () => {
 						aVal = a.countPaid;
 						bVal = b.countPaid;
 						break;
-					case "countCancelled":
-						aVal = a.countCancelled;
-						bVal = b.countCancelled;
-						break;
 				}
 
 				if (typeof aVal === "number" && typeof bVal === "number") {
@@ -186,9 +182,6 @@ const FeesDashboard = () => {
 						<th scope="col" onClick={() => requestSort("countPaid")}>
 							Fees PAID {getSortIcon("countPaid")}
 						</th>
-						<th scope="col" onClick={() => requestSort("countCancelled")}>
-							Fees CANCELLED {getSortIcon("countCancelled")}
-						</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</thead>
@@ -204,7 +197,6 @@ const FeesDashboard = () => {
 							<td>{fee.countFees}</td>
 							<td>{fee.countPending}</td>
 							<td>{fee.countPaid}</td>
-							<td>{fee.countCancelled}</td>
 
 							<td className="text-nowrap">
 								<button

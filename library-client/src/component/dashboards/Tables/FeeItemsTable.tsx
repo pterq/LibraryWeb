@@ -10,6 +10,19 @@ import apiLoans from "../../../api/apiLoans";
 import SearchBar from "../../common/SearchBar";
 import TableAlert from "../../common/TableAlert";
 
+function formatDateTime(dateRaw?: string | number | Date): string {
+	if (!dateRaw) return "-";
+
+	return new Date(dateRaw).toLocaleString("pl-PL", {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}
+
 const FeeItemsTable = ({
 	userId = null,
 	mode = "user",
@@ -99,13 +112,13 @@ const FeeItemsTable = ({
 	const statusOptions: FeeStatusType[] = ["PAID", "PENDING", "CANCELLED"];
 
 	const [sortConfig, setSortConfig] = useState<{
-		key: keyof FeeResponseDTO;
+		key: keyof FeeResponseDTO | "user" | "loan";
 		direction: "asc" | "desc";
 	} | null>(null);
 
 	const isFiltered = search !== "" || filter !== "ALL" || sortConfig !== null;
 
-	const requestSort = (key: keyof FeeResponseDTO) => {
+	const requestSort = (key: keyof FeeResponseDTO | "user" | "loan") => {
 		let direction: "asc" | "desc" = "asc";
 
 		if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
@@ -115,7 +128,7 @@ const FeeItemsTable = ({
 		setSortConfig({ key, direction });
 	};
 
-	const getSortIcon = (key: keyof FeeResponseDTO) => {
+	const getSortIcon = (key: keyof FeeResponseDTO | "user" | "loan") => {
 		if (!sortConfig || sortConfig.key !== key) return "";
 		return sortConfig.direction === "asc" ? "▲" : "▼";
 	};
@@ -136,7 +149,10 @@ const FeeItemsTable = ({
 				const bookTitle = fee.loan?.copy?.book?.title?.toLowerCase() ?? "";
 				const authors =
 					fee.loan?.copy?.book?.authors
-						?.map((a) => `${a.firstName} ${a.lastName}`)
+						?.map(
+							(a: { firstName: string; lastName: string }) =>
+								`${a.firstName} ${a.lastName}`,
+						)
 						.join(" ")
 						.toLowerCase() ?? "";
 
@@ -321,18 +337,19 @@ const FeeItemsTable = ({
 								<td>
 									{fee.loan?.copy?.book?.title} / (
 									{fee.loan?.copy?.book?.authors
-										?.map((a) => `${a.firstName} ${a.lastName}`)
+										?.map(
+											(a: { firstName: string; lastName: string }) =>
+												`${a.firstName} ${a.lastName}`,
+										)
 										.join(", ")}
 									) / {fee.loan?.copy?.inventoryCode}
 								</td>
 
-								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
+								<td>{formatDateTime(fee.createdAt)}</td>
 
 								<td>{fee.amount.toFixed(2)} zł</td>
 
-								<td>
-									{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}
-								</td>
+								<td>{fee.paidAt ? formatDateTime(fee.paidAt) : "-"}</td>
 
 								<td>{fee.status}</td>
 
@@ -420,18 +437,19 @@ const FeeItemsTable = ({
 								<td>
 									{fee.loan?.copy?.book?.title} / (
 									{fee.loan?.copy?.book?.authors
-										?.map((a) => `${a.firstName} ${a.lastName}`)
+										?.map(
+											(a: { firstName: string; lastName: string }) =>
+												`${a.firstName} ${a.lastName}`,
+										)
 										.join(", ")}
 									) / {fee.loan?.copy?.inventoryCode}
 								</td>
 
-								<td>{new Date(fee.createdAt).toLocaleDateString()}</td>
+								<td>{formatDateTime(fee.createdAt)}</td>
 
 								<td>{fee.amount.toFixed(2)} zł</td>
 
-								<td>
-									{fee.paidAt ? new Date(fee.paidAt).toLocaleDateString() : "-"}
-								</td>
+								<td>{formatDateTime(fee.paidAt)}</td>
 
 								<td>{fee.status}</td>
 

@@ -118,7 +118,6 @@ export interface FeesCountType {
 	countFees: number;
 	countPending: number;
 	countPaid: number;
-	countCancelled: number;
 }
 
 export interface LoanCountType {
