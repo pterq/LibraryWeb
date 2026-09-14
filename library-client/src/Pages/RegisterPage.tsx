@@ -107,6 +107,9 @@ const RegisterPage = () => {
 				error={message}
 				title="Register"
 			/>
+			<div className="text-center mt-3">
+				<Link to="/login">Already have an account? Login</Link>
+			</div>
 		</>
 	);
 };
